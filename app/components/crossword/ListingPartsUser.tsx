@@ -2,7 +2,7 @@
 
 
 import { SafeUser } from "@/app/types";
-import { PartAccordion, PartAccordionCategory } from "@/app/components/Accordion";
+import { PartAccordion } from "@/app/components/Accordion";
 
 
 type Props = {

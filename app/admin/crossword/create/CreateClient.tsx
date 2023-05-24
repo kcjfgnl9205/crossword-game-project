@@ -291,7 +291,7 @@ console.log(newData)
        fields.map((field, index) => (
         <CreateQuizAccordion
           key={field.id}
-          title={`問題${index+1}`}
+          title={`問題${index + 1}`}
           remove={() => handleRemove(index)}
           isNull={index===questionErrIndex}
         >

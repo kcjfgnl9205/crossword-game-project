@@ -18,7 +18,7 @@ type Props = {
 export default function Quiz({ id, item }: Props) {
   const [ currentTime, setCurrentTime ] = useState<number>(0);
   const [ selectedClue, setSelectedClue ] = useState<Record<string, string> | null>(null);
-
+  
   const router = useRouter();
   const [ onResult, setOnResult ] = useState<boolean>(false);
   

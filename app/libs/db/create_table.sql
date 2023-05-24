@@ -31,16 +31,6 @@ CREATE TABLE CROSSWORD_CATEGORY_MST (
   deleted_at timestamp
 );
 
--- DROP TABLE DIRECTION_MST;
--- CREATE TABLE DIRECTION_MST (
---   id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
---   name VARCHAR(255) NOT NULL,
---   name_en VARCHAR(255) NOT NULL,
---   created_at timestamp not null default current_timestamp,
---   updated_at timestamp not null default current_timestamp on update current_timestamp,
---   deleted_at timestamp
--- );
-
 DROP TABLE USER_MST;
 CREATE TABLE USER_MST (
   id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -96,3 +86,6 @@ CREATE TABLE CROSSWORD_DETAIL (
   deleted_at timestamp,
   FOREIGN KEY (crossword_id) REFERENCES CROSSWORD_CATEGORY_DETAIL(id) ON UPDATE CASCADE
 );
+
+
+

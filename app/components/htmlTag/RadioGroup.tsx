@@ -1,7 +1,7 @@
 'ues client';
 
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
-import Radio from "./Radio";
+import { Radio } from "@/app/components/htmlTag";
 
 
 type Props = {

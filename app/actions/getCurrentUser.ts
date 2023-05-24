@@ -27,8 +27,7 @@ export default async function getCurrentUser() {
       updatedAt: currentUser[0].updated_at,
     };
   } catch (error: any) {
-    console.log(error)
-    throw new Error(error);
+    return null;
   } finally {
     releaseConnection(connection);
   }
