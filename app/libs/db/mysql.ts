@@ -20,7 +20,9 @@ export const getConnection = async () => {
 
 export const releaseConnection = async (conn: any) => {
   try {
-    await conn.release();
+    if (conn) {
+      await conn.release();
+    }
   } catch (error: any) {
     console.error(`release error : ${error.message}`);
   }

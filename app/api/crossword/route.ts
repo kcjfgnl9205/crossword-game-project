@@ -37,26 +37,26 @@ const insert_crossword_logic = (crossword: any, crosswordQuestions: any) => {
         time_limit: changeMinuteToSecond(Number(crossword.minute), Number(crossword.second))
       })
         
-        Object.keys(crosswordQuestions).forEach(async (key) => {
-          const items = crosswordQuestions[key]; 
-          Object.keys(items).forEach(async (itemKey) => {
-            const item = items[itemKey];
-            await insert_crossword_detail(conn, {
-              number: Number(itemKey),
-              clue: item.clue,
-              hint: item.hint,
-              answer: item.answer,
-              col: item.col,
-              row: item.row,
-              crossword_id: Number(crosswordinfo.insertId),
-              direction: key
-            });
+      for (const key of Object.keys(crosswordQuestions)) {
+        const items = crosswordQuestions[key];
+        for (const itemKey of Object.keys(items)) {
+          const item = items[itemKey];
+          await insert_crossword_detail(conn, {
+            number: Number(itemKey),
+            clue: item.clue,
+            hint: item.hint,
+            answer: item.answer,
+            col: item.col,
+            row: item.row,
+            crossword_id: Number(crosswordinfo.insertId),
+            direction: key
           });
-        });
+        }
+      }
 
-        return crosswordinfo;
+      return crosswordinfo;
     } catch (err) {
-        throw err;
+      throw err;
     }
   };
 };
