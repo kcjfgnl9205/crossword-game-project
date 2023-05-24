@@ -10,7 +10,7 @@ export const insert_user_mst = async (conn: any, obj: any) => {
 
 
 const SELECT_USER_BY_USERNAME = 'SELECT * FROM USER_MST WHERE username = ?';
-export const fint_user_mst_by_username = async (conn: any, username: string) => {
+export const find_user_mst_by_username = async (conn: any, username: string) => {
   try {
     const [ rows ] = await conn?.execute(SELECT_USER_BY_USERNAME, [username]);
     return rows;

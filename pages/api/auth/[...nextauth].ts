@@ -1,5 +1,5 @@
 import { getConnection } from "@/app/libs/db/mysql";
-import { fint_user_mst_by_username } from "@/app/libs/db/sql/users/user_mst";
+import { find_user_mst_by_username } from "@/app/libs/db/sql/users/user_mst";
 
 import bcrypt from "bcrypt";
 import NextAuth, { AuthOptions } from "next-auth";
@@ -20,7 +20,7 @@ export const authOptions: AuthOptions = {
           throw new Error('Invalid credentials');
         }
 
-        const user = await fint_user_mst_by_username(connection, credentials.username); 
+        const user = await find_user_mst_by_username(connection, credentials.username); 
 
         if (!user[0] || !user[0]?.password) {
           throw new Error('Invalid credentials');

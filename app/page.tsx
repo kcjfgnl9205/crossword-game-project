@@ -26,7 +26,6 @@ export default async function Home() {
             return (
               <ListingParts
                 key={parts.id}
-                currentUser={currentUser}
                 item={parts}
               />
             )

@@ -1,7 +1,7 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { fint_user_mst_by_username } from "../libs/db/sql/users/user_mst";
+import { find_user_mst_by_username } from "../libs/db/sql/users/user_mst";
 
 
 export async function getSession() {
@@ -16,7 +16,7 @@ export default async function getCurrentUser() {
       return null;
     }
 
-    const currentUser = await fint_user_mst_by_username(connection, session.user.name);
+    const currentUser = await find_user_mst_by_username(connection, session.user.name);
     if (!currentUser[0]) {
       return null;
     }

@@ -1,5 +1,4 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { PartCategoriesType } from "../types";
 import { select_all_part_chapter } from "../libs/db/sql/crossword/select_all_part_chapter";
 
 

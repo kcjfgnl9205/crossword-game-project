@@ -29,6 +29,7 @@ type Props = {
 }
 
 export default function CrosswordCreateClient({ partCategories, langCategories, item }: Props) {
+  console.log(partCategories)
   const router = useRouter();
   // 過去のデータからimportできるように表示するモダール
   const subModal = useCrosswordCreateModal();
@@ -60,13 +61,13 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
 
 
   useEffect(() => {
-    setValue("part", item ? item.part_id.toString() : watch("part"));
-    setValue("lang", item ? item.lang_id.toString() : watch("lang"));
+    setValue("part", item ? item.part_id?.toString() : watch("part"));
+    setValue("lang", item ? item.lang_id?.toString() : watch("lang"));
     setValue("title", item ? item.title : watch("title"));
 
     const { minute, second } = changeSecondToMinute(item?.time_limit);
-    setValue("minute", item ? minute.toString() : watch("minute"));
-    setValue("second", item ? second.toString() : watch("second"));
+    setValue("minute", item ? minute?.toString() : watch("minute"));
+    setValue("second", item ? second?.toString() : watch("second"));
 
     const questionArray = convertAnswerObjectToAnswerArray(item?.question);
     if (questionArray.length === 0) {
@@ -83,7 +84,7 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
     const chapters = partCategories.filter((part) => part.id === partId)[0].chapters;
     setChapterCategories(chapters);
     setValue("part", watch("part"));
-    setValue("chapter", item ? item.chapter_id.toString() : watch("chapter"));
+    setValue("chapter", item ? item.chapter_id?.toString() : watch("chapter"));
   
   }, [watch("part"), watch("chapter")]);
 
@@ -99,10 +100,10 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
     const partId = Number(watch("part"));
     const chapters = partCategories.filter((part) => part.id === partId)[0].chapters;
     if (name === "part") {
-      setValue("chapter", chapters[0]?.id.toString());
+      setValue("chapter", chapters[0]?.id?.toString());
       setChapterCategories(chapters);
     } else if (name === "chapter") {
-      const chapterFlg = chapters.find((chapter) => chapter.id.toString() === watch("chapter"))?.flg;
+      const chapterFlg = chapters.find((chapter) => chapter.id?.toString() === watch("chapter"))?.flg;
       if (chapterFlg === 1) {
         setIsCombined(true);
       } else {

@@ -9,7 +9,7 @@ export const insert_chapter_mst = async (conn: any, obj: any) => {
 };
 
 
-const DELETE_CHAPTER_MST = 'UPDATE CHAPTER_MST SET deleted_at = ? WHERE part_id = ?';
+const DELETE_CHAPTER_MST = 'UPDATE CHAPTER_MST SET deleted_at = ? WHERE id = ?';
 export const delete_chapter_mst = async (conn: any, id: number) => {
   try {
     const [ rows ] = await conn?.execute(DELETE_CHAPTER_MST, [new Date(), id]);

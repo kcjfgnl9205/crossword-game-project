@@ -1,12 +1,10 @@
 'use client';
 
 
-import { SafeUser } from "@/app/types";
 import { PartAccordion, PartAccordionCategory } from "@/app/components/Accordion";
 
 
 type Props = {
-  currentUser?: SafeUser | null
   item: any;
 }
 

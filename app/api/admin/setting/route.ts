@@ -1,4 +1,4 @@
-import { getConnection, releaseConnection, transaction } from "@/app/libs/db/mysql";
+import { transaction } from "@/app/libs/db/mysql";
 import { delete_chapter_mst, insert_chapter_mst, update_chapter_mst } from "@/app/libs/db/sql/category/chapter_mst";
 import { delete_part_mst, insert_part_mst, update_part_mst } from "@/app/libs/db/sql/category/part_mst";
 import { NextResponse } from "next/server";
@@ -45,7 +45,6 @@ const update_category_logic = (parts: Array<any>) => {
         } else if (parts[i].onDelete) {
           //delete
           await delete_part_mst(conn, parts[i].id);
-          //delete
           await delete_chapter_mst(conn, Number(parts[i].id));
         } else {
           //update
@@ -55,25 +54,24 @@ const update_category_logic = (parts: Array<any>) => {
           });
 
           for (let j = 0; j < parts[i].chapters.length; j++) {
-            if (!parts[i].chapters[j].id) {
+            if (parts[i].chapters[j].onDelete) {
+              //delete
+              await delete_chapter_mst(conn, Number(parts[i].chapters[j].id));
+            } else if (parts[i].chapters[j].id) {
+              //update
+              await update_chapter_mst(conn, parts[i].chapters[j].id, {
+                name: parts[i].chapters[j].name,
+                sorted: j,
+                flg: parts[i].chapters[j].flg,
+              });
+            } else {
               //insert
               await insert_chapter_mst(conn, {
                 name: parts[i].chapters[j].name,
                 flg: parts[i].chapters[j].flg,
                 part_id: parts[i].id,
                 sorted: j
-              })
-            } else if (parts[i].chapters[j].onDelete) {
-              //delete
-              await delete_chapter_mst(conn, Number(parts[i].chapters[j].id));
-            } else {
-              //update
-              await update_chapter_mst(conn, parts[i].chapters[j].id, {
-                name: parts[i].chapters[j].name,
-                sorted: j,
-                flg: parts[i].chapters[j].flg,
-              })
-
+              });
             }
           }
         }

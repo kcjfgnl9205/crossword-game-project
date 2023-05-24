@@ -28,7 +28,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     defaultValues: {
       id: 0,
       name: "",
-      chapters: [{chapter_id: 0, name: "", flg: false, disabled: false}]
+      chapters: [{id: 0, name: "", flg: false, disabled: false}]
     }
   });
 
@@ -45,7 +45,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     } else {
       setValue('id', 0);
       setValue('name', "");
-      setValue('chapters', [{chapter_id: 0, name: "", flg: false, disabled: false}]);
+      setValue('chapters', [{id: 0, name: "", flg: 0, disabled: false}]);
     }
   }, [item, setValue]);
 
@@ -53,9 +53,10 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     append(null);
   }, [append]);
   
-  const handleChapterRemove = (id: number, index: number) => {
+  const handleChapterRemove = (index: number) => {
     const prevName = getValues(`chapters.${index}.name`);
-    update(index, { chapter_id: id, name: prevName, onDelete: true, flg: false});
+    const prevId = getValues(`chapters.${index}.id`);
+    update(index, { id: prevId, name: prevName, onDelete: true, flg: 0, disabled: false});
   };
 
   
@@ -88,6 +89,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
       {
         fields.map((chapter, chapterIndex) => {
           const { id, chapter_id, disabled, onDelete } = chapter as { id: string, chapter_id: number, disabled: boolean, onDelete: boolean };
+          
           if (!onDelete) {
             return (
               <div key={chapterIndex} className="flex flex-row gap-1 items-center">
@@ -110,7 +112,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
                 <div className="flex-none w-14">
                   <Button
                     label="-"
-                    onClick={() => handleChapterRemove(chapter_id, chapterIndex)}
+                    onClick={() => handleChapterRemove(chapterIndex)}
                     error
                     disabled={disabled}
                   />
