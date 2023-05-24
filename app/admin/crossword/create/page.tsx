@@ -11,7 +11,7 @@ import getLangCategories from "@/app/actions/getLangCategories";
 
 export default async function CrosswordCreate() {
   const currentUser = await getCurrentUser();
-  const partCategories = await getPartsAndChapter();
+  const partCategories = await getPartsAndChapter() as [];
   const langCategories = await getLangCategories();
   if (!currentUser?.authority) {
     redirect("/")

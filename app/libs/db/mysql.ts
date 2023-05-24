@@ -5,7 +5,7 @@ const pool = mysql.createPool({
   database: process.env.MYSQL_DATABASE,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
-  connectionLimit: 5,
+  connectionLimit: 10,
 });
 
 export const getConnection = async () => {
@@ -40,8 +40,6 @@ export const transaction = async (logic: any) => {
     if (conn) {
       conn.rollback();
     }
-
-    console.error(err);
     return null;
   } finally {
     if (conn) {

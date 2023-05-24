@@ -3,8 +3,8 @@
 
 import Container from "@/app/components/common/Container";
 import Heading from "@/app/components/common/Heading";
-import { SafeUser } from "../types";
-import ListingPartsUser from "../components/crossword/ListingPartsUser";
+import { SafeUser } from "../../types";
+import ListingPartsUser from "../../components/crossword/ListingPartsUser";
 
 
 
@@ -30,7 +30,7 @@ export default function ResultClient({ currentUser, crosswordParts }: Props) {
       <Heading title="username様が解決した問題リスト" />
       
       <div className="pt-2 flex flex-col gap-0.5 md:gap-1">
-        {
+        {/* {
           crosswordParts?.map((parts: any, index: number) => {
             return (
               <ListingPartsUser
@@ -40,7 +40,7 @@ export default function ResultClient({ currentUser, crosswordParts }: Props) {
               />
             )
           })
-        }
+        } */}
       </div>
     </Container>
   )

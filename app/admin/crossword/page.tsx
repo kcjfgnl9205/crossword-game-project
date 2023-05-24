@@ -17,7 +17,7 @@ export default async function Crossword() {
     <ClientOnly>
       <CrosswordClient
         currentUser={currentUser}
-        listings={crosswordParts}
+        listings={crosswordParts || []}
       />
     </ClientOnly>
   )

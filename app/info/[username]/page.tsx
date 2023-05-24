@@ -1,10 +1,10 @@
 
 import ClientOnly from "@/app/components/common/ClientOnly";
 import ResultClient from "./ResultClient";
-import getCurrentUser from "../actions/getCurrentUser";
+import getCurrentUser from "../../actions/getCurrentUser";
 import { redirect } from "next/navigation";
-import getParts from "../actions/getPartsAndChapter";
-import { EmptyState } from "../components/common";
+import getParts from "../../actions/getPartsAndChapter";
+import { EmptyState } from "../../components/common";
 
 
 
@@ -15,7 +15,7 @@ export default async function CrosswordUserResult() {
     redirect("/")
   }
 
-  if (parts.length === 0) {
+  if (parts?.length === 0) {
     return (
       <EmptyState showReset />
     );

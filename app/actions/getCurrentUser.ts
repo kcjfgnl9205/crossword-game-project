@@ -23,8 +23,8 @@ export default async function getCurrentUser() {
 
     return {
       ...currentUser[0],
-      createdAt: currentUser[0].created_at,
-      updatedAt: currentUser[0].updated_at,
+      createdAt: currentUser[0]?.created_at,
+      updatedAt: currentUser[0]?.updated_at,
     };
   } catch (error: any) {
     return null;

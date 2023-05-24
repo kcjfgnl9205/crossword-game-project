@@ -9,8 +9,6 @@ import { NextResponse } from "next/server";
 export async function POST(
   request: Request, 
 ) {
-  const connection = await getConnection();
-
   try {
     const body = await request.json();
     const { crossword, crosswordQuestions } = body;
@@ -20,8 +18,6 @@ export async function POST(
     return NextResponse.json(crosswordInsert);
   } catch (error: any) {
     throw new Error(error);
-  } finally {
-    releaseConnection(connection);
   }
 }
 

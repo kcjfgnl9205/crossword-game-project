@@ -27,7 +27,7 @@ const SELECT_ALL_PART_AND_CHAPTER = `
 
 export const select_all_part_chapter = async (conn: any) => {
   try {
-    const [ rows ] = await conn.execute(SELECT_ALL_PART_AND_CHAPTER, []);
+    const [ rows ] = await conn?.execute(SELECT_ALL_PART_AND_CHAPTER, []);
     return rows;
   } catch (err) {
     throw err;

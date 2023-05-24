@@ -7,7 +7,6 @@ import { NextResponse } from "next/server";
 export async function PUT(
   request: Request, 
 ) {
-  const connection = await getConnection();
 
   try {
     const body = await request.json();
@@ -18,8 +17,6 @@ export async function PUT(
     return NextResponse.json(updateCategory);
   } catch (error: any) {
     throw new Error(error);
-  } finally {
-    releaseConnection(connection);
   }
 }
 

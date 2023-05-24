@@ -8,7 +8,7 @@ import getPartsAndChapter from "@/app/actions/getPartsAndChapter";
 // 管理者メインページ
 export default async function Admin() {
   const currentUser = await getCurrentUser();
-  const parts = await getPartsAndChapter();
+  const parts = await getPartsAndChapter() as [];
   if (!currentUser?.authority) {
     redirect("/");
   }

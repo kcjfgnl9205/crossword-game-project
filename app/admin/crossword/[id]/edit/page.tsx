@@ -14,7 +14,7 @@ type Props = {
 
 export default async function CrosswordCreate({ params }:  { params: Props }) {
   const currentUser = await getCurrentUser();
-  const partCategories = await getPartsAndChapter();
+  const partCategories = await getPartsAndChapter() as [];
   const langCategories = await getLangCategories();
   const crossword = await getCrosswordById(params);
   if (!currentUser?.authority) {

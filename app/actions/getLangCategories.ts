@@ -9,7 +9,7 @@ export default async function getLangCategories() {
 
     return categories;
   } catch (error: any) {
-    throw new Error(error);
+    console.log(error)
   } finally {
     releaseConnection(connection);
   }

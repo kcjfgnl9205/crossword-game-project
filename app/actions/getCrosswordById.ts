@@ -48,7 +48,7 @@ export default async function getCrosswordById(params: Props) {
     
     return formattedData;
   } catch (error: any) {
-    throw new Error(error);
+    console.log(error)
   } finally {
     releaseConnection(connection);
   }

@@ -40,7 +40,7 @@ const SELECT_CROSSWORD_BY_ID = `
 
 export const select_crossword_by_id = async (conn: any, id: number) => {
   try {
-    const [ rows ] = await conn.execute(SELECT_CROSSWORD_BY_ID, [id]);
+    const [ rows ] = await conn?.execute(SELECT_CROSSWORD_BY_ID, [id]);
     return rows;
   } catch (err) {
     throw err;

@@ -12,7 +12,7 @@ export default async function Home() {
     redirect("/admin");
   }
 
-  if (crosswordParts.length === 0) {
+  if (crosswordParts?.length === 0) {
     return (
       <EmptyState showReset />
     );
@@ -22,7 +22,7 @@ export default async function Home() {
     <Container>
       <div className="pt-2 flex flex-col gap-0.5 md:gap-1">
         {
-          crosswordParts.map((parts: any, index: number) => {
+          crosswordParts?.map((parts: any, index: number) => {
             return (
               <ListingParts
                 key={parts.id}

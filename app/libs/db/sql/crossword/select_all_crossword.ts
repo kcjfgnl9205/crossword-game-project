@@ -44,7 +44,7 @@ const SELECT_ALL_CROSSWORD = `
 
 export const select_all_crossword = async (conn: any) => {
   try {
-    const [ rows ] = await conn.execute(SELECT_ALL_CROSSWORD);
+    const [ rows ] = await conn?.execute(SELECT_ALL_CROSSWORD);
     return rows;
   } catch (err) {
     throw err;

@@ -13,11 +13,7 @@ export async function DELETE(
   request: Request, 
   { params }: { params: IParams }
 ) {
-  const connection = await getConnection();
-
   try {
-    connection?.beginTransaction();
-
     const { id } = params;
     if (!id || typeof id !== 'string') {
       throw new Error('Invalid ID');
@@ -29,8 +25,6 @@ export async function DELETE(
 
   } catch (error: any) {
     throw new Error(error);
-  } finally {
-    releaseConnection(connection);
   }
 }
 
