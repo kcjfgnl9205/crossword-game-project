@@ -58,6 +58,7 @@ export type PartCategoryType = {
   id: number;
   name: string;
   disabled: boolean;
+  sorted: number;
   onCreate?: boolean;
   onUpdate?: boolean;
   onDelete?: boolean;

@@ -2,19 +2,13 @@
 
 
 import { useCallback, useEffect } from 'react';
-import {
-  FieldValues,
-  SubmitHandler,
-  useFieldArray,
-  useForm
-} from 'react-hook-form';
+import { FieldValues, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 
 import Modal from './Modal';
 import { Heading } from "@/app/components/common";
 import { Button, Input, Checkbox } from "@/app/components/htmlTag";
 import usePartCreateModal from '@/app/hooks/usePartCreate';
 import { PartCategoryType } from '@/app/types';
-
 
 
 type Props = {
@@ -26,9 +20,11 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
   const createModal = usePartCreateModal();
   const { control, register, handleSubmit, formState: { errors }, setValue, getValues } = useForm<FieldValues>({
     defaultValues: {
-      id: 0,
+      id: undefined,
       name: "",
-      chapters: [{id: 0, name: "", flg: false, disabled: false}]
+      disabled: false,
+      sorted: 0,
+      chapters: [{id: 0, name: "", flg: 0, disabled: false}]
     }
   });
 
@@ -41,33 +37,40 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     if (item) {
       setValue('id', item.id);
       setValue('name', item.name);
+      setValue('disabled', item.disabled);
+      setValue('sorted', item.sorted);
       setValue('chapters', item.chapters);
     } else {
-      setValue('id', 0);
+      setValue('id', undefined);
       setValue('name', "");
+      setValue('disabled', false);
+      setValue('sorted', 0);
       setValue('chapters', [{id: 0, name: "", flg: 0, disabled: false}]);
     }
-  }, [item, setValue]);
+  }, [item, setValue, createModal.isOpen]);
 
+  // 章を追加するボタンを押下した時
   const handleAddChapter = useCallback(() => {
     append(null);
   }, [append]);
   
+  // 章を削除するボタンを押下した時
   const handleChapterRemove = (index: number) => {
     const prevName = getValues(`chapters.${index}.name`);
     const prevId = getValues(`chapters.${index}.id`);
     update(index, { id: prevId, name: prevName, onDelete: true, flg: 0, disabled: false});
   };
 
-  
+  // 章を追加する
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     if (handleAppendPart) {
-      handleAppendPart?.(data);
+      handleAppendPart(data);
     }
 
     createModal.onClose();
   }
 
+  // モーダルを閉じる
   const handleOnClose = () => {
     createModal.onClose();
   }

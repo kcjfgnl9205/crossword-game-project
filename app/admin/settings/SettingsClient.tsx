@@ -2,13 +2,13 @@
 
 
 import { useCallback, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useFieldArray, useForm } from "react-hook-form";
 import { HiChevronUp, HiChevronDown } from "react-icons/hi";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { PartCategoryType } from "@/app/types";
+import { LangCategoryType, PartCategoryType } from "@/app/types";
 import { PartAccordion } from "@/app/components/Accordion";
 import { Button, Input } from "@/app/components/htmlTag";
 import { Container, ErrorMessage, Heading } from "@/app/components/common";
@@ -18,45 +18,70 @@ import usePartCreateModal from "@/app/hooks/usePartCreate";
 
 type Props = {
   parts: Array<PartCategoryType>;
+  langs: Array<LangCategoryType>;
+  minCnt: number;
 }
 
 const partHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">単元・章設定</div>;
-const settingHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">ゲーム設定</div>;
+const langHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">言語カテゴリー名称設定</div>;
+const settingHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">ゲーム詳細設定</div>;
 
-export default function SettingsClient({ parts }: Props) {
+export default function SettingsClient({ parts, langs, minCnt }: Props) {
   const router = useRouter();
   const createModal = usePartCreateModal();
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   const [ data, setData ] = useState<Array<PartCategoryType>>(parts);
   const [ modalData, setModalData ] = useState<PartCategoryType | null>(null);
 
-  const { register, formState: { errors }, getValues } = useForm<FieldValues>({
+  const { control, register, formState: { errors }, getValues, watch } = useForm<FieldValues>({
     defaultValues: {
-      minCnt: 0,
+      langs: langs,
+      min_cnt: minCnt
     }
   });
 
+  const { fields } = useFieldArray({
+    control,
+    name: "langs",
+  });
   
-  const handleDeletePart = useCallback((id: number) => {
+  const handleSort = useCallback(() => {
     setData((prev: Array<PartCategoryType>) => {
+      let newIndex = 1;
       return prev.map((part: PartCategoryType) => {
-        if (part.id === id) {
+        if (part.onDelete) {
+          return { ...part, sorted: 0 };
+        } else {
+          const updatedPart = { ...part, sorted: newIndex };
+          newIndex++;
+          return updatedPart;
+        }
+      }).sort((a, b) => a.sorted - b.sorted);
+    });
+  }, [])
+
+  // 単元削除ボタン押下した時
+  const handleDeletePart = useCallback((sortedIndex: number) => {
+    setData((prev: Array<PartCategoryType>) => {
+      return prev.map((part: PartCategoryType, prevIndex: number) => {
+        if (sortedIndex === part.sorted) {
           return { ...part, onDelete: true };
         } else {
           return { ...part }
         }
       })
     });
-  }, []);
+
+    handleSort();
+  }, [handleSort]);
   
+  // 単元追加ボタン押下した時
   const handleAppendPart = useCallback((data: any) => {
     setData((prev: Array<PartCategoryType>) => {
       const index = prev.findIndex((part: PartCategoryType) => part.id === data.id);
-      if (index === -1) {
-        const maxId = prev.length === 0 ? 0 : Math.max(...prev.map(item => item.id));
-        const newId = maxId + 1;
-        const newData = { ...data, id: undefined, chapters: data.chapters, disabled: false };
-        return [...prev, newData];
+      if (index === -1 || ! data.id) {
+        const newData = { ...data, id: undefined, disabled: false };
+        return [ ...prev, newData ];
       } else {
         return prev.map((part: PartCategoryType) => {
           if (part.id === data.id) {
@@ -67,17 +92,19 @@ export default function SettingsClient({ parts }: Props) {
         })
       }
     })
-  }, []);
 
-  const handleSortPart = useCallback((id: number, direction: string) => {
+    handleSort();
+  }, [handleSort]);
+
+  // 単元並び順ボタン押下した時
+  const handleSortPart = useCallback((sortedIndex: number, direction: "up" | "down") => {
     // 該当データのindexを探す
-    const index = data.findIndex((part: PartCategoryType) => part.id === id);
-
+    const index = data.findIndex((part: PartCategoryType) => part.sorted === sortedIndex);
     if (index === -1 || (direction === 'up' && index === 0) || (direction === 'down' && index === data.length - 1)) {
       return;
     }
 
-    const newData = [...data];
+    const newData = [ ...data ];
     if (direction === 'up') {
       [newData[index - 1], newData[index]] = [newData[index], newData[index - 1]];
     } else if (direction === 'down') {
@@ -85,8 +112,11 @@ export default function SettingsClient({ parts }: Props) {
     }
 
     setData(newData);
-  }, [data]);
+    handleSort();
+  }, [data, handleSort]);
   
+
+  // 全て修正後、修正ボタン押下した時
   const handleOnSubmit = useCallback(async () => {
     setIsLoading(true);
 
@@ -94,23 +124,25 @@ export default function SettingsClient({ parts }: Props) {
       if (confirm("設定値を修正します。")) {
         const response = await axios.put(`/api/admin/setting`, {
           parts: data,
-          minCnt: Number(getValues("minCnt")),
+          min_cnt: Number(watch("min_cnt")),
+          langs: getValues("langs"),
           withCredentials: true,
         });
   
         if (response.status === 200) {
+          alert("修正しました。");
+          setData(response.data);
           router.refresh();
         }
-        console.log(response)
       } else {
         setIsLoading(false);
       }
     } catch (error: any) {
-      console.log(error);
+      alert("error: " + error);
     } finally {
       setIsLoading(false);
     }
-  }, [data, router, getValues]);
+  }, [data, router, watch, getValues]);
 
   
   const partBody = (
@@ -147,7 +179,7 @@ export default function SettingsClient({ parts }: Props) {
                     <div className="flex-none w-14">
                       <Button
                         label="　"
-                        onClick={() => handleSortPart(part.id, "up")}
+                        onClick={() => handleSortPart(part.sorted, "up")}
                         disabled={isLoading}
                         icon={HiChevronUp}
                       />
@@ -155,7 +187,7 @@ export default function SettingsClient({ parts }: Props) {
                     <div className="flex-none w-14">
                       <Button
                         label="　"
-                        onClick={() => handleSortPart(part.id, "down")}
+                        onClick={() => handleSortPart(part.sorted, "down")}
                         disabled={isLoading}
                         icon={HiChevronDown}
                       />
@@ -163,7 +195,7 @@ export default function SettingsClient({ parts }: Props) {
                     <div className="flex-none w-14">
                       <Button
                         label="-"
-                        onClick={() => handleDeletePart(part.id)}
+                        onClick={() => handleDeletePart(part.sorted)}
                         error
                         disabled={isLoading || part.disabled}
                       />
@@ -175,13 +207,38 @@ export default function SettingsClient({ parts }: Props) {
     </div>
   )
 
+  const langBody = (
+    <div className="py-4">
+      <div className="flex flex-col py-1 gap-2 md:py-2">
+        <ErrorMessage message="※名前だけ修正可能、追加や削除はできない。" />
+        <div className="flex flex-col gap-2 md:flex-row">
+          {
+            fields.map((lang, langIndex) => {
+              const { id, name_en } = lang as { id: string, name_en: string };
+              return (
+                <Input
+                  key={lang.id}
+                  id={`langs.${langIndex}.name`}
+                  label={`名称(${name_en})`}
+                  register={register}
+                  errors={errors}
+                />
+              )
+            })
+          }
+        </div>
+      </div>
+    </div>
+  );
+
+
   const settingBody = (
     <div className="py-4">
       <div className="flex flex-col py-1 w-full gap-2 md:py-2">
-        <p className="px-1">各クロスワードゲームの最小問題数</p>
+        <ErrorMessage message="※各クロスワードゲームの最小問題数を設定してください。" />
         <Input
           type="number"
-          id="minCnt"
+          id="min_cnt"
           label="最小問題数"
           register={register}
           errors={errors}
@@ -204,6 +261,7 @@ export default function SettingsClient({ parts }: Props) {
 
       <div className="flex flex-col gap-1 py-4">
         <PartAccordion header={partHeader} body={partBody} />
+        <PartAccordion header={langHeader} body={langBody} />
         <PartAccordion header={settingHeader} body={settingBody} />
         <div className="md:w-24">
           <Button label="修正" onClick={() => handleOnSubmit()} primary disabled={isLoading} />

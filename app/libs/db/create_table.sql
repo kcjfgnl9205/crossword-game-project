@@ -103,3 +103,16 @@ CREATE TABLE `CROSSWORD_DETAIL` (
 );
 
 
+DROP TABLE NAME_MST;
+CREATE TABLE `NAME_MST` (
+  `key1` varchar(5) NOT NULL,  -- AA001, AA002等
+  `key2` varchar(3) NOT NULL,  -- 001, 002, 003連番
+  `name` varchar(255) NOT NULL,
+  `remark1` varchar(255),
+  `remark2` varchar(255),
+  `remark3` varchar(255),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+   PRIMARY KEY (`key1`, `key2`)
+);

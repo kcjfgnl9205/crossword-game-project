@@ -1,13 +1,14 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
 import { select_all_part_chapter } from "../libs/db/sql/crossword/select_all_part_chapter";
+import { PartCategoryType } from "../types";
 
 
-export default async function getPartsAndChapter() {
+export default async function getPartsAndChapter(): Promise<Array<PartCategoryType>> {
   const connection = await getConnection();
   try {    
     const parts = await select_all_part_chapter(connection);
 
-    const transformedData: any[] = [];
+    const transformedData: Array<PartCategoryType> = [];
     parts?.forEach((row: any) => {
       const partIndex = transformedData.findIndex((item) => item?.id === row?.id);
       if (partIndex === -1) {
@@ -16,6 +17,7 @@ export default async function getPartsAndChapter() {
           id: row?.id,
           name: row?.name,
           disabled: row?.part_cnt > 0,
+          sorted: row?.sorted,
           chapters: [{
               id: row?.chapter_id,
               name: row?.chapter_name,
@@ -40,7 +42,8 @@ export default async function getPartsAndChapter() {
 
     return transformedData;
   } catch (error: any) {
-    console.log(error)
+    console.log("getPartsAndChapter" + error);
+    return [];
   } finally {
     releaseConnection(connection);
   }
