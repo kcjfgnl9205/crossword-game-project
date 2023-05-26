@@ -18,3 +18,14 @@ export const delete_crossword_mst = async (conn: any, id: number) => {
     throw err;
   }
 };
+
+
+const UPDATE_CROSSWORD = "UPDATE CROSSWORD_MST SET title = ?, part_id = ?, chapter_id = ? WHERE id = ?"
+export const update_crossword_mst = async (conn: any, id: number, obj: any) => {
+  try {
+    const [ rows ] = await conn?.execute(UPDATE_CROSSWORD, [obj.title, obj.part_id, obj.chapter_id, id]);
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};

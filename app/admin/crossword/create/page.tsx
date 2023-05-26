@@ -1,23 +1,24 @@
 
-import ClientOnly from "@/app/components/common/ClientOnly";
+import { redirect } from "next/navigation";
+import { ClientOnly } from "@/app/components/common";
 import CreateClient from "./CreateClient";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { redirect } from "next/navigation";
 import getPartsAndChapter from "@/app/actions/getPartsAndChapter";
 import getLangCategories from "@/app/actions/getLangCategories";
 
 
 
 export default async function CrosswordCreate() {
-  const [currentUser, partCategories = [], langCategories] = await Promise.all([
-    await getCurrentUser(),
-    await getPartsAndChapter(),
-    await getLangCategories()
-  ]);
-  
+  const currentUser = await getCurrentUser();
   if (!currentUser?.authority) {
     redirect("/")
   }
+
+  const [partCategories, langCategories] = await Promise.all([
+    getPartsAndChapter(),
+    getLangCategories()
+  ]);
+  
   return (
     <ClientOnly>
       <CreateClient

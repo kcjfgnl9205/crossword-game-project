@@ -14,13 +14,17 @@ type Props = {
 
 export default async function CrosswordCreate({ params }:  { params: Props }) {
   const currentUser = await getCurrentUser();
-  const partCategories = await getPartsAndChapter() as [];
-  const langCategories = await getLangCategories();
-  const crossword = await getCrosswordById(params);
   if (!currentUser?.authority) {
     redirect("/")
   }
-  
+
+  const [partCategories, langCategories, crossword] = await Promise.all([
+    getPartsAndChapter(),
+    getLangCategories(),
+    getCrosswordById(params)
+  ]);
+
+
   return (
     <ClientOnly>
       <CreateClient

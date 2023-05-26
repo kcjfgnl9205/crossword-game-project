@@ -3,8 +3,9 @@ import { InputClueType, InputClueTypeResult } from "../types";
 
 // 秒を分, 秒に変更する
 export const changeSecondToMinute = (seconds: number): any => {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
+  let m = Math.floor(seconds / 60);
+  let s = seconds % 60;
+  
   return { minute: m, second: s }
 }
 
@@ -18,7 +19,7 @@ export const changeMinuteToSecond = (minute: number, seconds: number): number =>
 export function crosswordGenerator(arr: Array<InputClueType>) {
     // increase the probability of having an answer
     const sortedArr = sortArr(arr);
-    return draw([{ clue: sortedArr[sortedArr.length - 1].clue, hint: sortedArr[sortedArr.length - 1].hint, answer: sortedArr.pop()?.answer || "", col: 0, row: 0, isHorizon: true, direction: "across" }], sortedArr.pop() || { clue: "", hint: "", answer: "" })
+    return draw([{ id: sortedArr[sortedArr.length - 1].id, clue: sortedArr[sortedArr.length - 1].clue, hint: sortedArr[sortedArr.length - 1].hint, answer: sortedArr.pop()?.answer || "", col: 0, row: 0, isHorizon: true, direction: "across" }], sortedArr.pop() || { id: 0, clue: "", hint: "", answer: "" })
 
     function sortArr(arr: Array<InputClueType>): Array<InputClueType> {
       return [ ...arr ].sort((prev, next) => prev.answer.length - next.answer.length);
@@ -101,6 +102,7 @@ export function crosswordGenerator(arr: Array<InputClueType>) {
           }
 
           available.push({
+            id: clueObject.id,
             clue: clueObject.clue,
             hint: clueObject.hint,
             answer: clueObject.answer,
@@ -233,8 +235,8 @@ export function crosswordGenerator(arr: Array<InputClueType>) {
     let acrossKey = 1;
     let downKey = 1;
     arr.forEach((item) => {
-      const { clue, hint, answer, col, row, isHorizon } = item;
-      const newItem = { clue, hint, answer, row, col };
+      const { id, clue, hint, answer, col, row, isHorizon } = item;
+      const newItem = { id, clue, hint, answer, row, col };
   
       if (isHorizon) {
         const key = Object.values(result.down).findIndex((downItem: any) => downItem.row === row && downItem.col === col) + 1;

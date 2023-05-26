@@ -11,7 +11,7 @@ type Props = {
   required?: boolean;
   register: UseFormRegister<FieldValues>,
   errors?: FieldErrors;
-  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, name: string) => void;
+  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   items: Array<any>;
 }
 
@@ -45,7 +45,7 @@ export default function RadioGroupAndSelect ({
               required={required}
               value={item.id}
               handleOnChange={handleOnChange}
-              defaultChecked={index === 0}
+              // defaultChecked={value && index === 0}
             />
           )
         })

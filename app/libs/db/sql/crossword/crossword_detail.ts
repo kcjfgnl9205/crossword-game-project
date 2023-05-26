@@ -18,3 +18,25 @@ export const delete_crossword_detail = async (conn: any, id: number) => {
     throw err;
   }
 };
+
+
+const UPDATE_CROSSWORD_DETAIL = `
+  UPDATE CROSSWORD_DETAIL
+     SET number = ?
+       , clue = ?
+       , hint = ?
+       , answer = ?
+       , x_coordinates = ?
+       , y_coordinates = ?
+       , direction = ?
+   WHERE id = ?
+     AND crossword_id = ?
+`;
+export const update_crossword_detail = async (conn: any, id: number, detail_id: number, obj: any) => {
+  try {
+    const [ rows ] = await conn?.execute(UPDATE_CROSSWORD_DETAIL, [obj.number, obj.clue, obj.hint, obj.answer, obj.col, obj.row, obj.direction, detail_id, id]);
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};

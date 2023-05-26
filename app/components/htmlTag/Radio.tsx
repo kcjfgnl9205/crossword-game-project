@@ -13,7 +13,7 @@ type Props = {
   register: UseFormRegister<FieldValues>,
   errors?: FieldErrors;
   defaultChecked?: boolean;
-  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement>, name: string) => void;
+  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function Radio ({
@@ -38,7 +38,7 @@ export default function Radio ({
         type="radio"
         className="hidden peer"
         defaultChecked={defaultChecked}
-        onChange={(e) => handleOnChange?.(e, name)}
+        onChange={(e) => handleOnChange?.(e)}
       />
 
       <label

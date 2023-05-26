@@ -13,21 +13,8 @@ export type SafeUser = Omit<
   authority: boolean;
 }
 
-export type ClueType = {
-  direction: Direction,
-  clue: string,
-  answer: string,
-  hint: string,
-  row: number,
-  col: number,
-  across: string,
-  down: string,
-  number?: string,
-  guess?: string,
-  score?: number,
-}
-
 export type InputClueType = {
+  id: number,
   clue: string,
   hint: string,
   answer: string,
@@ -65,7 +52,6 @@ export type PartCategoryType = {
   chapters: Array<ChapterCategoryType>
 }
 
-export type PartCategoriesType = Array<PartCategoryType>
 
 export type CrosswordQuestionType = {
   id: number;
@@ -82,8 +68,28 @@ export type CrosswordGameType = {
   id: number;
   title: string;
   time_limit: number;
+  part_id: number;
   part_name: string;
+  chapter_id: number;
   chapter_name: string;
+  lang_id: number;
   lang_name: string;
-  questions?: Array<CrosswordQuestionType>;
+  lang_name_en: string;
+  questions: Record<Direction, Record<string, ClueType>>;
+  questions_cnt?: number;
+}
+
+export type ClueType = {
+  id: number,
+  direction: Direction,
+  clue: string,
+  answer: string,
+  hint: string,
+  row: number,
+  col: number,
+  across?: string,
+  down?: string,
+  number?: string,
+  guess?: string,
+  score?: number,
 }

@@ -8,7 +8,7 @@ import getCrosswords from "@/app/actions/getCrosswords";
 // 管理者クロスワードリストページ
 export default async function Crossword() {
   const currentUser = await getCurrentUser();
-  const crosswordParts = await getCrosswords();
+  const crosswords = await getCrosswords();
   if (!currentUser?.authority) {
     redirect("/");
   }
@@ -16,8 +16,7 @@ export default async function Crossword() {
   return (
     <ClientOnly>
       <CrosswordClient
-        currentUser={currentUser}
-        listings={crosswordParts || []}
+        listings={crosswords}
       />
     </ClientOnly>
   )

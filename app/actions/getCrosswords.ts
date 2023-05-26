@@ -20,7 +20,7 @@ export default async function getCrosswords() {
     crosswords?.forEach((row: any) => {
       const partIndex = transformedData?.findIndex((item) => item?.part_id === row?.part_id);
       if (partIndex === -1) {
-        // 새로운 part 추가
+        // 新しい part 追加
         transformedData.push({
           part_id: row?.part_id,
           part_name: row?.part_name,
@@ -45,7 +45,7 @@ export default async function getCrosswords() {
       } else {
         const chapterIndex = transformedData[partIndex]?.chapters.findIndex((chapter: any) => chapter?.chapter_id === row?.chapter_id);
         if (chapterIndex === -1) {
-          // 새로운 chapter 추가
+          // 新しい　chapter 追加
           transformedData[partIndex]?.chapters.push({
             chapter_id: row?.chapter_id,
             chapter_name: row?.chapter_name,
@@ -62,7 +62,7 @@ export default async function getCrosswords() {
               : [],
           });
         } else {
-          // 기존 chapter에 question 추가
+          // 既存の chapterに question 追加
           if (row?.crossword_id) {
             transformedData[partIndex]?.chapters[chapterIndex].questions.push({
               crossword_id: row?.crossword_id,
@@ -76,7 +76,8 @@ export default async function getCrosswords() {
 
     return transformedData;
   } catch (error: any) {
-    console.log(error)
+    console.log("getCrosswords" + error);
+    return [];
   } finally {
     releaseConnection(connection);
   }

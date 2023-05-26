@@ -11,7 +11,7 @@ type Props = {
   required?: boolean;
   register: UseFormRegister<FieldValues>,
   errors?: FieldErrors;
-  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement>, name: string) => void;
+  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   items?: Array<any>;
 }
 

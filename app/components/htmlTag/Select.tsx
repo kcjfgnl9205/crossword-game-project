@@ -11,7 +11,7 @@ type Props = {
   register: UseFormRegister<FieldValues>,
   errors?: FieldErrors,
   options?: Array<any>;
-  handleOnChange?: (e: React.ChangeEvent<HTMLSelectElement>, name: string) => void;
+  handleOnChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   value: string;
 }
 
@@ -49,7 +49,7 @@ export default function Input ({
           ${errors?.[id] ? "border-rose-500" : "border-neutral-300"}
           ${errors?.[id] ? "focus:border-rose-500" : "focus:border-black"}
         `}
-          onChange={(e) => handleOnChange?.(e, id)}
+          onChange={(e) => handleOnChange?.(e)}
           value={value}
       >
         {

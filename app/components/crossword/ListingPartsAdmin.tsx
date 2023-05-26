@@ -1,13 +1,11 @@
 'use client';
 
 
-import { SafeUser } from "@/app/types";
 import { PartAccordion } from "@/app/components/Accordion";
 import { Button } from "../htmlTag";
 
 
 type Props = {
-  currentUser?: SafeUser | null
   item: any;
   isLoading: boolean;
   handleDelete?: (title: string, id: number) => void;

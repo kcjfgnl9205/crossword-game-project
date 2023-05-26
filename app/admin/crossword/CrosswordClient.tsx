@@ -3,7 +3,6 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { SafeUser } from "@/app/types";
 import { Button } from "@/app/components/htmlTag";
 import { Container, EmptyState } from "@/app/components/common";
 import { CrosswordType } from "@/app/actions/getCrosswords";
@@ -11,14 +10,13 @@ import ListingPartsAdmin from "@/app/components/crossword/ListingPartsAdmin";
 
 
 type Props = {
-  currentUser?: SafeUser | null
   listings: Array<CrosswordType>
 }
 
-export default function CrosswordClient({ currentUser, listings }: Props) {
+export default function CrosswordClient({ listings }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-console.log(listings)
+
   //　クロスワード削除
   const handleDelete = useCallback(async (title: string, id: number) => {
     setIsLoading(true);
@@ -29,8 +27,10 @@ console.log(listings)
         });
 
         if (response.status === 200) {
+          alert(`${title}」を削除します。`); 
           router.refresh();
         }
+        
       } catch (error: any) {
         alert(`${error.response.status}: ${error.response.statusText}`);
       } finally {
@@ -68,7 +68,6 @@ console.log(listings)
                   return (
                     <ListingPartsAdmin
                       key={index}
-                      currentUser={currentUser}
                       item={parts}
                       isLoading={isLoading}
                       handleDelete={handleDelete}

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import ClientOnly from "@/app/components/common/ClientOnly";
-import AdminClient from "./AdminClient";
+import { ClientOnly, Container } from "@/app/components/common";
+import { ListingCard } from "@/app/components/admin";
 
 
 // 管理者メインページ
@@ -13,7 +13,12 @@ export default async function Admin() {
 
   return (
     <ClientOnly>
-      <AdminClient />
+      <Container>
+        <div className="flex flex-col gap-2 py-4">
+          <ListingCard label="アプリ設定" href="/admin/settings" />
+          <ListingCard label="クロスワードプロジェクト管理" href="/admin/crossword" />
+        </div>
+      </Container>
     </ClientOnly>
   )
 }

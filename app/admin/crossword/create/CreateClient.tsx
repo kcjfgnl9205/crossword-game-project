@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 import { changeSecondToMinute, convertAnswerObjectToAnswerArray, convertToResultArray, crosswordGenerator } from "@/app/utils/utils";
-import { ChapterCategoryType, InputClueType, LangCategoryType, PartCategoriesType, PartCategoryType } from "@/app/types";
+import { ChapterCategoryType, InputClueType, LangCategoryType, PartCategoryType } from "@/app/types";
 import { Direction } from "@/app/components/cross/types";
 import { Container, ErrorMessage } from "@/app/components/common";
 import { CrosswordProviderImperative } from "@/app/components/cross/CrosswordProvider";
@@ -23,18 +23,20 @@ import CrosswordCreateSubModal from "@/app/components/modal/CrosswordCreateSubMo
 const defaultQuestion = { clue: "", answer: "", hint: "" };
 
 type Props = {
-  partCategories: PartCategoriesType;
+  partCategories: Array<PartCategoryType>;
   langCategories: Array<LangCategoryType>;
   item?: any
 }
 
 export default function CrosswordCreateClient({ partCategories, langCategories, item }: Props) {
-  console.log(partCategories)
+  console.log(item)
   const router = useRouter();
   // 過去のデータからimportできるように表示するモダール
   const subModal = useCrosswordCreateModal();
+  const { minute, second } = changeSecondToMinute(item?.time_limit || 300);
 
   const crosswordRef = useRef<CrosswordProviderImperative>(null);
+  const [ partId, setpartId ] = useState<string>(item ? item.part_id.toString() : partCategories[0].id.toString());
   const [ isCombined, setIsCombined ] = useState<boolean>(false);
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   const [ isChecked, setIsChecked ] = useState<boolean>(false);
@@ -45,31 +47,23 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
   const [ crosswordData, setCrosswordData ] = useState<Record<Direction, Record<string, any>> | null>(null);
   const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
-      part: "",
-      chapter: "",
-      lang: "",
-      title: "",
-      minute: "5",
-      second: "0",
+      part: item ? item.part_id.toString() : partCategories[0].id.toString(),
+      chapter: item ? item.chapter_id.toString() : partCategories[0].chapters[0].id.toString(),
+      lang: item ? item.lang_id.toString() : langCategories[0].id.toString(),
+      title: item?.title || "",
+      minute: minute.toString(),
+      second: second.toString(),
       questions: []
     }
-  })
+  });
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'questions',
   });
 
-
   useEffect(() => {
-    setValue("part", item ? item.part_id?.toString() : watch("part"));
-    setValue("lang", item ? item.lang_id?.toString() : watch("lang"));
-    setValue("title", item ? item.title : watch("title"));
-
-    const { minute, second } = changeSecondToMinute(item?.time_limit);
-    setValue("minute", item ? minute?.toString() : watch("minute"));
-    setValue("second", item ? second?.toString() : watch("second"));
-
-    const questionArray = convertAnswerObjectToAnswerArray(item?.question);
+    const questionArray = convertAnswerObjectToAnswerArray(item?.questions);
     if (questionArray.length === 0) {
       append([defaultQuestion, defaultQuestion, defaultQuestion]);
     } else {
@@ -77,40 +71,35 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
         append([question]);
       })
     }
-  }, []);
+  }, [item, append, setValue])
+
 
   useEffect(() => {
-    const partId = Number(watch("part"));
-    const chapters = partCategories.filter((part) => part.id === partId)[0].chapters;
+    const chapters: Array<ChapterCategoryType> = partCategories.filter((part) => part.id.toString() === watch("part"))[0].chapters;
     setChapterCategories(chapters);
-    setValue("part", watch("part"));
-    setValue("chapter", item ? item.chapter_id?.toString() : watch("chapter"));
+    setValue("chapter", partId !== watch("part") ? chapters[0].id.toString() : watch("chapter"));
+    setpartId(watch("part"))
+  }, [partCategories, chapterCategories, setValue, watch, partId])
   
-  }, [watch("part"), watch("chapter")]);
 
-
-  const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>, name: string) => {
+  const handleOnChange = useCallback((e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     setCrosswordData(null);
-    let value: string = e.target.value;
-    if (name.startsWith("questions")) {
-      value = e.target.value.toUpperCase();
-    }
+    
+    const { name, value } = e.target;
     setValue(name, value);
-
-    const partId = Number(watch("part"));
-    const chapters = partCategories.filter((part) => part.id === partId)[0].chapters;
+    if (name.startsWith("questions")) {
+      setValue(name, value.toUpperCase());
+    }
+    
+    const chapters = partCategories.filter((part) => part.id.toString() === watch("part"))[0].chapters;
     if (name === "part") {
-      setValue("chapter", chapters[0]?.id?.toString());
       setChapterCategories(chapters);
     } else if (name === "chapter") {
       const chapterFlg = chapters.find((chapter) => chapter.id?.toString() === watch("chapter"))?.flg;
-      if (chapterFlg === 1) {
-        setIsCombined(true);
-      } else {
-        setIsCombined(false);
-      }
+      const flg = chapterFlg === 1;
+      setIsCombined(flg);
     }
-  };
+  }, [partCategories, setValue, watch, setChapterCategories]);
   
 
   // 問題を追加する
@@ -158,10 +147,10 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
       alert("error");
       return;
     }
-console.log(result)
+
     const newData = convertToResultArray(result.positionObjArr);
 
-console.log(newData)
+
     setCrosswordData(newData);
 
     setIsChecked(true);
@@ -174,30 +163,46 @@ console.log(newData)
   
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
+
     if (!isChecked) {
       alert("クロスワードゲームを生成してください。");
       return;
     }
     try {
-      const response = await axios.post(`/api/crossword`, {
+      const params = {
         crossword: data,
         crosswordQuestions: crosswordData,
         withCredentials: true,
-      });
-  
-      if (response.status === 200) {
-        router.push("/admin/crossword");
-        router.refresh();
       }
+      if (item) {
+        //修正
+        console.log(crosswordData)
+        const response = await axios.put(`/api/crossword/${item.id}`, params);
+
+        if (response.status === 200) {
+          alert("クロスワードゲームを修正しました。");
+          router.push("/admin/crossword");
+          router.refresh();
+        }
+      } else {
+        //登録
+        const response = await axios.post(`/api/crossword`, params);
+
+        if (response.status === 200) {
+          alert("クロスワードゲームを登録しました。");
+          router.push("/admin/crossword");
+          router.refresh();
+        }
+      }  
     } catch(error: any) {
-      console.log(error);
+      alert("error: " + error);
     } finally {
       setIsLoading(false);
     }    
   }
 
   const handleSetRandomQuestions = useCallback(() => {
-    console.log("zz");
+    console.log("ランダム生成");
   }, []);
   return (
     <Container>
@@ -208,7 +213,7 @@ console.log(newData)
         <RadioGroupAndSelect
           name="part"
           value={watch("part")}
-          disabled={isLoading || item}
+          disabled={isLoading}
           register={register}
           errors={errors}
           items={partCategories}
@@ -217,7 +222,7 @@ console.log(newData)
         <RadioGroupAndSelect
           name="chapter"
           value={watch("chapter")}
-          disabled={isLoading || item}
+          disabled={isLoading}
           register={register}
           errors={errors}
           items={chapterCategories}
@@ -226,7 +231,7 @@ console.log(newData)
         <RadioGroupAndSelect
           name="lang"
           value={watch("lang")}
-          disabled={isLoading || item}
+          disabled={isLoading}
           register={register}
           errors={errors}
           items={langCategories}
@@ -243,8 +248,6 @@ console.log(newData)
           register={register}
           errors={errors}
           required
-          value={watch("title")}
-          handleOnChange={handleOnChange}
         />
         
         {/* 所要時間 */}
@@ -258,7 +261,6 @@ console.log(newData)
             errors={errors}
             required
             subFormat="分"
-            handleOnChange={handleOnChange}
           />
           <Input
             type="number"
@@ -269,7 +271,6 @@ console.log(newData)
             errors={errors}
             required
             subFormat="秒"
-            handleOnChange={handleOnChange}
           />
         </div>
       </div>
@@ -278,10 +279,10 @@ console.log(newData)
 
       <div className="flex flex-col gap-1 md:flex-row">
         <Button label="問題追加" onClick={() => handleAppend()} primary/>
-        { isCombined && <Button label="問題ランダム追加" onClick={handleSetRandomQuestions} info/> }
-        {/* <div className="flex flex-row w-full gap-1"> */}
-          {/* <Button label="問題インポート" onClick={subModal.onOpen} info/> */}
-        {/* </div> */}
+        <div className="flex flex-col w-full gap-1 md:flex-row">
+          <Button label="問題インポート" onClick={subModal.onOpen} info/>
+          { isCombined && <Button label="問題ランダム追加" onClick={handleSetRandomQuestions} info/> }
+        </div>
       </div>
       
       <div className="flex flex-col">

@@ -1,4 +1,4 @@
-import { getConnection, releaseConnection, transaction } from "@/app/libs/db/mysql";
+import {  transaction } from "@/app/libs/db/mysql";
 import { insert_crossword_detail } from "@/app/libs/db/sql/crossword/crossword_detail";
 import { insert_crossword_map } from "@/app/libs/db/sql/crossword/crossword_mst_detail_map";
 import { insert_crossword_mst } from "@/app/libs/db/sql/crossword/crossword_mst";
@@ -24,7 +24,6 @@ export async function POST(
 const insert_crossword_logic = (crossword: any, crosswordQuestions: any) => {
   return async (conn: any) => {
     try {
-
       const crosswordInsertInfo = await insert_crossword_mst(conn, {
         title: crossword.title, 
         part_id: Number(crossword.part),
