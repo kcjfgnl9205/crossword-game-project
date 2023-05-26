@@ -45,7 +45,7 @@ export default function UserMenu({ currentUser }: Props) {
                         <MenuItem label="Settings" onClick={() => { toggleOpen(); router.push(`/admin/settings`); }} />
                       </>
                     : <>
-                        <MenuItem label={currentUser.authority ? "Settings" : "My Page"} onClick={() => { toggleOpen(); router.push(`/${currentUser?.username}`); }} />
+                        <MenuItem label={currentUser.authority ? "Settings" : "My Page"} onClick={() => { toggleOpen(); router.push(`/info/${currentUser?.username}`); }} />
                       </>
                   }
                   <hr />
