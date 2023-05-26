@@ -109,7 +109,7 @@ export default function Quiz({ id, item }: Props) {
         <div>
           <CrosswordGame
             lang={item.lang_name_en}
-            data={item.question}
+            data={item.questions}
             onAnswerComplete={onAnswerComplete}
             onAnswerCorrect={onAnswerCorrect}
             onCrosswordComplete={onCrosswordComplete}

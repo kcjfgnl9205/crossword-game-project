@@ -29,7 +29,6 @@ type Props = {
 }
 
 export default function CrosswordCreateClient({ partCategories, langCategories, item }: Props) {
-  console.log(item)
   const router = useRouter();
   // 過去のデータからimportできるように表示するモダール
   const subModal = useCrosswordCreateModal();
@@ -139,7 +138,6 @@ export default function CrosswordCreateClient({ partCategories, langCategories, 
     }
 
     setQuestionErrIndex(-1);
-
     let words: Array<InputClueType> = data.questions;
     
     const result = crosswordGenerator(words);
