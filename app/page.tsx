@@ -1,18 +1,18 @@
 import { redirect } from "next/navigation";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { Container, EmptyState } from "@/app/components/common";
-import getCrosswords from "@/app/actions/getCrosswords";
-import ListingParts from "./components/crossword/ListingParts";
+import { Container, EmptyState, Heading } from "@/app/components/common";
+import ListingCard from "./components/listing/ListingCard";
+import getCategories from "./actions/getCategories";
 
 
 export default async function Home() {
   const currentUser = await getCurrentUser();
-  const crosswordParts = await getCrosswords();
+  const categories = await getCategories();
   if (currentUser?.authority) {
     redirect("/admin");
   }
 
-  if (crosswordParts?.length === 0) {
+  if (categories?.length === 0) {
     return (
       <EmptyState showReset />
     );
@@ -20,14 +20,15 @@ export default async function Home() {
 
   return (
     <Container>
+      <div className="pt-8 pb-1">
+        <Heading title="目次" />
+      </div>
+
       <div className="pt-2 flex flex-col gap-0.5 md:gap-1">
         {
-          crosswordParts?.map((parts: any, index: number) => {
+          categories?.map((category: any, index: number) => {
             return (
-              <ListingParts
-                key={parts.id}
-                item={parts}
-              />
+              <ListingCard key={index} label={category.name} href={`/crossword/${category.name_en}`} />
             )
           })
         }

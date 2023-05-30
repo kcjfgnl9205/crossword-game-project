@@ -42,10 +42,10 @@ export default function UserMenu({ currentUser }: Props) {
                     currentUser.authority
                     ? <>
                         <MenuItem label="CrosswordGame" onClick={() => { toggleOpen(); router.push(`/admin/crossword`); }} />
-                        <MenuItem label="Settings" onClick={() => { toggleOpen(); router.push(`/admin/settings`); }} />
+                        <MenuItem label="Users" onClick={() => { toggleOpen(); router.push(`/admin/users`); }} />
                       </>
                     : <>
-                        <MenuItem label={currentUser.authority ? "Settings" : "My Page"} onClick={() => { toggleOpen(); router.push(`/info/${currentUser?.username}`); }} />
+                        <MenuItem label={currentUser.authority ? "Settings" : "My Page"} onClick={() => { toggleOpen(); router.push(`/user/${currentUser?.username}`); }} />
                       </>
                   }
                   <hr />

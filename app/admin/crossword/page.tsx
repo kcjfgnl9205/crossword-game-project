@@ -1,23 +1,23 @@
 import { redirect } from "next/navigation";
+import CategoryClient from "./CategoryClient";
+import ClientOnly from "@/app/components/common/ClientOnly";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { ClientOnly } from "@/app/components/common";
-import CrosswordClient from "./CrosswordClient";
-import getCrosswords from "@/app/actions/getCrosswords";
+import getCategories from "@/app/actions/getCategories";
 
 
-// 管理者クロスワードリストページ
-export default async function Crossword() {
+// 管理者設定ページ
+export default async function Admin() {
   const currentUser = await getCurrentUser();
-  const crosswords = await getCrosswords();
   if (!currentUser?.authority) {
     redirect("/");
   }
-
+  
+  // カテゴリーリスト取得
+  const categories = await getCategories();
+  
   return (
     <ClientOnly>
-      <CrosswordClient
-        listings={crosswords}
-      />
+      <CategoryClient categories={categories} />
     </ClientOnly>
   )
 }

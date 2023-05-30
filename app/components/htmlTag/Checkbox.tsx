@@ -9,8 +9,9 @@ type Props = {
   name: string;
   disabled?: boolean;
   required?: boolean;
-  register: UseFormRegister<FieldValues>,
+  register: UseFormRegister<FieldValues>;
   defaultChecked?: boolean;
+  handleOnChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function Checkbox ({
@@ -20,6 +21,8 @@ export default function Checkbox ({
   disabled,
   register,
   required,
+  defaultChecked,
+  handleOnChange
 }: Props) {
   return (
     <div className="w-full relative">
@@ -29,6 +32,8 @@ export default function Checkbox ({
         { ...register(name, { required }) }
         type="checkbox"
         className="hidden peer"
+        defaultChecked={defaultChecked}
+        onChange={handleOnChange}
       />
 
       <label

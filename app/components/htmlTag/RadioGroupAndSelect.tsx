@@ -13,6 +13,7 @@ type Props = {
   errors?: FieldErrors;
   handleOnChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   items: Array<any>;
+  selectLabel?: string;
 }
 
 export default function RadioGroupAndSelect ({
@@ -24,6 +25,7 @@ export default function RadioGroupAndSelect ({
   errors,
   handleOnChange,
   items,
+  selectLabel = "単元を選択してください。",
 }: Props) {
   if (items.length === 0) {
     return <div className="text-center font-semibold py-4">データが存在しません。</div>;
@@ -45,7 +47,6 @@ export default function RadioGroupAndSelect ({
               required={required}
               value={item.id}
               handleOnChange={handleOnChange}
-              // defaultChecked={value && index === 0}
             />
           )
         })
@@ -53,7 +54,7 @@ export default function RadioGroupAndSelect ({
       </div>
       <div className="flex flex-row gap-1 md:hidden">
         <Select
-          label="単元を選択してください。"
+          label={selectLabel}
           id={name}
           options={items}
           disabled={disabled}

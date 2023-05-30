@@ -2,17 +2,15 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { IconType } from "react-icons";
 import qs from "query-string";
 
 
 type Props = {
   label: string
-  icon?: IconType;
   selected?: boolean;
   description?: string;
 }
-export default function CategoryBox({ label, icon: Icon, selected, description }: Props) {
+export default function CategoryBox({ label, selected, description }: Props) {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -33,7 +31,7 @@ export default function CategoryBox({ label, icon: Icon, selected, description }
     }
 
     const url = qs.stringifyUrl({
-      url: "/",
+      url: "/admin/settings",
       query: updatedQuery
     }, { skipNull: true });
 
@@ -57,7 +55,6 @@ export default function CategoryBox({ label, icon: Icon, selected, description }
         ${selected ? "text-neutral-800" : "text-neutral-500"}
       `}
     >
-      {/* <Icon size={22} /> */}
       <div className="font-medium text-sm">
         {description}
       </div>

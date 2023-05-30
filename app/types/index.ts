@@ -24,10 +24,23 @@ export type InputClueTypeResult = InputClueType & {col: number, row: number, isH
 
 
 
-export type LangCategoryType = {
+export type CategoryType = {
   id: number;
   name: string;
-  name_en: string;
+  name_en?: string;
+  sorted: number;
+
+  min_cnt?: number;
+  cnt?: number;
+  disabled?: boolean;
+  
+  onCreate?: boolean;
+  onUpdate?: boolean;
+  onDelete?: boolean;
+}
+
+export type CategoryChapterType = CategoryType & {
+  chapters: Array<ChapterCategoryType>;
 }
 
 export type ChapterCategoryType = {
@@ -39,17 +52,6 @@ export type ChapterCategoryType = {
   onUpdate?: boolean;
   onDelete?: boolean;
   title?: string;
-}
-
-export type PartCategoryType = {
-  id: number;
-  name: string;
-  disabled: boolean;
-  sorted: number;
-  onCreate?: boolean;
-  onUpdate?: boolean;
-  onDelete?: boolean;
-  chapters: Array<ChapterCategoryType>
 }
 
 
@@ -67,7 +69,11 @@ export type CrosswordQuestionType = {
 export type CrosswordGameType = {
   id: number;
   title: string;
-  time_limit: number;
+  minute: number;
+  second: number;
+  category_id: number;
+  category_name: string;
+  category_name_en: string;
   part_id: number;
   part_name: string;
   chapter_id: number;
@@ -76,7 +82,6 @@ export type CrosswordGameType = {
   lang_name: string;
   lang_name_en: string;
   questions: Record<Direction, Record<string, ClueType>>;
-  questions_cnt?: number;
 }
 
 export type ClueType = {
@@ -92,4 +97,19 @@ export type ClueType = {
   number?: string,
   guess?: string,
   score?: number,
+}
+
+
+
+
+
+
+
+
+
+export type LangType = {
+  id: number;
+  name: string;
+  name_en: string;
+  cnt: number;
 }

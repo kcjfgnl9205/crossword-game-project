@@ -1,40 +1,44 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
 import { select_all_part_chapter } from "../libs/db/sql/crossword/select_all_part_chapter";
-import { PartCategoryType } from "../types";
+import { CategoryChapterType } from "../types";
 
 
-export default async function getPartsAndChapter(): Promise<Array<PartCategoryType>> {
+type Props =  {
+  slug: string;
+}
+
+export default async function getPartsAndChapter(params: Props): Promise<Array<CategoryChapterType>> {
   const connection = await getConnection();
   try {    
-    const parts = await select_all_part_chapter(connection);
+    const parts = await select_all_part_chapter(connection, params.slug);
 
-    const transformedData: Array<PartCategoryType> = [];
-    parts?.forEach((row: any) => {
-      const partIndex = transformedData.findIndex((item) => item?.id === row?.id);
+    const transformedData: Array<CategoryChapterType> = [];
+    parts.forEach((row: any) => {
+      const partIndex = transformedData.findIndex((item) => item.id === row.id);
       if (partIndex === -1) {
         // 新しい単元追加
         transformedData.push({
-          id: row?.id,
-          name: row?.name,
-          disabled: row?.part_cnt > 0,
-          sorted: row?.sorted,
+          id: row.id,
+          name: row.name,
+          disabled: row.part_cnt > 0,
+          sorted: row.sorted,
           chapters: [{
-              id: row?.chapter_id,
-              name: row?.chapter_name,
-              flg: row?.chapter_flg,
-              disabled: row?.chapter_cnt > 0,
-              title: row?.title
+              id: row.chapter_id,
+              name: row.chapter_name,
+              flg: row.chapter_flg,
+              disabled: row.chapter_cnt > 0,
+              title: row.title
           }],
         });
       } else {
         // 既存単元に章を追加
-        if (row?.chapter_id) {
-          transformedData[partIndex].chapters?.push({
-            id: row?.chapter_id,
-            name: row?.chapter_name,
-            flg: row?.chapter_flg,
-            disabled: row?.chapter_cnt > 0,
-            title: row?.title
+        if (row.chapter_id) {
+          transformedData[partIndex].chapters.push({
+            id: row.chapter_id,
+            name: row.chapter_name,
+            flg: row.chapter_flg,
+            disabled: row.chapter_cnt > 0,
+            title: row.title
           });
         }
       }

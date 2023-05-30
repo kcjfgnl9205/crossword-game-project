@@ -1,12 +1,27 @@
+DROP TABLE CATEGORY_MST;
+CREATE TABLE `CATEGORY_MST` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `name_en` varchar(255) NOT NULL,
+  `sorted` int NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`, `name_en`)
+);
+
 DROP TABLE PART_MST;
 CREATE TABLE `PART_MST` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `sorted` int NOT NULL,
+  `category_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `part_mst_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `CATEGORY_MST` (`id`) ON UPDATE CASCADE
 );
 
 DROP TABLE CHAPTER_MST;
@@ -23,7 +38,6 @@ CREATE TABLE `CHAPTER_MST` (
   KEY `part_id` (`part_id`),
   CONSTRAINT `chapter_mst_ibfk_1` FOREIGN KEY (`part_id`) REFERENCES `PART_MST` (`id`) ON UPDATE CASCADE
 );
-
 
 DROP TABLE LANG_MST;
 CREATE TABLE `LANG_MST` (
@@ -53,34 +67,24 @@ DROP TABLE CROSSWORD_MST;
 CREATE TABLE `CROSSWORD_MST` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
+  `time_limit` int NOT NULL,
+  `category_id` int NOT NULL,
   `part_id` int NOT NULL,
   `chapter_id` int NOT NULL,
+  `lang_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
   KEY `part_id` (`part_id`),
   KEY `chapter_id` (`chapter_id`),
-  CONSTRAINT `crossword_mst_ibfk_1` FOREIGN KEY (`part_id`) REFERENCES `PART_MST` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `crossword_mst_ibfk_2` FOREIGN KEY (`chapter_id`) REFERENCES `CHAPTER_MST` (`id`) ON UPDATE CASCADE
-);
-
-
-DROP TABLE CROSSWORD_MST_DETAIL_MAP;
-CREATE TABLE `CROSSWORD_MST_DETAIL_MAP` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `crossword_id` int NOT NULL,
-  `lang_id` int NOT NULL,
-  `time_limit` int NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `crossword_id` (`crossword_id`),
   KEY `lang_id` (`lang_id`),
-  CONSTRAINT `crossword_mst_detail_map_ibfk_1` FOREIGN KEY (`crossword_id`) REFERENCES `CROSSWORD_MST` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `crossword_mst_detail_map_ibfk_2` FOREIGN KEY (`lang_id`) REFERENCES `LANG_MST` (`id`) ON UPDATE CASCADE
-)
+  CONSTRAINT `crossword_mst_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `CATEGORY_MST` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `crossword_mst_ibfk_2` FOREIGN KEY (`part_id`) REFERENCES `PART_MST` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `crossword_mst_ibfk_3` FOREIGN KEY (`chapter_id`) REFERENCES `CHAPTER_MST` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `crossword_mst_ibfk_4` FOREIGN KEY (`lang_id`) REFERENCES `LANG_MST` (`id`) ON UPDATE CASCADE
+);
 
 DROP TABLE CROSSWORD_DETAIL;
 CREATE TABLE `CROSSWORD_DETAIL` (
@@ -99,7 +103,7 @@ CREATE TABLE `CROSSWORD_DETAIL` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `crossword_id` (`crossword_id`),
-  CONSTRAINT `crossword_detail_ibfk_1` FOREIGN KEY (`crossword_id`) REFERENCES `CROSSWORD_MST_DETAIL_MAP` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `crossword_detail_ibfk_1` FOREIGN KEY (`crossword_id`) REFERENCES `CROSSWORD_MST` (`id`) ON UPDATE CASCADE
 );
 
 
@@ -116,3 +120,19 @@ CREATE TABLE `NAME_MST` (
   `deleted_at` timestamp NULL DEFAULT NULL,
    PRIMARY KEY (`key1`, `key2`)
 );
+
+
+CREATE TABLE `CATEGORY_LANG_PACKAGE` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `category_id` int NOT NULL,
+  `lang_id` int NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  KEY `lang_id` (`lang_id`),
+  CONSTRAINT `category_mst_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `CATEGORY_MST` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `lang_mst_ibfk_1` FOREIGN KEY (`lang_id`) REFERENCES `LANG_MST` (`id`) ON UPDATE CASCADE
+);
+

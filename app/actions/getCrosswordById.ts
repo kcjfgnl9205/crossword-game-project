@@ -1,9 +1,11 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
 import { select_crossword_by_id } from "../libs/db/sql/crossword/select_crossword_by_id";
 import { ClueType, CrosswordGameType } from "../types";
+import { changeSecondToMinute } from "../utils/utils";
 
 
 type Props =  {
+  slug: string;
   id: string;
 }
 
@@ -11,10 +13,15 @@ export default async function getCrosswordById(params: Props): Promise<Crossword
   const connection = await getConnection();
   try {
     const crosswords: Array<any> = await select_crossword_by_id(connection, Number(params.id));
+    const { minute, second } = changeSecondToMinute(crosswords[0].time_limit);
     const formattedData: CrosswordGameType = {
       id: crosswords[0].id,
       title: crosswords[0].title,
-      time_limit: crosswords[0].time_limit,
+      minute: minute,
+      second: second,
+      category_id: crosswords[0].category_id,
+      category_name: crosswords[0].category_name,
+      category_name_en: crosswords[0].category_name_en,
       part_id: crosswords[0].part_id,
       part_name: crosswords[0].part_name,
       chapter_id: crosswords[0].chapter_id,
@@ -22,7 +29,6 @@ export default async function getCrosswordById(params: Props): Promise<Crossword
       lang_id: crosswords[0].lang_id,
       lang_name: crosswords[0].lang_name,
       lang_name_en: crosswords[0].lang_name_en,
-      questions_cnt: crosswords.length,
       questions: {
         across: {},
         down: {}

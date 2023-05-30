@@ -8,11 +8,11 @@ import Modal from './Modal';
 import { Heading } from "@/app/components/common";
 import { Button, Input, Checkbox } from "@/app/components/htmlTag";
 import usePartCreateModal from '@/app/hooks/usePartCreate';
-import { PartCategoryType } from '@/app/types';
+import { CategoryChapterType } from '@/app/types';
 
 
 type Props = {
-  item: PartCategoryType | null;
+  item: CategoryChapterType | null;
   handleAppendPart?: (data: any) => void;
 }
 

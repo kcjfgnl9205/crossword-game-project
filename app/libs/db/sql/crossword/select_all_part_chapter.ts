@@ -12,7 +12,9 @@ const SELECT_ALL_PART_AND_CHAPTER = `
              , CROSSWORD_MST.title 
              , Count(CROSSWORD_MST.id) OVER (PARTITION BY PART_MST.id) AS part_cnt
              , Count(CROSSWORD_MST.id) OVER (PARTITION BY PART_MST.id, CHAPTER_MST.id) AS chapter_cnt
-          FROM PART_MST
+          FROM CATEGORY_MST 
+    INNER JOIN PART_MST
+            ON CATEGORY_MST.id = PART_MST.category_id
     INNER JOIN CHAPTER_MST
             ON PART_MST.id = CHAPTER_MST.part_id
            AND PART_MST.deleted_at IS NULL
@@ -21,13 +23,14 @@ const SELECT_ALL_PART_AND_CHAPTER = `
             ON PART_MST.id = CROSSWORD_MST.part_id
            AND CHAPTER_MST.id = CROSSWORD_MST.chapter_id
            AND CROSSWORD_MST.deleted_at IS NULL
+         WHERE CATEGORY_MST.name_en = ?
       ORDER BY PART_MST.sorted
              , CHAPTER_MST.sorted
 `;
 
-export const select_all_part_chapter = async (conn: any) => {
+export const select_all_part_chapter = async (conn: any, name: string) => {
   try {
-    const [ rows ] = await conn?.execute(SELECT_ALL_PART_AND_CHAPTER, []);
+    const [ rows ] = await conn?.execute(SELECT_ALL_PART_AND_CHAPTER, [name]);
     return rows;
   } catch (err) {
     throw err;
