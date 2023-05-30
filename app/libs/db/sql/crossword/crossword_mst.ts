@@ -1,8 +1,4 @@
-import { changeMinuteToSecond } from "@/app/utils/utils";
-
-const INSERT_CROSSWORD = `
-    INSERT INTO CROSSWORD_MST(title, time_limit, category_id, part_id, chapter_id, lang_id)
-         VALUES(?, ?, ?, ?, ?, ?)`;
+const INSERT_CROSSWORD = `INSERT INTO CROSSWORD_MST(title, time_limit, category_id, part_id, chapter_id, lang_id) VALUES(?, ?, ?, ?, ?, ?)`;
 export const insert_crossword_mst = async (conn: any, obj: any) => {
   try {
     const [ rows ] = await conn?.execute(INSERT_CROSSWORD, [obj.title, obj.time_limit, obj.category_id, obj.part_id, obj.chapter_id, obj.lang_id]);

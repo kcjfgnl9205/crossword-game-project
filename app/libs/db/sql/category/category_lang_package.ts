@@ -1,10 +1,10 @@
 const FIND_CATEGORY_LANG_PACKAGE = `
-  SELECT id
+   SELECT id
         , category_id
         , lang_id
       FROM CATEGORY_LANG_PACKAGE
-    WHERE category_id = ?
-      AND lang_id = ?
+     WHERE category_id = ?
+       AND lang_id = ?
 `;
 export const find_category_lang_package = async (conn: any, category_id: number, lang_id: number) => {
   try {
@@ -26,7 +26,7 @@ export const insert_category_lang_package = async (conn: any, category_id: numbe
 };
 
 const UPDATE_CATEGORY_LANG_PACKAGE = `
-  UPDATE CATEGORY_LANG_PACKAGE
+   UPDATE CATEGORY_LANG_PACKAGE
       SET deleted_at = ?
     WHERE category_id = ?
       AND lang_id = ?

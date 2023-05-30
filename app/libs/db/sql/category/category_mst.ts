@@ -1,7 +1,4 @@
-const INSERT_CATEGORY_MST = `
-  INSERT CATEGORY_MST(name, name_en, sorted, min_cnt)
-               VALUES(?, ?, ?, ?)
-`;
+const INSERT_CATEGORY_MST = `INSERT CATEGORY_MST(name, name_en, sorted, min_cnt) VALUES(?, ?, ?, ?)`;
 export const insert_category_mst = async (conn: any, obj: any) => {
   try {
     const [ rows ] = await conn?.execute(INSERT_CATEGORY_MST, [obj.name, obj.name_en, Number(obj.sorted), Number(obj.min_cnt)]);
@@ -18,7 +15,7 @@ const SELECT_CATEGORY_MST = `
              , name_en
              , sorted
              , min_cnt
-          FROM category_mst
+          FROM CATEGORY_MST
          WHERE deleted_at IS NULL
            AND sorted IS NOT NULL
       ORDER BY sorted
@@ -39,7 +36,7 @@ const FIND_CATEGORY_MST_BY_SLUG = `
            , name_en
            , sorted
            , min_cnt
-        FROM category_mst
+        FROM CATEGORY_MST
        WHERE deleted_at IS NULL
          AND sorted IS NOT NULL
          AND name_en = ?
@@ -71,7 +68,7 @@ export const delete_category_mst = async (conn: any, id: number) => {
 
 
 const UPDATE_CATEGORY_MST = `
-  UPDATE category_mst
+  UPDATE CATEGORY_MST
      SET name = ?
        , name_en = ?
        , sorted = ?

@@ -1,6 +1,4 @@
-const INSERT_CROSSWORD_DETAIL = `
-    INSERT INTO CROSSWORD_DETAIL(number, clue, hint, answer, x_coordinates, y_coordinates, crossword_id, direction)
-         VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
+const INSERT_CROSSWORD_DETAIL = `INSERT INTO CROSSWORD_DETAIL(number, clue, hint, answer, x_coordinates, y_coordinates, crossword_id, direction) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
 export const insert_crossword_detail = async (conn: any, crossword_id: number, obj: any) => {
   try {
     const [ rows ] = await conn?.execute(INSERT_CROSSWORD_DETAIL, [obj.number, obj.clue, obj.hint, obj.answer, obj.col, obj.row, crossword_id, obj.direction]);
