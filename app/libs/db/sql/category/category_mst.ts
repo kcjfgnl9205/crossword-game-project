@@ -1,6 +1,3 @@
-import { CategoryType } from "@/app/types";
-
-
 const INSERT_CATEGORY_MST = `
   INSERT CATEGORY_MST(name, name_en, sorted, min_cnt)
                VALUES(?, ?, ?, ?)
@@ -81,7 +78,7 @@ const UPDATE_CATEGORY_MST = `
        , min_cnt = ?
    WHERE id = ?
 `
-export const update_category_mst = async (conn: any, obj: CategoryType) => {
+export const update_category_mst = async (conn: any, obj: any) => {
   try {
     const [ rows ] = await conn?.execute(UPDATE_CATEGORY_MST, [obj.name, obj.name_en, obj.sorted, obj.min_cnt, obj.id]);
     return rows;

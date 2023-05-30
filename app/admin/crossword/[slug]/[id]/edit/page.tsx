@@ -31,6 +31,9 @@ export default async function CrosswordCreate({ params }:  { params: Props }) {
     getCrosswordById(params)
   ]);
 
+  if (!crossword) {
+    notFound();
+  }
 
   return (
     <ClientOnly>

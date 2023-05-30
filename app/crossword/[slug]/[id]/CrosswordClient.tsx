@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Container, Heading, Timer } from "@/app/components/common";
 import { CluesData, Direction, UsedCellData } from "@/app/components/cross/types";
 import { Button } from "@/app/components/htmlTag";
 import CrosswordGame from "@/app/components/crossword/CrosswordGame";
+import { CrosswordType } from "@/app/types";
+import { changeMinuteToSecond } from "@/app/utils/utils";
 
 
 type Props = {
   id: string;
-  crossword: any;
+  crossword: CrosswordType;
 }
 
 
@@ -26,7 +28,8 @@ export default function Quiz({ id, crossword }: Props) {
 
   // 全ての回答をしたとき
   const onCrosswordComplete = (correct: boolean) => {
-    setOnResult(correct);
+    console.log(correct)
+    setOnResult(true);
   }
   // １つの問題に回答をした時
   const onAnswerCorrect = (direction: Direction, number: string, answer: string) => {
@@ -39,17 +42,19 @@ export default function Quiz({ id, crossword }: Props) {
     console.log(correct, answer, userAnswer)
   }
   // 提出ボタン押下する
-  const onSubmit = () => {
+  const onSubmit = useCallback(() => {
     if (!onResult) {
-      if (confirm("間違っている問題が存在する、このまま提出しますか？")) {
+      if (confirm("解決していない問題が存在する、提出しますか？")) {
+        router.push(`/crossword/${crossword.category.name_en}/${id}/result`);
         // router.push("/quiz/1/result");
       }
     } else {
       if (confirm("提出しますか？")) {
+        router.push(`/crossword/${crossword.category.name_en}/${id}/result`);
         // router.push("/quiz/1/result");
       }
     }
-  }
+  }, [router, crossword, onResult, id]);
 
   //クロスワードinputタグクリック
   const onCellSelected = (cellData: UsedCellData, direction: Direction) => {
@@ -90,7 +95,7 @@ export default function Quiz({ id, crossword }: Props) {
   return (
     <Container>
       <div className="py-4">
-        <Heading title={`${crossword.title} (${crossword.lang_name})`} subtitle={`${crossword.part_name} ${crossword.chapter_name}`} />
+        <Heading title={`${crossword.title} (${crossword.lang.name})`} subtitle={`${crossword.part.name} ${crossword.chapter.name}`} />
 
         <div>
           <div>
@@ -98,17 +103,17 @@ export default function Quiz({ id, crossword }: Props) {
             <Timer
               currentTime={currentTime}
               setCurrentTime={setCurrentTime}
-              endTime={crossword.time_limit}
+              endTime={changeMinuteToSecond(crossword.minute, crossword.second)}
             />
           </div>
           <div>
-            進行状況：0問/全{crossword.question_cnt}問、ヒント使用：2回
+            進行状況：0問/全20問、ヒント使用：2回
           </div>
         </div>
 
         <div>
           <CrosswordGame
-            lang={crossword.lang_name_en}
+            lang={crossword.lang.name_en}
             data={crossword.questions}
             onAnswerComplete={onAnswerComplete}
             onAnswerCorrect={onAnswerCorrect}
@@ -126,7 +131,7 @@ export default function Quiz({ id, crossword }: Props) {
         <div className="py-4 md:w-40">
           <Button
             label="提出する"
-            onClick={() => router.push(`/crossword/${crossword.category_name_en}/${id}/result`)}
+            onClick={onSubmit}
             primary
           />
         </div>

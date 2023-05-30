@@ -9,7 +9,7 @@ import { CluesData, Direction, LangType, UsedCellData } from "../cross/types";
 
 type Props = {
   ref1?:React.ForwardedRef<CrosswordProviderImperative>;
-  lang: LangType;
+  lang: any;
   data: any;
   onAnswerComplete?: (direction: Direction, number: string, correct: boolean, answer: string, userAnswer: string) => void;
   onAnswerCorrect?: (direction: Direction, number: string, answer: string) => void;

@@ -2,7 +2,8 @@
 import ClientOnly from "@/app/components/common/ClientOnly";
 import ResultClient from "./ResultClient";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import getCategoryBySlug from "@/app/actions/getCategoryBySlug";
 
 
 type Props = {
@@ -11,6 +12,11 @@ type Props = {
 }
 
 export default async function CrosswordResult({ params }:  { params: Props }) {
+  const category = await getCategoryBySlug(params);
+  if (!category) {
+    notFound();
+  }
+  
   const currentUser = await getCurrentUser();
   if (!currentUser?.authority) {
     redirect("/")
@@ -18,7 +24,9 @@ export default async function CrosswordResult({ params }:  { params: Props }) {
   
   return (
     <ClientOnly>
-      <ResultClient />
+      <ResultClient
+        category={category}
+      />
     </ClientOnly>
   )
 }

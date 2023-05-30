@@ -71,7 +71,7 @@ export default async function getCrosswordsByCategoryId(id: number): Promise<Arr
         }
       }
     });
-    
+
     return transformedData;
   } catch (error: any) {
     console.log("getCrosswordById" + error);

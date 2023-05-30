@@ -1,18 +1,17 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { select_all_part_chapter } from "../libs/db/sql/crossword/select_all_part_chapter";
-import { CategoryChapterType } from "../types";
+import { select_all_part_chapter } from "../libs/db/sql/category/part_mst";
 
 
 type Props =  {
   slug: string;
 }
 
-export default async function getPartsAndChapter(params: Props): Promise<Array<CategoryChapterType>> {
+export default async function getPartsAndChapter(params: Props): Promise<Array<any>> {
   const connection = await getConnection();
-  try {    
+  try {
     const parts = await select_all_part_chapter(connection, params.slug);
 
-    const transformedData: Array<CategoryChapterType> = [];
+    const transformedData: Array<any> = [];
     parts.forEach((row: any) => {
       const partIndex = transformedData.findIndex((item) => item.id === row.id);
       if (partIndex === -1) {

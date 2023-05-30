@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 import { convertAnswerObjectToAnswerArray, convertToResultArray, crosswordGenerator } from "@/app/utils/utils";
-import { ChapterCategoryType, InputClueType, CategoryType, CategoryChapterType, LangType } from "@/app/types";
+import { InputClueType, LangType, CategoryType, CrosswordType } from "@/app/types";
 import { Direction } from "@/app/components/cross/types";
 import { Container, ErrorMessage, Heading } from "@/app/components/common";
 import { CrosswordProviderImperative } from "@/app/components/cross/CrosswordProvider";
@@ -22,10 +22,10 @@ import Link from "next/link";
 const defaultQuestion = { clue: "", answer: "", hint: "" };
 
 type Props = {
-  partsCategories: Array<CategoryChapterType>;
+  partsCategories: Array<any>;
   langsCategories: Array<LangType>;
-  item?: any
-  category: any;
+  item?: CrosswordType;
+  category: CategoryType | null;
 }
 
 export default function CrosswordCreateClient({ partsCategories, langsCategories, item, category }: Props) {
@@ -33,8 +33,8 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
 
   const crosswordRef = useRef<CrosswordProviderImperative>(null);
   const parts = partsCategories;
-  const [ chapters, setChapters ] = useState<Array<ChapterCategoryType>>(item ? parts.filter((part: any) => part.id === item.part_id)[0].chapters : parts[0]?.chapters || []);
-  const langs: Array<LangType> = langsCategories.filter((lang: LangType) => lang.cnt > 0);
+  const [ chapters, setChapters ] = useState<Array<any>>(item ? parts.filter((part: any) => part.id === item.part.id)[0].chapters : parts[0]?.chapters || []);
+  const langs: Array<LangType> = langsCategories.filter((lang: LangType) => lang.cnt && lang.cnt > 0);
 
   const [ isCombined, setIsCombined ] = useState<boolean>(false); //総合問題なのか
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
@@ -46,10 +46,10 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
   const [ crosswordData, setCrosswordData ] = useState<Record<Direction, Record<string, any>> | null>(null);
   const { control, register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm<FieldValues>({
     defaultValues: {
-      category_id: category.id.toString(),
-      part_id: item ? item.part_id.toString() : parts[0]?.id.toString(),
-      chapter_id: item ? item.chapter_id.toString() : chapters[0]?.id.toString(),
-      lang_id: item ? item.lang_id.toString() : langs[0]?.id.toString(),
+      category_id: category?.id.toString(),
+      part_id: item ? item.part.id.toString() : parts[0]?.id.toString(),
+      chapter_id: item ? item.chapter.id.toString() : chapters[0]?.id.toString(),
+      lang_id: item ? item.lang.id.toString() : langs[0]?.id.toString(),
       
       title: item ? item.title : "",
       minute: item ? item.minute.toString() : "5",
@@ -91,7 +91,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
     }
     
     if (name === "part_id") {
-      const part = parts.filter((part: CategoryChapterType) => part.id.toString() === watch("part_id"))[0];
+      const part = parts.filter((part: any) => part.id.toString() === watch("part_id"))[0];
       
       // setValue("chapter_id", part.chapters[0]?.id.toString());
       setChapters(part.chapters);
@@ -183,7 +183,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
 console.log(response)
         if (response.status === 200) {
           alert("クロスワードゲームを修正しました。");
-          router.push(`/admin/crossword/${category.name_en}`);
+          router.push(`/admin/crossword/${category?.name_en}`);
           router.refresh();
         }
       } else {
@@ -192,7 +192,7 @@ console.log(response)
 
         if (response.status === 200) {
           alert("クロスワードゲームを登録しました。");
-          router.push(`/admin/crossword/${category.name_en}`);
+          router.push(`/admin/crossword/${category?.name_en}`);
           router.refresh();
         }
       }  
@@ -209,7 +209,7 @@ console.log(response)
   return (
     <Container>
       <div className="mt-8">
-        <Link href={`/admin/crossword/${category.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
+        <Link href={`/admin/crossword/${category?.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
         <Heading title="クロスワードゲーム生成" />
       </div>
       
@@ -218,7 +218,7 @@ console.log(response)
         <RadioGroupAndSelect
           name="part_id"
           value={watch("part_id")}
-          disabled={isLoading || item}
+          disabled={isLoading || item !== undefined}
           register={register}
           errors={errors}
           items={parts}
@@ -227,7 +227,7 @@ console.log(response)
         <RadioGroupAndSelect
           name="chapter_id"
           value={watch("chapter_id")}
-          disabled={isLoading || item}
+          disabled={isLoading || item !== undefined}
           register={register}
           errors={errors}
           items={chapters}
@@ -236,7 +236,7 @@ console.log(response)
         <RadioGroupAndSelect
           name="lang_id"
           value={watch("lang_id")}
-          disabled={isLoading || item}
+          disabled={isLoading || item !== undefined}
           register={register}
           errors={errors}
           items={langs}

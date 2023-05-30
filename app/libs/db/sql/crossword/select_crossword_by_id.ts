@@ -7,10 +7,15 @@ const SELECT_CROSSWORD_BY_ID = `
              , CATEGORY_MST.id as category_id
              , CATEGORY_MST.name as category_name
              , CATEGORY_MST.name_en as category_name_en
+             , CATEGORY_MST.sorted as category_sorted
+             , CATEGORY_MST.min_cnt as category_min_cnt
              , PART_MST.id as part_id
              , PART_MST.name as part_name
+             , PART_MST.sorted as part_sorted
              , CHAPTER_MST.id as chapter_id
              , CHAPTER_MST.name as chapter_name 
+             , CHAPTER_MST.sorted as chapter_sorted
+             , CHAPTER_MST.flg as chapter_flg 
              , LANG_MST.id as lang_id
              , LANG_MST.name as lang_name
              , LANG_MST.name_en as lang_name_en

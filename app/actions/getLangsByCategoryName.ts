@@ -1,6 +1,6 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { LangType } from "../types";
 import { select_lang_mst_by_categoryname } from "../libs/db/sql/category/lang_mst";
+import { LangType } from "../types";
 
 
 type Props =  {

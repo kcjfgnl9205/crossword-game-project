@@ -3,7 +3,6 @@ import { find_category_lang_package, insert_category_lang_package, update_catego
 import { insert_category_mst, update_category_mst } from "@/app/libs/db/sql/category/category_mst";
 import { delete_chapter_mst, insert_chapter_mst, update_chapter_mst } from "@/app/libs/db/sql/category/chapter_mst";
 import { delete_part_mst, insert_part_mst, update_part_mst } from "@/app/libs/db/sql/category/part_mst";
-import { CategoryType } from "@/app/types";
 import { NextResponse } from "next/server";
 
 
@@ -44,7 +43,7 @@ export async function PUT(
 }
 
 
-const update_category_sort_logic = (categories: Array<CategoryType>) => {
+const update_category_sort_logic = (categories: Array<any>) => {
   return async (conn: any) => {
     try {
       for (let i = 0; i < categories.length; i++) {

@@ -103,8 +103,8 @@ export default function CategoryClient({ categories }: Props) {
           {
             item.length === 0
             ? <Heading center title="カテゴリーデータが存在しません。・" subtitle="カテゴリーを追加してください。" />
-            : item.map((category: CategoryType, index: number) => (
-                    <div key={index} className="flex flex-row gap-1 items-center md:gap-2">
+            : item.map((category: CategoryType) => (
+                    <div key={category.id} className="flex flex-row gap-1 items-center md:gap-2">
                       <div
                         onClick={() =>  router.push(`/admin/crossword/${category.name_en}`)}
                         className="p-4 border rounded-lg transition w-full text-center hover:opacity-80 hover:bg-neutral-100 cursor-pointer"

@@ -3,29 +3,24 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-import { CategoryType } from "@/app/types";
 import { Container, Heading } from "@/app/components/common";
 
-type Props = {
-  categories?: Array<CategoryType>;
-}
 
 const users = [
-  {rank: 1, username: "admin1", score: 300, timer: 200},
-  {rank: 2, username: "admin2", score: 298, timer: 200},
-  {rank: 3, username: "admin3", score: 297, timer: 300},
-  {rank: 4, username: "admin4", score: 295, timer: 300},
-  {rank: 5, username: "admin5", score: 294, timer: 300},
-  {rank: 6, username: "admin6", score: 291, timer: 312},
-  {rank: 7, username: "admin7", score: 283, timer: 333},
-  {rank: 8, username: "admin8", score: 283, timer: 384},
-  {rank: 9, username: "admin9", score: 282, timer: 400},
-  {rank: 10, username: "admin10", score: 260, timer: 411},
+  {rank: 1, username: "user1", score: 300, timer: 200},
+  {rank: 2, username: "user2", score: 298, timer: 200},
+  {rank: 3, username: "user3", score: 297, timer: 300},
+  {rank: 4, username: "user4", score: 295, timer: 300},
+  {rank: 5, username: "user5", score: 294, timer: 300},
+  {rank: 6, username: "user6", score: 291, timer: 312},
+  {rank: 7, username: "user7", score: 283, timer: 333},
+  {rank: 8, username: "user8", score: 283, timer: 384},
+  {rank: 9, username: "user9", score: 282, timer: 400},
+  {rank: 10, username: "user10", score: 260, timer: 411},
 ]
 
 
-export default function UsersClient({ categories }: Props) {
+export default function UsersClient() {
   const router = useRouter();
   
   return (

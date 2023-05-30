@@ -1,8 +1,9 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { CategoryType } from "../types";
 import { select_category_mst } from "../libs/db/sql/category/category_mst";
+import { CategoryType } from "../types";
 
 
+// カテゴリーリスト取得する
 export default async function getCategories(): Promise<Array<CategoryType>> {
   const connection = await getConnection();
   try {

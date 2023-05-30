@@ -1,25 +1,3 @@
-const SELECT_PART_MST_BY_CATEGORY_NAME = `
-        SELECT part_mst.id
-             , part_mst.name
-             , part_mst.sorted
-          FROM category_mst
-    INNER JOIN part_mst
-            ON part_mst.category_id = category_mst.id
-           AND part_mst.deleted_at IS NULL
-           AND category_mst.deleted_at IS NULL
-         WHERE category_mst.name_en = ?
-      ORDER BY part_mst.sorted
-`;
-export const select_part_mst_by_categoryname = async (conn: any, name: any) => {
-  try {
-    const [ rows ] = await conn?.execute(SELECT_PART_MST_BY_CATEGORY_NAME, [name]);
-    return rows;
-  } catch (err) {
-    throw err;
-  }
-};
-
-
 const INSERT_PART_MST = 'INSERT INTO PART_MST(name, sorted, category_id) VALUES(?, ?, ?)';
 export const insert_part_mst = async (conn: any, category_id: number, obj: any) => {
   try {
@@ -46,6 +24,45 @@ const UPDATE_PART_MST = 'UPDATE PART_MST SET name = ?, sorted = ? WHERE id = ?';
 export const update_part_mst = async (conn: any, id: number, obj: any) => {
   try {
     const [ rows ] = await conn?.execute(UPDATE_PART_MST, [obj.name, obj.sorted, id]);
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+// 単元、章のデータを取得する
+
+const SELECT_ALL_PART_AND_CHAPTER = `
+        SELECT DISTINCT
+               PART_MST.id as id
+             , PART_MST.name as name
+             , PART_MST.sorted as sorted
+             , CHAPTER_MST.id as chapter_id
+             , CHAPTER_MST.name as chapter_name
+             , CHAPTER_MST.sorted as chapter_sorted
+             , CHAPTER_MST.flg as chapter_flg
+             , CROSSWORD_MST.title 
+             , Count(CROSSWORD_MST.id) OVER (PARTITION BY PART_MST.id) AS part_cnt
+             , Count(CROSSWORD_MST.id) OVER (PARTITION BY PART_MST.id, CHAPTER_MST.id) AS chapter_cnt
+          FROM CATEGORY_MST 
+    INNER JOIN PART_MST
+            ON CATEGORY_MST.id = PART_MST.category_id
+    INNER JOIN CHAPTER_MST
+            ON PART_MST.id = CHAPTER_MST.part_id
+           AND PART_MST.deleted_at IS NULL
+           AND CHAPTER_MST.deleted_at IS NULL
+     LEFT JOIN CROSSWORD_MST
+            ON PART_MST.id = CROSSWORD_MST.part_id
+           AND CHAPTER_MST.id = CROSSWORD_MST.chapter_id
+           AND CROSSWORD_MST.deleted_at IS NULL
+         WHERE CATEGORY_MST.name_en = ?
+      ORDER BY PART_MST.sorted
+             , CHAPTER_MST.sorted
+`;
+export const select_all_part_chapter = async (conn: any, name: string) => {
+  try {
+    const [ rows ] = await conn?.execute(SELECT_ALL_PART_AND_CHAPTER, [name]);
     return rows;
   } catch (err) {
     throw err;

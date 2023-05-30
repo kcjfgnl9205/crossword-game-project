@@ -1,6 +1,6 @@
 'use client';
 
-import { changeSecondToMinute } from "@/app/utils/utils";
+
 import Accordion from "../../Accordion/Accordion";
 
 
@@ -17,10 +17,9 @@ export default function CrosswordResult({rank, username, score, timer, subItems}
 
   const header = (
     <div className="flex flex-row justify-between py-1 px-2 gap-1 hover:bg-neutral-100 cursor-pointer text-sm md:text-xl">
-      <div className="w-12">{rank}等</div>
       <div className="flex-auto">{username}</div>
       <div className="w-20 text-center">{score}点</div>
-      <div className="w-20 text-center">{}</div>
+      <div className="w-30 text-center">4問題 / 5問題</div>
     </div>
   )
 
@@ -38,8 +37,7 @@ export default function CrosswordResult({rank, username, score, timer, subItems}
                             <div className="flex-auto">{el.questionNo}. {el.question}</div>
                             <div className="flex flex-row gap-2 text-left md:text-center md:flex-row-reverse">
                               <div>{el.userAnswer === el.answer ? "⭕️" : "❌"}</div>
-                              <div>{el.userAnswer}</div>
-                              <div>（{el.answer}）</div>
+                              <div>{el.answer}</div>
                             </div>
                           </div>
                           )

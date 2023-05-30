@@ -5,7 +5,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import getCategories from "@/app/actions/getCategories";
 
 
-// 管理者設定ページ
+// 管理者カテゴリー設定ページ
 export default async function Admin() {
   const currentUser = await getCurrentUser();
   if (!currentUser?.authority) {

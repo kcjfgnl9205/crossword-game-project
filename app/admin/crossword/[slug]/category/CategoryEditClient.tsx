@@ -8,7 +8,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { CategoryType, CategoryChapterType } from "@/app/types";
+import { CategoryType } from "@/app/types";
 import { PartAccordion } from "@/app/components/Accordion";
 import { Button, Checkbox, Input } from "@/app/components/htmlTag";
 import { Container, ErrorMessage, Heading } from "@/app/components/common";
@@ -17,8 +17,8 @@ import usePartCreateModal from "@/app/hooks/usePartCreate";
 
 
 type Props = {
-  category?: CategoryType | null;
-  parts: Array<CategoryChapterType>;
+  category: CategoryType | null;
+  parts: Array<any>;
   langs: Array<any>;
 }
 
@@ -31,11 +31,11 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
   const createModal = usePartCreateModal();
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   
-  const [ partItem, setPartItem ] = useState<Array<CategoryChapterType>>(parts);
+  const [ partItem, setPartItem ] = useState<Array<any>>(parts);
   const [ langChecked, setLangChecked ] = useState<Array<any>>(langs.map((lang) => { return { id: lang.id, name: lang.name, name_en: lang.name_en, checked: Number(lang.cnt) > 0 } }))
-  const [ modalData, setModalData ] = useState<CategoryChapterType | null>(null);
+  const [ modalData, setModalData ] = useState<any | null>(null);
 
-  const { register, handleSubmit, formState: { errors }, setValue, getValues, watch } = useForm<FieldValues>({
+  const { register, handleSubmit, formState: { errors }, setValue, getValues } = useForm<FieldValues>({
     defaultValues: {
       id: category?.id,
       name: category?.name || "",
@@ -50,9 +50,9 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
 
   
   const handleSort = useCallback(() => {
-    setPartItem((prev: Array<CategoryChapterType>) => {
+    setPartItem((prev: Array<any>) => {
       let newIndex = 1;
-      return prev.map((part: CategoryChapterType) => {
+      return prev.map((part: any) => {
         if (part.onDelete) {
           return { ...part, sorted: 0 };
         } else {
@@ -66,8 +66,8 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
 
   // 単元削除ボタン押下した時
   const handleDeletePart = useCallback((sortedIndex: number) => {
-    setPartItem((prev: Array<CategoryChapterType>) => {
-      return prev.map((part: CategoryChapterType, prevIndex: number) => {
+    setPartItem((prev: Array<any>) => {
+      return prev.map((part: any, prevIndex: number) => {
         if (sortedIndex === part.sorted) {
           return { ...part, onDelete: true };
         } else {
@@ -81,13 +81,13 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
   
   // 単元追加ボタン押下した時
   const handleAppendPart = useCallback((data: any) => {
-    setPartItem((prev: Array<CategoryType>) => {
-      const index = prev.findIndex((part: CategoryType) => part.id === data.id);
+    setPartItem((prev: Array<any>) => {
+      const index = prev.findIndex((part: any) => part.id === data.id);
       if (index === -1 || ! data.id) {
         const newData = { ...data, id: undefined, disabled: false };
         return [ ...prev, newData ];
       } else {
-        return prev.map((part: CategoryType) => {
+        return prev.map((part: any) => {
           if (part.id === data.id) {
             return { ...part, name: data.name, chapters: data.chapters }
           } else {
@@ -103,7 +103,7 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
   // 単元並び順ボタン押下した時
   const handleSortPart = useCallback((sortedIndex: number, direction: "up" | "down") => {
     // 該当データのindexを探す
-    const index = partItem.findIndex((part: CategoryType) => part.sorted === sortedIndex);
+    const index = partItem.findIndex((part: any) => part.sorted === sortedIndex);
     if (index === -1 || (direction === 'up' && index === 0) || (direction === 'down' && index === partItem.length - 1)) {
       return;
     }
@@ -290,7 +290,7 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
         <PartAccordion header={settingHeader} body={settingBody} />
         <div className="flex flex-col gap-2 md:w-64 md:flex-row">
           <Button label={category ? "修正" : "登録"} onClick={handleSubmit(handleOnSubmit)} primary disabled={isLoading} />
-          <Button label="取消" onClick={() => router.push("/admin/crossword")} error disabled={isLoading} />
+          <Button label="取消" onClick={() => router.push(`/admin/crossword`)} error disabled={isLoading} />
         </div>
       </div>
     </Container>

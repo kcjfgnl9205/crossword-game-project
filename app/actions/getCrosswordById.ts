@@ -1,6 +1,6 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
 import { select_crossword_by_id } from "../libs/db/sql/crossword/select_crossword_by_id";
-import { ClueType, CrosswordGameType } from "../types";
+import { ClueType, CrosswordType } from "../types";
 import { changeSecondToMinute } from "../utils/utils";
 
 
@@ -9,26 +9,40 @@ type Props =  {
   id: string;
 }
 
-export default async function getCrosswordById(params: Props): Promise<CrosswordGameType | null> {
+export default async function getCrosswordById(params: Props): Promise<CrosswordType | null> {
   const connection = await getConnection();
   try {
     const crosswords: Array<any> = await select_crossword_by_id(connection, Number(params.id));
     const { minute, second } = changeSecondToMinute(crosswords[0].time_limit);
-    const formattedData: CrosswordGameType = {
+    const formattedData: CrosswordType = {
       id: crosswords[0].id,
       title: crosswords[0].title,
       minute: minute,
       second: second,
-      category_id: crosswords[0].category_id,
-      category_name: crosswords[0].category_name,
-      category_name_en: crosswords[0].category_name_en,
-      part_id: crosswords[0].part_id,
-      part_name: crosswords[0].part_name,
-      chapter_id: crosswords[0].chapter_id,
-      chapter_name: crosswords[0].chapter_name,
-      lang_id: crosswords[0].lang_id,
-      lang_name: crosswords[0].lang_name,
-      lang_name_en: crosswords[0].lang_name_en,
+      category: {
+        id: crosswords[0].category_id,
+        name: crosswords[0].category_name,
+        name_en: crosswords[0].category_name_en,
+        sorted: crosswords[0].category_sorted,
+        min_cnt: crosswords[0].category_min_cnt
+      },
+      part: {
+        id: crosswords[0].part_id,
+        name: crosswords[0].part_name,
+        sorted: crosswords[0].part_sorted
+      },
+      chapter: {
+        id: crosswords[0].chapter_id,
+        name: crosswords[0].chapter_name,
+        sorted: crosswords[0].chapter_sorted,
+        flg: crosswords[0].chapter_flg
+      },
+      lang: {
+        id: crosswords[0].lang_id,
+        name: crosswords[0].lang_name,
+        name_en: crosswords[0].lang_name_en,
+        cnt: 0
+      },
       questions: {
         across: {},
         down: {}

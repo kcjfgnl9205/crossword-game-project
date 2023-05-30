@@ -7,10 +7,11 @@ import { Button } from "@/app/components/htmlTag";
 import { Container, EmptyState, Heading } from "@/app/components/common";
 import ListingPartsAdmin from "@/app/components/crossword/ListingPartsAdmin";
 import Link from "next/link";
+import { CategoryType } from "@/app/types";
 
 
 type Props = {
-  category: any;
+  category: CategoryType;
   crosswords: Array<any>
 }
 

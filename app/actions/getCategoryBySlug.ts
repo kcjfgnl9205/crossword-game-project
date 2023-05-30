@@ -1,12 +1,13 @@
 import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { CategoryType } from "../types";
 import { find_category_mst_by_slug } from "../libs/db/sql/category/category_mst";
+import { CategoryType } from "../types";
 
 
 type Props =  {
   slug: string;
 }
 
+// カテゴリーデータ取得
 export default async function getCategoryBySlug(params: Props): Promise<CategoryType | null> {
   const connection = await getConnection();
   try {

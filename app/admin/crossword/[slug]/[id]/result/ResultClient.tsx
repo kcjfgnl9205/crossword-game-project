@@ -5,6 +5,7 @@ import Container from "@/app/components/common/Container";
 import Heading from "@/app/components/common/Heading";
 import RankListing from "@/app/components/admin/result/RankListing";
 import Link from "next/link";
+import { CategoryType } from "@/app/types";
 
 
 const rankData = [
@@ -28,11 +29,15 @@ const subItems: Array<any> = [
   {questionNo: 5, direction: "down", question: "Javaプログラムは_______によって実行されます。これはバイトコードを解釈します。", answer: "jvm", userAnswer: "jvn"},
 ]
 
-export default function ResultClient() { 
+type Props = {
+  category: CategoryType;
+}
+
+export default function ResultClient({ category }: Props) { 
   return (
     <Container>
       <div className="py-4">
-        <Link href="/admin/crossword" className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
+        <Link href={`/admin/crossword/${category.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
         <Heading title="JAVA基礎（英語版）" />
 
         <div className="flex flex-col gap-0.5">
