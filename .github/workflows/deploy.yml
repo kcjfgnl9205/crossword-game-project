@@ -1,4 +1,4 @@
-name: CI/CD
+name: Deploy
 
 on:
   push:
@@ -15,13 +15,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout source code.
         uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - name: "Create env file"
+      - name: Check Node v
+        run: node -v
+
+      - name: Create env file
         run: |
           touch .env
           echo NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} >> .env
@@ -36,11 +40,15 @@ jobs:
           echo MYSQL_PORT=${{ secrets.MYSQL_PORT }} >> .env
           cat .env
 
-      - name: Build next app
-        run: |
-          npm install -g yarn
-          yarn install --frozen-lockfile
-          yarn build
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: zip create
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell: bash
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -50,9 +58,10 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
+        run: |
+          aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://crossword-bucket/$GITHUB_SHA.zip
 
-      - name: Code Deploy
+      - name: Deploy
         run: |
           aws deploy create-deployment \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
