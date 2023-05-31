@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import PropTypes, { InferProps } from 'prop-types';
 
-import { ThemeContext, ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 
 import Cell from './Cell';
 
@@ -84,8 +84,6 @@ export default function CrosswordGrid({ theme }: CrosswordGridProps) {
   } = useContext(CrosswordContext);
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const contextTheme = useContext(ThemeContext);
 
   // focus and movement
   const focus = useCallback<FocusHandler>(() => {
@@ -168,8 +166,8 @@ export default function CrosswordGrid({ theme }: CrosswordGridProps) {
   // needed ones that are missing.  (We create this in standard last-one-wins
   // order in Javascript, of course.)
   const finalTheme = useMemo(
-    () => ({ ...defaultTheme, ...contextTheme, ...theme }),
-    [contextTheme, theme]
+    () => ({ ...defaultTheme, ...theme }),
+    [theme]
   );
 
   return (
@@ -188,7 +186,7 @@ export default function CrosswordGrid({ theme }: CrosswordGridProps) {
                 y={0}
                 width={width}
                 height={height}
-                fill={finalTheme.gridBackground}
+                fill='rgb(245,245,245)'
               />
               {gridData.flatMap((rowData, row) =>
                 rowData.map((cellData, col) =>

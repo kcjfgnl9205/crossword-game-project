@@ -4,7 +4,6 @@
 
 import React, {
   useCallback,
-  useContext,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -14,7 +13,7 @@ import React, {
 import PropTypes from 'prop-types';
 
 import produce from 'immer';
-import { ThemeContext, ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 
 import { CrosswordContext, CrosswordContextType } from './context';
 import {
@@ -360,8 +359,6 @@ const CrosswordProvider = React.forwardRef<
     },
     ref
   ) => {
-    const contextTheme =
-      useContext<CrosswordProviderProps['theme']>(ThemeContext);
 
     // The final theme is the merger of three values: the "theme" property
     // passed to the component (which takes precedence), any values from
@@ -369,8 +366,8 @@ const CrosswordProvider = React.forwardRef<
     // needed ones that are missing.  (We create this in standard last-one-wins
     // order in Javascript, of course.)
     const finalTheme = useMemo(() => (
-      { ...defaultTheme, ...contextTheme, ...theme }
-    ), [contextTheme, theme]);
+      { ...defaultTheme, ...theme }
+    ), [theme]);
 
     // The original Crossword implementation used separate state to track size
     // and grid data, and conflated the clues-input-data-based grid data and the

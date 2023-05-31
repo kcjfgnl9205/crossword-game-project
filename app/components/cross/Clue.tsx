@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
-import styled, { ThemeContext } from 'styled-components';
+import styled from 'styled-components';
 
 import type { Direction, EnhancedProps } from './types';
 import { CrosswordContext } from './context';
@@ -47,7 +47,6 @@ export default function Clue({
     hint: string;
   }
 >) {
-  const { highlightBackground } = useContext(ThemeContext);
   const { focused, selectedDirection, selectedNumber, handleClueSelected } = useContext(CrosswordContext);
   const [ onHintShow, setOnHintShow ] = useState<boolean>(false);
 
@@ -63,7 +62,7 @@ export default function Clue({
     <>
       <div>
         <ClueWrapper
-          highlightBackground={highlightBackground}
+          highlightBackground='rgb(255,255,204)'
           highlight={
             focused && direction === selectedDirection && number === selectedNumber
           }
