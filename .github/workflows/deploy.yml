@@ -1,50 +1,55 @@
-name: CI/CD
+name: DEV Node.js CI
 
-on:
-  push:
-    branches:
-      - main
+  on:
+    push:
+      branches: ["main"]
 
-env:
-  S3_BUCKET_NAME: crossword-bucket
-  CODE_DEPLOY_APPLICATION_NAME: dev-crossword-game
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: dev-crossword
+  jobs:
+    build:
+      name: Build
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          node-version: [16.x]
+      steps:
+        - uses: actions/checkout@v3
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+        - name: Use Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v3
+          with:
+            node-version: ${{ matrix.node-version }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
+        - name: 'Create env file'
+          run: |
+            touch .env
+            echo NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} >> .env
+            echo NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }} >> .env
+            echo NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} >> .env
+            echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
+            echo MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} >> .env
+            echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env
+            echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env
+            echo MYSQL_ROOT_USER=${{ secrets.MYSQL_ROOT_USER }} >> .env
+            echo MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} >> .env
+            echo MYSQL_PORT=${{ secrets.MYSQL_PORT }} >> .env
+            cat .env
 
-      - name: Install dependencies
-        run: yarn install
+        - name: "Build project"
+          run: |
+            yarn install
+            yarn build
+            rm -r node_modules
 
-      - name: Build next app
-        run: yarn build
-
-      - name: Make zip file
-        run: zip -qq -r ./$GITHUB_SHA.zip . -x "node_modules/*"
-        shell: bash
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
-
-      - name: Code Deploy
-        run: |
-          aws deploy create-deployment \
-          --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
+        - name: AWS CodeDeploy
+          uses: sourcetoad/aws-codedeploy-action@v1
+          with:
+            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws_region: ap-northeast-2
+            codedeploy_name: dev-crossword-game
+            codedeploy_group: dev-crossword
+            codedeploy_register_only: false
+            s3_bucket: crossword-bucket
+            s3_folder: dev
+            max_polling_iterations: 0
+            directory: ./

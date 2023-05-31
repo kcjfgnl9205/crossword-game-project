@@ -1,4 +1,4 @@
- #!/bin/bash
-  cd /home/ubuntu/crossword-game
-  rm -r node_modules/
-  yarn install
+#!/bin/bash
+cd /var/crossword/
+rm -r node_modules/
+yarn install
