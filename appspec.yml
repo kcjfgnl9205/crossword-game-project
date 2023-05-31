@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/crossword-game
+permissions:
+  - object: /home/ubuntu/crossword-game
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
