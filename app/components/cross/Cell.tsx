@@ -2,7 +2,6 @@
 
 import React, { useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { ThemeContext } from 'styled-components';
 
 import { CrosswordSizeContext } from './context';
 import type { UsedCellData, EnhancedProps } from './types';
@@ -51,16 +50,7 @@ export default function Cell({
   focus,
   highlight,
 }: CellProps) {
-  const { cellSize, cellPadding, cellInner, cellHalf, fontSize } =
-    useContext(CrosswordSizeContext);
-  const {
-    // gridBackground,
-    cellBackground,
-    cellBorder,
-    textColor,
-    focusBackground,
-    highlightBackground,
-  } = useContext(ThemeContext);
+  const { cellSize, cellPadding, cellInner, cellHalf, fontSize } = useContext(CrosswordSizeContext);
 
   const handleClick = useCallback<React.MouseEventHandler>(
     (event) => {
@@ -90,12 +80,12 @@ export default function Cell({
         height={cellInner}
         fill={
           focus
-            ? focusBackground
+            ? 'rgb(255,255,0)'
             : highlight
-            ? highlightBackground
-            : cellBackground
+            ? 'rgb(255,255,204)'
+            : 'rgb(255,255,255)'
         }
-        stroke={cellBorder}
+        stroke={'rgb(0,0,0)'}
         strokeWidth={cellSize / 50}
       />
       {number && (
@@ -115,7 +105,7 @@ export default function Cell({
         y={y + cellHalf + 1} // +1 for visual alignment?
         textAnchor="middle"
         dominantBaseline="middle"
-        style={{ fill: answer === guess ? textColor : "#d32f2f" }}
+        style={{ fill: answer === guess ? 'rgb(0,0,0)' : "#d32f2f" }}
         className={
           answer === guess ? 'guess-text-correct' : 'guess-text-incorrect'
         }
