@@ -86,9 +86,9 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
     
     const { name, value } = e.target;
     setValue(name, value);
-    if (name.startsWith("questions")) {
-      setValue(name, value.toUpperCase());
-    }
+    // if (name.startsWith("questions")) {
+    //   setValue(name, value.toUpperCase());
+    // }
     
     if (name === "part_id") {
       const part = parts.filter((part: any) => part.id.toString() === watch("part_id"))[0];

@@ -37,7 +37,7 @@ export default function ListingPartsAdmin({ item, isLoading, handleDelete, handl
                 return (
                   <div
                     key={crossword.id}
-                    className="flex flex-col py-2 gap-2 md:flex-row md:justify-between md:pl-10 hover:bg-neutral-100 cursor-pointer"
+                    className="flex flex-col p-2 my-1 gap-2 border rounded-lg md:flex-row md:justify-between md:pl-10 md:border-none hover:bg-neutral-100 cursor-pointer"
                   >
                     <div className="flex flex-col md:flex-row">
                       <div className="font-semibold mr-8">

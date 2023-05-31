@@ -42,12 +42,12 @@ export default function PartAccordionList({ item }: Props) {
                                 </div>
                                 <div>
                                   {
-                                    answer.result?.map((result: any) => {
+                                    answer.result?.map((result: any, index: number) => {
                                       return (
                                         <div key={result.id} className="flex flex-col px-4 my-4 md:flex-row md:justify-between">
                                           <div className="flex flex-col gap-1 md:flex-row md:gap-4">
                                             <div className="font-semibold">
-                                              {result.direction === "across" ? "よこ" : "たて"}問題{result.number}
+                                              問題{index + 1}
                                             </div>
                                             <div>{result.clue}</div>
                                           </div>
