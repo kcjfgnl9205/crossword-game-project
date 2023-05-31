@@ -4,8 +4,19 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/crossword-game
-permissions:
-  - object: /home/ubuntu/crossword-game
-    owner: ubuntu
-    group: ubuntu
-    mode: 755
+    overwrite: true
+file_exists_behavior: OVERWRITE
+
+hooks:
+  BeforeInstall:
+    - location: scripts/before-install.sh
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: scripts/after-install.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/application-start.sh
+      timeout: 300
+      runas: root
