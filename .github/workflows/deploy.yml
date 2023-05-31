@@ -12,15 +12,11 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout source code.
-        uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
+        uses: actions/checkout@v2
 
       - name: Check Node v
         run: node -v
@@ -62,9 +58,8 @@ jobs:
           aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://crossword-bucket/$GITHUB_SHA.zip
 
       - name: Deploy
-        run: |
-          aws deploy create-deployment \
-          --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+        run: aws deploy create-deployment
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }}
+          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }}
           --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
