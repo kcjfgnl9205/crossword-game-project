@@ -284,12 +284,15 @@ export function convertAnswerObjectToAnswerArray(obj: any) {
 
 
 
+export function calculateScore(numQuestions: number): number {
+  const maxScore = 100; // 満点
+  let scorePerQuestion: number = 0;
 
+  if (numQuestions === 0) {
+    scorePerQuestion = 0; // 問題がない場合
+  } else {
+    scorePerQuestion = Math.floor(maxScore / numQuestions); // 点数計算
+  }
 
-
-
-
-
-
-
-
+  return scorePerQuestion;
+}

@@ -11,11 +11,13 @@ type Props = {
   ref1?:React.ForwardedRef<CrosswordProviderImperative>;
   lang: any;
   data: any;
-  onAnswerComplete?: (direction: Direction, number: string, correct: boolean, answer: string, userAnswer: string) => void;
+  onAnswerComplete?: (direction: Direction, number: string, correct: boolean, answer: string) => void;
   onAnswerCorrect?: (direction: Direction, number: string, answer: string) => void;
+  onAnswerIncorrect?: (direction: Direction, number: string, answer: string) => void;
   onCrosswordComplete?: (correct: boolean) => void;
   onCellSelected?: (cellData: UsedCellData, direction: Direction) => void;
   onClueSelected?: (direction: Direction, number: string) => void;
+  onHintSelected?: (direction: Direction, number: string, onHint: boolean) => void;
   onCellChange?: (row: number, col: number, char: string, currentDirection: Direction, currentNumber: string, clues: CluesData | undefined) => void;
 
   onHintShow?: boolean;
@@ -29,9 +31,11 @@ export default function CrosswordGame({
   data,
   onAnswerComplete,
   onAnswerCorrect,
+  onAnswerIncorrect,
   onCrosswordComplete,
   onCellSelected,
   onClueSelected,
+  onHintSelected,
   onCellChange,
 
   onHintShow,
@@ -48,9 +52,11 @@ export default function CrosswordGame({
       data={data}
       onAnswerComplete={onAnswerComplete}
       onAnswerCorrect={onAnswerCorrect}
+      onAnswerIncorrect={onAnswerIncorrect}
       onCrosswordComplete={onCrosswordComplete}
       onCellSelected={onCellSelected}
       onClueSelected={onClueSelected}
+      onHintSelected={onHintSelected}
       onCellChange={onCellChange}
     >
       <div className="flex flex-col gap-2 md:grid md:grid-flow-row-dense md:grid-cols-2 md:gap-4">

@@ -1,6 +1,7 @@
 import { Direction } from "../components/cross/types";
 
 type User = {
+  id: number;
   username: string;
   email: string;
 }

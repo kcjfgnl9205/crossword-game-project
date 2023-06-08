@@ -37,7 +37,9 @@ const clueInputPropsOriginal = {
   /** The hint to display */
   hint: PropTypes.string.isRequired,
 
-  userAnswer: PropTypes.string
+  usedHint: PropTypes.bool,
+
+  userAnswer: PropTypes.array,
 };
 
 export const clueShapeOriginal = PropTypes.shape(clueInputPropsOriginal);

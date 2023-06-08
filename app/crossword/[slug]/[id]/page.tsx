@@ -2,6 +2,7 @@ import { ClientOnly } from "@/app/components/common";
 import CrosswordClient from "./CrosswordClient";
 import getCrosswordById from "@/app/actions/getCrosswordById";
 import { notFound } from "next/navigation";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
 
 type Props = {
@@ -15,10 +16,12 @@ export default async function Quiz({ params }:  { params: Props }) {
     notFound();
   }
 
+  const currentUser = await getCurrentUser();
+
   return (
     <ClientOnly>
       <CrosswordClient
-        id={params.id}
+        currentUser={currentUser}
         crossword={crossword}
       />
     </ClientOnly>

@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import Hint from "./Hint";
+import { CrosswordContext } from "./context";
 
 
 type Props = {
@@ -8,7 +10,8 @@ type Props = {
 }
 
 export default function OptionMobile({ onHintShow, setOnHintShow, item }: Props) {
-  console.log(item)
+  const { handleHintSelected } = useContext(CrosswordContext);
+  
   return (
     <div className="border rounded-lg p-2 bg-neutral-100 block md:hidden">
       <h3 className="font-semibold text-md">
@@ -18,7 +21,7 @@ export default function OptionMobile({ onHintShow, setOnHintShow, item }: Props)
       {
         item.hint && 
         <span>
-          <span className="text-yellow-500 text-xs" onClick={() => setOnHintShow?.(prev => !prev)}>Hintを{ onHintShow ? "閉じる" : "見る" }</span>
+          <span className="text-yellow-500 text-xs" onClick={() => { setOnHintShow?.(prev => !prev); handleHintSelected(item.direction, item.number.toString()) }}>Hintを{ onHintShow ? "閉じる" : "見る" }</span>
           <Hint onShow={onHintShow}>{item.hint}</Hint>
         </span>
       }

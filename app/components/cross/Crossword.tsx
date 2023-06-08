@@ -121,6 +121,12 @@ const Crossword = React.forwardRef<CrosswordImperative, CrosswordProps>(
          */
         isCrosswordCorrect: () => !!providerRef.current?.isCrosswordCorrect(),
 
+        
+        /**
+         * 入力したデータを表示する
+         */
+        isResultClues: () => providerRef.current?.isResultClues(),
+
         /**
          * Sets the “guess” character for a specific grid position.
          *

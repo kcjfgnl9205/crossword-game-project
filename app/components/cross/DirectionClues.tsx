@@ -33,12 +33,11 @@ export default function DirectionClues({
   label,
 }: DirectionCluesProps) {
   const { clues } = useContext(CrosswordContext);
-  
   return (
     <div>
       {/* use something other than h3? */}
       <h3 className="font-semibold text-xl">{label || direction.toUpperCase()}</h3>
-      {clues?.[direction].map(({ number, clue, complete, correct, hint }) => (
+      {clues?.[direction].map(({ number, clue, complete, correct, hint, usedHint = false }) => (
         <Clue
           key={number}
           direction={direction}
@@ -46,6 +45,7 @@ export default function DirectionClues({
           complete={complete}
           correct={correct}
           hint={hint}
+          usedHint={usedHint}
         >
           {clue}
         </Clue>

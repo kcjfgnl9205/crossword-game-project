@@ -52,15 +52,12 @@ export default function Cell({
 }: CellProps) {
   const { cellSize, cellPadding, cellInner, cellHalf, fontSize } = useContext(CrosswordSizeContext);
 
-  const handleClick = useCallback<React.MouseEventHandler>(
-    (event) => {
-      event.preventDefault();
-      if (onClick) {
-        onClick(cellData);
-      }
-    },
-    [cellData, onClick]
-  );
+  const handleClick = useCallback<React.MouseEventHandler>((event) => {
+    event.preventDefault();
+    if (onClick) {
+      onClick(cellData);
+    }
+  },[cellData, onClick]);
 
   const { row, col, guess, number, answer } = cellData;
 

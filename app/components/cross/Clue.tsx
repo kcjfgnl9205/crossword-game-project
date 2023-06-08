@@ -38,6 +38,7 @@ export default function Clue({
   complete,
   correct,
   hint,
+  usedHint,
   ...props
 }: EnhancedProps<
   typeof Clue.propTypes,
@@ -45,9 +46,10 @@ export default function Clue({
     /** direction of the clue: “across” or “down”; passed back in onClick */
     direction: Direction;
     hint: string;
+    usedHint: boolean | null;
   }
 >) {
-  const { focused, selectedDirection, selectedNumber, handleClueSelected } = useContext(CrosswordContext);
+  const { focused, selectedDirection, selectedNumber, handleClueSelected, handleHintSelected } = useContext(CrosswordContext);
   const [ onHintShow, setOnHintShow ] = useState<boolean>(false);
 
   const handleClick = useCallback<React.MouseEventHandler>(
@@ -60,7 +62,7 @@ export default function Clue({
 
   return (
     <>
-      <div>
+      <div className="inline-block mr-4">
         <ClueWrapper
           highlightBackground='rgb(255,255,204)'
           highlight={
@@ -73,9 +75,9 @@ export default function Clue({
           aria-label={`clue-${number}-${direction}`}
         >
           問題{number}：{children}
-          { hint && <span className="text-yellow-500 text-xs hidden md:inline-block" onClick={() => setOnHintShow(prev => !prev)}>Hintを{ onHintShow ? "閉じる" : "見る" }</span> }
         </ClueWrapper>
       </div>
+      { hint && <span className="text-yellow-500 text-xs hidden cursor-pointer md:inline-block" onClick={() => { setOnHintShow(prev => !prev); handleHintSelected(direction, number); } }>Hintを{ onHintShow ? "閉じる" : "見る" }</span> }
       <Hint onShow={onHintShow}>{hint}</Hint>
     </>
   );

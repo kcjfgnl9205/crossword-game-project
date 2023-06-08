@@ -180,7 +180,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
         console.log(data)
         //修正
         const response = await axios.put(`/api/crossword/${item.id}`, params);
-console.log(response)
+
         if (response.status === 200) {
           alert("クロスワードゲームを修正しました。");
           router.push(`/admin/crossword/${category?.name_en}`);

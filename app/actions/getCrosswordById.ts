@@ -12,7 +12,7 @@ type Props =  {
 export default async function getCrosswordById(params: Props): Promise<CrosswordType | null> {
   const connection = await getConnection();
   try {
-    const crosswords: Array<any> = await select_crossword_by_id(connection, Number(params.id));
+    const crosswords: Array<any> = await select_crossword_by_id(connection, Number(params.id), params.slug);
     const { minute, second } = changeSecondToMinute(crosswords[0].time_limit);
     const formattedData: CrosswordType = {
       id: crosswords[0].id,

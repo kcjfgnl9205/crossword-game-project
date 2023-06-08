@@ -39,7 +39,9 @@ export interface CrosswordContextType {
   registerFocusHandler: (focusHandler: FocusHandler | null) => void;
   /** A handler for `<input>` element Change events. */
   handleCompositionEnd: React.CompositionEventHandler<HTMLInputElement>;
-  
+  /** ヒント使用をクリックした時 */
+  handleHintSelected: (direction: Direction, number: string) => void;
+
   // player state
   focused: boolean;
   selectedPosition: GridPosition;
@@ -71,6 +73,7 @@ export const CrosswordContext = React.createContext<CrosswordContextType>({
   handleInputClick: nop,
   handleClueSelected: nop,
   registerFocusHandler: nop,
+  handleHintSelected: nop,
 
   focused: false,
   selectedPosition: { row: 0, col: 0 },

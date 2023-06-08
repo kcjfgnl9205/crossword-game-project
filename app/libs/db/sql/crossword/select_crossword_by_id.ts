@@ -43,11 +43,12 @@ const SELECT_CROSSWORD_BY_ID = `
             ON CROSSWORD_MST.id = CROSSWORD_DETAIL.crossword_id
            AND CROSSWORD_DETAIL.deleted_at IS NULL
          WHERE CROSSWORD_MST.id = ?
+           AND CATEGORY_MST.name_en = ?
       ORDER BY CROSSWORD_DETAIL.id
 `;
-export const select_crossword_by_id = async (conn: any, id: number) => {
+export const select_crossword_by_id = async (conn: any, id: number, category_name: string) => {
   try {
-    const [ rows ] = await conn?.execute(SELECT_CROSSWORD_BY_ID, [id]);
+    const [ rows ] = await conn?.execute(SELECT_CROSSWORD_BY_ID, [id, category_name]);
     return rows;
   } catch (err) {
     throw err;

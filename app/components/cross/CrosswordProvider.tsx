@@ -167,6 +167,9 @@ export const crosswordProviderPropTypes = {
    */
   onClueSelected: PropTypes.func,
 
+
+  onHintSelected: PropTypes.func,
+
   /**
    * callback function called when a Cell is selected
    */
@@ -199,7 +202,6 @@ export type CrosswordProviderProps = EnhancedProps<typeof crosswordProviderPropT
       number: string,
       correct: boolean,
       answer: string,
-      userAnswer: string
     ) => void;
 
     /**
@@ -276,6 +278,9 @@ export type CrosswordProviderProps = EnhancedProps<typeof crosswordProviderPropT
      * callback function called when a clue is selected
      */
     onClueSelected?: (direction: Direction, number: string) => void;
+    
+    
+    onHintSelected?: (direction: Direction, number: string, onHint: boolean) => void;
 
     /**
      * callback function called when a Cell is selected
@@ -313,6 +318,8 @@ export interface CrosswordProviderImperative {
    * @since 4.1.0
    */
   setGuess: (row: number, col: number, guess: string) => void;
+
+  isResultClues: () => any;
 }
 
 const defaultTheme: CrosswordProviderProps['theme'] = {
@@ -352,6 +359,7 @@ const CrosswordProvider = React.forwardRef<
       onCrosswordCorrect,
       onCellChange,
       onClueSelected,
+      onHintSelected,
       onCellSelected,
       useStorage,
       storageKey,
@@ -359,7 +367,6 @@ const CrosswordProvider = React.forwardRef<
     },
     ref
   ) => {
-
     // The final theme is the merger of three values: the "theme" property
     // passed to the component (which takes precedence), any values from
     // ThemeContext, and finally the "defaultTheme" values fill in for any
@@ -447,21 +454,25 @@ const CrosswordProvider = React.forwardRef<
         );
 
         if (onCellChange) {
-          // setClues(
-          //   produce((draft) => {
-          //     if (draft) {
-          //       const clueInfo = draft[currentDirection].find((i) => i.number === currentNumber);
-          //       if (clueInfo) {
-          //         if (char === "") {
-          //           clueInfo.userAnswer = clueInfo.userAnswer.slice(0, -1);
-          //         } else {
-          //           console.log("z")
-          //           clueInfo.userAnswer += char;
-          //         }
-          //       } 
-          //     }
-          //   })
-          // )
+          setClues(
+            produce((draft) => {
+              if (draft) {
+                const clueInfo = draft[currentDirection].find((i) => i.number === currentNumber);
+                if (clueInfo) {
+                  if (!clueInfo.userAnswer) {
+                    clueInfo.userAnswer = new Array(clueInfo.answer.length).fill("");
+                  }
+
+                  const across = isAcross(currentDirection);
+                  if (across) {
+                    clueInfo.userAnswer.splice(col - clueInfo.col, 1, char);
+                  } else {
+                    clueInfo.userAnswer.splice(row - clueInfo.row, 1, char);
+                  }
+                } 
+              }
+            })
+          )
           onCellChange(row, col, char, currentDirection, currentNumber, clues);
         }
       },
@@ -474,10 +485,9 @@ const CrosswordProvider = React.forwardRef<
         number: string,
         correct: boolean,
         answer: string,
-        userAnswer: string
       ) => {
         if (onAnswerComplete) {
-          onAnswerComplete(direction, number, correct, answer, userAnswer);
+          onAnswerComplete(direction, number, correct, answer);
         }
 
         if (correct) {
@@ -518,7 +528,6 @@ const CrosswordProvider = React.forwardRef<
 
     const checkCorrectness = useCallback(
       (row: number, col: number) => {
-        let userAnswer = "";
         const cell = getCellData(row, col);
         if (!cell.used) {
           // Because this is in an internal callback, and we only call it with a
@@ -561,7 +570,7 @@ const CrosswordProvider = React.forwardRef<
               correct = false;
             }
 
-            userAnswer += checkCell.guess;
+            // userAnswer += checkCell.guess;
           }
 
           // update the clue state
@@ -578,7 +587,7 @@ const CrosswordProvider = React.forwardRef<
           );
 
           if (complete) {
-            notifyAnswerComplete(direction, number, correct, info.answer, userAnswer);
+            notifyAnswerComplete(direction, number, correct, info.answer);
           }
         });
       },
@@ -1039,6 +1048,32 @@ const CrosswordProvider = React.forwardRef<
       [clues, focus, moveTo, onClueSelected]
     );
 
+    const handleHintSelected = useCallback((direction: Direction, number: string) => {
+        const info = clues?.[direction].find((clue) => clue.number === number);
+        if (!info) {
+          return;
+        }
+
+        let onHint: boolean = false;
+        setClues(
+          produce((draft) => {
+            if (draft) {
+              const clueInfo = draft[direction].find((i) => i.number === number);
+              if (clueInfo) {
+                onHint = clueInfo.usedHint as boolean;
+                clueInfo.usedHint = true;
+              }
+            }
+          })
+        );
+
+        if (onHintSelected) {
+          onHintSelected(direction, number, onHint);
+        }
+      },
+      [clues, onHintSelected]
+    );
+
     const registerFocusHandler = useCallback(
       (focusHandler: FocusHandler | null) => {
         // console.log('CrosswordProvider.registerFocusHandler() called', {
@@ -1144,6 +1179,9 @@ const CrosswordProvider = React.forwardRef<
          */
         isCrosswordCorrect: () => crosswordCorrect,
 
+
+        isResultClues: () => clues,
+
         /**
          * Sets the “guess” character for a specific grid position.
          *
@@ -1179,6 +1217,7 @@ const CrosswordProvider = React.forwardRef<
         handleClueSelected,
         handleCompositionEnd,
         registerFocusHandler,
+        handleHintSelected,
 
         focused,
         selectedPosition: { row: focusedRow, col: focusedCol },
@@ -1200,6 +1239,7 @@ const CrosswordProvider = React.forwardRef<
         handleInputClick,
         handleClueSelected,
         registerFocusHandler,
+        handleHintSelected,
         focused,
         focusedRow,
         focusedCol,
