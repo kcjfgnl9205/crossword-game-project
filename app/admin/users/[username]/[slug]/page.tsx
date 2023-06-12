@@ -1,8 +1,9 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { ClientOnly } from "@/app/components/common";
 import ResultClientByCategory from "@/app/user/[username]/[slug]/ResultClientByCategory";
-import { sampleResultArr } from "@/app/data/resultSample";
+import getCrosswordAllResults from "@/app/actions/getCrosswordAllResults";
+import getUserByUsername from "@/app/actions/getUserByUsername";
 
 
 type Props = {
@@ -17,12 +18,18 @@ export default async function AdminUsersDetail({ params }:  { params: Props }) {
     redirect("/");
   }
   
-  const category = sampleResultArr.filter((data) => data.name_en === params.slug)[0];
+  const user = await getUserByUsername(params);
+  
+  const items = await getCrosswordAllResults(params);
+  if (!items) {
+    notFound();
+  }
+  
   return (
     <ClientOnly>
       <ResultClientByCategory
-        username={params.username}
-        category={category}
+        user={user}
+        items={items}
       />
     </ClientOnly>
   )

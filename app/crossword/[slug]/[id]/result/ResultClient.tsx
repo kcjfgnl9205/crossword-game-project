@@ -19,7 +19,6 @@ export default function ResultClient({ params, searchParams }:  Props) {
       <h2 className="font-semibold text-xl py-2">{searchParams.title}({searchParams.lang})</h2>
       <p>所要時間：{time.minute.toString().padStart(2, "0")}:{time.second.toString().padStart(2, "0")}</p>
       <p>正解：{searchParams.correctCnt}問、誤解：{searchParams.inCorrectCnt}問、ヒント使用：{searchParams.hintCount}回</p>
-      <p>ランキング：12名 / 27名</p>
 
       <div className="w-40 mx-auto py-8">
         <Button

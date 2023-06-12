@@ -3,6 +3,7 @@ import ClientOnly from "@/app/components/common/ClientOnly";
 import ResultClient from "./ResultClient";
 import getCurrentUser from "../../actions/getCurrentUser";
 import { redirect } from "next/navigation";
+import getCrosswordMaxResults from "@/app/actions/getCrosswordMaxResults";
 
 
 
@@ -16,10 +17,13 @@ export default async function CrosswordUserResult({ params }:  { params: Props }
     redirect("/");
   }
   
+  const items = await getCrosswordMaxResults(params);
+
   return (
     <ClientOnly>
       <ResultClient
-        username={params.username}
+        user={currentUser}
+        items={items}
       />
     </ClientOnly>
   )

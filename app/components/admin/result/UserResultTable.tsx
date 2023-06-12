@@ -13,7 +13,7 @@ type Props = {
 
 
 export default function UserResultTable({ item, onClick, onHref }: Props) {
-console.log(item)
+
   const header = (
     <div className="font-semibold text-lg md:text-xl">
       {item.name}
@@ -36,18 +36,22 @@ console.log(item)
               <div className="flex flex-col mb-4 md:flex-row">
                 <div className="grow flex flex-col md:flex-row">
                   {
-                    part.chapters?.map((chapter: any, chapterIndex: number) => {
+                    part.chapters?.map((chapter: any) => {
                       return (
-                        <div className="grow flex flex-row text-center md:flex-col" key={chapterIndex}>
+                        <div className="grow flex flex-row text-center md:flex-col" key={chapter.id}>
                           <div className="px-4 py-2 border bg-cyan-50 w-20 md:w-full">{chapter.name}</div>
                           <div className="flex grow flex-col text-center md:flex-row">
                           {
-                            chapter.lang?.map((lang: any, langIndex: number) => {
+                            chapter.langs?.map((lang: any) => {
                               return (
-                                <div key={langIndex} className="grow flex flex-row md:flex-col">
+                                <div key={lang.id} className="grow flex flex-row md:flex-col">
                                   <div className="px-4 py-2 border bg-cyan-50">{lang.name}</div>
                                   <div className="px-4 py-2 border grow">
-                                    { lang.score ? `${lang.score}点` : "未実施" }
+                                    {
+                                      lang.total_correct_answers
+                                      ? <span>{lang.total_correct_answers}問 / {lang.total_questions}問</span>
+                                      : <span className="text-rose-500">未実施</span>
+                                    }
                                   </div>
                                 </div>
                               )

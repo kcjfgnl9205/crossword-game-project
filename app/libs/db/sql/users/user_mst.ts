@@ -18,3 +18,15 @@ export const find_user_mst_by_username = async (conn: any, username: string) => 
     throw err;
   }
 };
+
+
+const SELECT_USER_MST = 'SELECT * FROM USER_MST WHERE authority = 0';
+export const select_user_mst = async (conn: any) => {
+  try {
+    const [ rows ] = await conn?.execute(SELECT_USER_MST, []);
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};
+

@@ -6,14 +6,15 @@ import Heading from "@/app/components/common/Heading";
 import PartAccordionList from "@/app/components/Accordion/PartAccordionList";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { SafeUser } from "@/app/types";
 
 
 type Props = {
-  username: string;
-  category: any;
+  user: SafeUser;
+  items: any;
 }
 
-export default function ResultClient({ username, category }: Props) { 
+export default function ResultClient({ user, items }: Props) { 
   const router = useRouter();
 
   return (
@@ -22,11 +23,11 @@ export default function ResultClient({ username, category }: Props) {
         <Link href="#" legacyBehavior>
           <a onClick={() => router.back()} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</a>
         </Link>
-        <Heading title={`${username}様、${category.name}`} />
+        <Heading title={`${user.username}様、${items.name}`} />
       </div>
 
       {
-       category.parts.map((part: any) => {
+       items.parts?.map((part: any) => {
         return (
           <PartAccordionList
             key={part.id}
