@@ -213,7 +213,7 @@ export default function CrosswordCreateClient({ item, category }: Props) {
     if (confirm("登録・修正を取り消します。\n作成中の内容は保存しません。")) {
       router.push(`/admin/crossword/${category.name_en}`);
     }
-  }, [router]);
+  }, [router, category]);
 
   return (
     <Container>

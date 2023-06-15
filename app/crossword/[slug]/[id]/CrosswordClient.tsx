@@ -49,7 +49,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
 
     const newData = convertToResultArray(result);
     setData(newData);
-  }, []);
+  }, [crossword]);
 
   useEffect(() => {
     let intervalId: any;
