@@ -18,9 +18,6 @@ export default async function CrosswordResult({ params }:  { params: Props }) {
   }
 
   const item = await getCrosswordResultsByCrosswordId(params);
-  if (!item) {
-    notFound();
-  }
   
   return (
     <ClientOnly>

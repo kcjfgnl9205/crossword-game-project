@@ -20,13 +20,15 @@ export default function ResultClient({ item }: Props) {
 
         <div className="flex flex-col gap-0.5">
         {
-          item.users.map((user: any) => (
-            <RankListing
-              key={user.id}
-              username={user.username}
-              items={user.answers}
-            />
-          ))
+          item.users.length === 0
+          ? <div className="text-center font-semibold py-4">結果データが存在しません。</div>
+          : item.users.map((user: any) => (
+              <RankListing
+                key={user.id}
+                username={user.username}
+                items={user.answers}
+              />
+            ))
         }
         </div>
       </div>

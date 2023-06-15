@@ -261,18 +261,6 @@ function AddWordToBoard(){
   return true;
 }
 
-
-export function convertAnswerObjectToAnswerArray(obj: any) {
-  let arr: any[] = [];
-  if (obj) {
-    const acrossValues = Object.values(obj?.across);
-    const downValues = Object.values(obj?.down);
-    arr = [...acrossValues, ...downValues];
-  }
-  return arr;
-}
-
-
 export function convertToResultArray(arr: Array<any>) {
   let result: any = {
     across: {},

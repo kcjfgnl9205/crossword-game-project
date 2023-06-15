@@ -15,7 +15,7 @@ import CrosswordGame from "@/app/components/crossword/CrosswordGame";
 import CreateQuizAccordion from "@/app/components/admin/crossword/CreateQuizAccordion";
 import CreateQuizAccordionItem from "@/app/components/admin/crossword/CreateQuizAccordionItem";
 import { Input, Button, Hr, RadioGroupAndSelect } from "@/app/components/htmlTag";
-import { CrosswordBoardCreate, convertAnswerObjectToAnswerArray, convertToResultArray } from "@/app/utils/crosswordutil";
+import { CrosswordBoardCreate, convertToResultArray } from "@/app/utils/crosswordutil";
 
 
 
@@ -61,11 +61,11 @@ export default function CrosswordCreateClient({ item, category }: Props) {
 
   // 質問リスト
   useEffect(() => {
-    const questionArray = convertAnswerObjectToAnswerArray(item?.questions);
-    if (questionArray.length === 0) {
+    console.log(item)
+    if (item?.questions.length === 0) {
       append([defaultQuestion, defaultQuestion]);
     } else {
-      questionArray.forEach((question: any) => {
+      item?.questions.forEach((question: any) => {
         append([question]);
       })
     }

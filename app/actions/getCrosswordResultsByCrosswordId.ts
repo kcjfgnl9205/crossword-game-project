@@ -26,7 +26,7 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
             name: row.lang_name,
             name_en: row.lang_name_en
           },
-          users: [{
+          users: row.user_id ? [{
             id: row.user_id,
             username: row.user_username,
             answers: [
@@ -47,7 +47,7 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
                 ]
               }
             ]
-          }]
+          }] : []
         });
       } else {
         const userIndex = transformedData[crosswordIndex]?.users.findIndex((item: any) => item?.id === row.user_id);
@@ -106,6 +106,10 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
         }
       }
     });
+
+    if (transformedData.length === 0) {
+      return null;
+    }
     return transformedData[0];
   } catch (error: any) {
     console.log("getCrosswordResultsByCrosswordId" + error);

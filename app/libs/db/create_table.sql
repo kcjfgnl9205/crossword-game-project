@@ -90,13 +90,10 @@ CREATE TABLE `CROSSWORD_MST` (
 DROP TABLE CROSSWORD_DETAIL;
 CREATE TABLE `CROSSWORD_DETAIL` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `number` int NOT NULL,
   `clue` varchar(255) NOT NULL,
   `hint` varchar(255) DEFAULT NULL,
   `answer` varchar(255) NOT NULL,
   `score` int NOT NULL DEFAULT '0',
-  `x_coordinates` int NOT NULL,
-  `y_coordinates` int NOT NULL,
   `crossword_id` int NOT NULL,
   `direction` varchar(6) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -127,6 +124,7 @@ CREATE TABLE `CATEGORY_LANG_PACKAGE` (
   `id` int NOT NULL AUTO_INCREMENT,
   `category_id` int NOT NULL,
   `lang_id` int NOT NULL,
+  `flg` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -178,13 +176,10 @@ DROP TABLE CROSSWORD_RESULT_DETAIL;
 CREATE TABLE `CROSSWORD_RESULT_DETAIL` (
   `id` int NOT NULL AUTO_INCREMENT,
   `crossword_result_id` int NOT NULL,
-  `number` int NOT NULL,
   `clue` varchar(255) NOT NULL,
   `hint` varchar(255) DEFAULT NULL,
   `answer` varchar(255) NOT NULL,
   `score` int NOT NULL DEFAULT '0',
-  `x_coordinates` int NOT NULL,
-  `y_coordinates` int NOT NULL,
   `direction` varchar(6) NOT NULL,
   `u_hint` int NOT NULL,             -- ヒント使用
   `u_answer` varchar(255) NOT NULL,  -- ユーザーが提出した回答  

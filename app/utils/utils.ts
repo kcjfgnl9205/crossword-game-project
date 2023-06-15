@@ -1,6 +1,3 @@
-import { InputClueType, InputClueTypeResult } from "../types";
-
-
 // 秒を分, 秒に変更する
 export const changeSecondToMinute = (seconds: number): any => {
   let m = Math.floor(seconds / 60);

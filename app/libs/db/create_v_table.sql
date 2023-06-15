@@ -15,8 +15,8 @@ CREATE VIEW V_CROSSWORD_ALL_RESULT AS
              , LANG_MST.name as lang_name
              , LANG_MST.name_en as lang_name_en
              , CROSSWORD_RESULT_MST.id as result_id
-             , CROSSWORD_RESULT_MST.crossword_id as crossword_id
-             , CROSSWORD_RESULT_MST.title as result_title
+             , CROSSWORD_MST.id as crossword_id
+             , CROSSWORD_MST.title as result_title
              , CROSSWORD_RESULT_MST.time_limit as result_time_limit
              , CROSSWORD_RESULT_MST.u_time_limit as result_u_time_limit
              , CROSSWORD_RESULT_MST.u_score as result_u_score
@@ -27,23 +27,30 @@ CREATE VIEW V_CROSSWORD_ALL_RESULT AS
              , CROSSWORD_RESULT_DETAIL.direction as result_detail_direction
              , CROSSWORD_RESULT_DETAIL.u_hint as result_detail_u_hint
              , CASE WHEN CROSSWORD_RESULT_DETAIL.answer = CROSSWORD_RESULT_DETAIL.u_answer THEN TRUE ELSE FALSE END AS isCorrect
-          FROM CATEGORY_MST
+           FROM CATEGORY_MST
     INNER JOIN PART_MST
             ON CATEGORY_MST.id = PART_MST.category_id 
            AND PART_MST.deleted_at IS NULL
     INNER JOIN CHAPTER_MST
             ON PART_MST.id = CHAPTER_MST.part_id 
            AND CHAPTER_MST.deleted_at IS NULL
+    INNER JOIN CROSSWORD_MST 
+            ON CATEGORY_MST.id = CROSSWORD_MST.category_id
+           AND PART_MST.id = CROSSWORD_MST.part_id
+           AND CHAPTER_MST.id = CROSSWORD_MST.chapter_id
+           AND CROSSWORD_MST.deleted_at IS NULL
+     LEFT JOIN LANG_MST
+            ON CROSSWORD_MST.lang_id = LANG_MST.id
      LEFT JOIN CROSSWORD_RESULT_MST
-            ON CATEGORY_MST.id = CROSSWORD_RESULT_MST.category_id
-           AND PART_MST.id = CROSSWORD_RESULT_MST.part_id
-           AND CHAPTER_MST.id = CROSSWORD_RESULT_MST.chapter_id
+            ON CROSSWORD_MST.category_id = CROSSWORD_RESULT_MST.category_id
+           AND CROSSWORD_MST.part_id = CROSSWORD_RESULT_MST.part_id
+           AND CROSSWORD_MST.chapter_id = CROSSWORD_RESULT_MST.chapter_id
+           AND CROSSWORD_MST.lang_id = CROSSWORD_RESULT_MST.lang_id
+           AND CROSSWORD_MST.id = CROSSWORD_RESULT_MST.crossword_id
            AND CROSSWORD_RESULT_MST.deleted_at IS NULL
      LEFT JOIN CROSSWORD_RESULT_DETAIL
             ON CROSSWORD_RESULT_MST.id = CROSSWORD_RESULT_DETAIL.crossword_result_id
-     LEFT JOIN LANG_MST
-            ON CROSSWORD_RESULT_MST.lang_id = LANG_MST.id
-    INNER JOIN USER_MST 
+     LEFT JOIN USER_MST 
             ON USER_MST.id = CROSSWORD_RESULT_MST.user_id
 
 

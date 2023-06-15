@@ -53,7 +53,7 @@ export type CrosswordType = {
   minute: number;
   second: number;
   category: CategoryType;
-  questions: Record<Direction, Record<string, ClueType>>;
+  questions: Array<any>;
 }
 
 export type InputClueType = {
