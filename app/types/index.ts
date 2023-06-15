@@ -20,12 +20,17 @@ export type CategoryType = {
   name_en: string;
   sorted: number;
   min_cnt: number;
+  langs: Array<LangType>;
+  parts: Array<PartType>;
 }
 
 export type PartType = {
   id: number;
   name: string;
   sorted: number;
+  chapters: Array<ChapterType>;
+
+  onDelete?: boolean;
 }
 
 export type ChapterType = {
@@ -39,7 +44,7 @@ export type LangType = {
   id: number;
   name: string;
   name_en: string;
-  cnt?: number;
+  flg: boolean;
 }
 
 export type CrosswordType = {
@@ -48,9 +53,6 @@ export type CrosswordType = {
   minute: number;
   second: number;
   category: CategoryType;
-  part: PartType;
-  chapter: ChapterType;
-  lang: LangType;
   questions: Record<Direction, Record<string, ClueType>>;
 }
 

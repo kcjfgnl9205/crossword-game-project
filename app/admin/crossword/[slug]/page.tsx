@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation";
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import { ClientOnly } from "@/app/components/common";
 import CrosswordsClient from "./CrosswordsClient";
-import getCategoryBySlug from "@/app/actions/getCategoryBySlug";
-import getCrosswordsByCategoryId from "@/app/actions/getCrosswordsByCategoryId";
+import getCurrentUser from "@/app/actions/getCurrentUser";
+import getCrosswordsByCategoryId from "@/app/actions/getCrosswordsByCategory";
+import getCategories from "@/app/actions/getCategories";
 
 
 type Props = {
@@ -12,21 +12,26 @@ type Props = {
 
 // 管理者クロスワードリストページ
 export default async function Crossword({ params }:  { params: Props }) {
-  const category = await getCategoryBySlug(params);
+  // URLに該当するカテゴリーデータ
+  const category = await getCategories(params);
   if (!category) {
     notFound();
   }
 
+  // 管理者権限チェック
   const currentUser = await getCurrentUser();
-  const crosswords = await getCrosswordsByCategoryId(category.id);
   if (!currentUser?.authority) {
     redirect("/");
   }
+  
+  // クロスワードリストを取得する
+  const crosswords = await getCrosswordsByCategoryId(params);
+
 
   return (
     <ClientOnly>
       <CrosswordsClient
-        category={category}
+        category={category[0]}
         crosswords={crosswords}
       />
     </ClientOnly>

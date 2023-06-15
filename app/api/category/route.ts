@@ -1,9 +1,6 @@
-import { transaction } from "@/app/libs/db/mysql";
-import { find_category_lang_package, insert_category_lang_package, update_category_lang_package } from "@/app/libs/db/sql/category/category_lang_package";
-import { insert_category_mst, update_category_mst } from "@/app/libs/db/sql/category/category_mst";
-import { delete_chapter_mst, insert_chapter_mst, update_chapter_mst } from "@/app/libs/db/sql/category/chapter_mst";
-import { delete_part_mst, insert_part_mst, update_part_mst } from "@/app/libs/db/sql/category/part_mst";
 import { NextResponse } from "next/server";
+import { excuteQuery, transaction } from "@/app/libs/db/mysql";
+import { DELETE_CHAPTER_MST, DELETE_PART_MST, INSERT_CATEGORY_LANG_PACKAGE, INSERT_CATEGORY_MST, INSERT_CHAPTER_MST, INSERT_PART_MST, UPDATE_CATEGORY_LANG_PACKAGE, UPDATE_CATEGORY_MST, UPDATE_CHAPTER_MST, UPDATE_PART_MST } from "@/app/libs/db/sql/category";
 
 
 type IParams = {
@@ -25,13 +22,9 @@ export async function PUT(
     } else {
       if (category.id) {
         // 修正
-        console.log("修正")
-        console.log(category)
         await transaction(update_category_logic(category));
       } else {
         // 登録
-        console.log("登録")
-        console.log(category)
         await transaction(insert_category_logic(category));
       }
       
@@ -47,7 +40,7 @@ const update_category_sort_logic = (categories: Array<any>) => {
   return async (conn: any) => {
     try {
       for (let i = 0; i < categories.length; i++) {
-        await update_category_mst(conn, categories[i]);
+        await excuteQuery(conn, UPDATE_CATEGORY_MST, [categories[i].name, categories[i].name_en, categories[i].sorted, categories[i].min_cnt, categories[i].id]);
       }
     } catch (err) {
       throw err;
@@ -58,12 +51,9 @@ const update_category_sort_logic = (categories: Array<any>) => {
 const insert_category_logic = (category: any) => {
   return async (conn: any) => {
     try {
-      const categoryMstInfoawait = await insert_category_mst(conn, category);
+      const categoryMstInfoawait = await excuteQuery(conn, INSERT_CATEGORY_MST, [category.name, category.name_en, Number(category.sorted), Number(category.min_cnt)])
       for (let i = 0; i < category.langs.length; i++) {
-        console.log(categoryMstInfoawait.insertId)
-        category.langs[i]
-        await insert_category_lang_package(conn, categoryMstInfoawait.insertId, category.langs[i]);  
-        console.log("test")
+        await excuteQuery(conn, INSERT_CATEGORY_LANG_PACKAGE, [categoryMstInfoawait.insertId, category.langs[i].id, category.langs[i].flg]);
       }
 
       // 単元、章更新
@@ -74,61 +64,50 @@ const insert_category_logic = (category: any) => {
 
         if (category.parts[i].onDelete) {
           //delete
-          console.log("1")
-          await delete_part_mst(conn, category.parts[i].id);
-          await delete_chapter_mst(conn, Number(category.parts[i].id));
+          await excuteQuery(conn, DELETE_PART_MST, [new Date(), category.parts[i].id]);
+          await excuteQuery(conn, DELETE_CHAPTER_MST, [new Date(), Number(category.parts[i].id)]);
         } else if (!category.parts[i].id) {
-          console.log("2")
           //insert
-          const insertInfo = await insert_part_mst(conn, categoryMstInfoawait.insertId, {
-            name: category.parts[i].name,
-            sorted: category.parts[i].sorted
-          })
-          console.log("3")
+          const insertInfo = await excuteQuery(conn, INSERT_PART_MST, [category.parts[i].name, category.parts[i].sorted, categoryMstInfoawait.insertId])
           for (let j = 0; j < category.parts[i].chapters.length; j++) {
             if (!category.parts[i].chapters[j].onDelete) {
-              await insert_chapter_mst(conn, {
+              const obj = {
                 name: category.parts[i].chapters[j].name,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: insertInfo.insertId,
                 sorted: j
-              })
+              }
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
             }
           }
         } else {
-          console.log("4")
           //update
-          await update_part_mst(conn, category.parts[i].id, {
-            name: category.parts[i].name,
-            sorted: category.parts[i].sorted
-          });
-          console.log("5")
+          await excuteQuery(conn, UPDATE_PART_MST, [category.parts[i].name, category.parts[i].sorted, category.parts[i].id])
           for (let j = 0; j < category.parts[i].chapters.length; j++) {
             if (category.parts[i].chapters[j].onDelete && !category.parts[i].chapters[j].id) {
               continue;
             }
 
             if (category.parts[i].chapters[j].onDelete) {
-              console.log("6")
               //delete
-              await delete_chapter_mst(conn, Number(category.parts[i].chapters[j].id));
+              await excuteQuery(conn, DELETE_CHAPTER_MST, [new Date(), Number(category.parts[i].chapters[j].id)]);
             } else if (!category.parts[i].chapters[j].id) {
               //insert
-              console.log("7")
-              await insert_chapter_mst(conn, {
+              const obj = {
                 name: category.parts[i].chapters[j].name,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: category.parts[i].id,
                 sorted: j
-              });
+              }
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
             } else {
-              console.log("8")
               //update
-              await update_chapter_mst(conn, category.parts[i].chapters[j].id, {
+              const obj = {
                 name: category.parts[i].chapters[j].name,
                 sorted: j,
                 flg: category.parts[i].chapters[j].flg,
-              });
+              };
+              await excuteQuery(conn, UPDATE_CHAPTER_MST, [obj.name, obj.sorted, obj.flg, category.parts[i].chapters[j].id])
             }
           }
         }
@@ -145,17 +124,10 @@ const update_category_logic = (category: any) => {
   return async (conn: any) => {
     try {
       // カテゴリーマスタ更新
-      await update_category_mst(conn, category);
-
+      await excuteQuery(conn, UPDATE_CATEGORY_MST, [category.name, category.name_en, category.sorted, category.min_cnt, category.id]);
       for (let i = 0; i < category.langs.length; i++) {
-        const categoryLangInfo = await find_category_lang_package(conn, category.id, category.langs[i].id);
-        if (categoryLangInfo.length === 0) {
-          //登録
-          await insert_category_lang_package(conn, category.id, category.langs[i]);
-        } else {
-          //更新、削除
-          await update_category_lang_package(conn, category.id, category.langs[i].id, category.langs[i].checked);
-        }
+        //更新、削除
+        await excuteQuery(conn, UPDATE_CATEGORY_LANG_PACKAGE, [ category.langs[i].flg, category.id, category.langs[i].id]);
       }
 
       // 単元、章更新
@@ -166,32 +138,25 @@ const update_category_logic = (category: any) => {
 
         if (category.parts[i].onDelete) {
           //delete
-          await delete_part_mst(conn, category.parts[i].id);
-          await delete_chapter_mst(conn, Number(category.parts[i].id));
+          await excuteQuery(conn, DELETE_PART_MST, [new Date(), category.parts[i].id]);
+          await excuteQuery(conn, DELETE_CHAPTER_MST, [new Date(), Number(category.parts[i].id)]);
         } else if (!category.parts[i].id) {
           //insert
-          const insertInfo = await insert_part_mst(conn, category.id, {
-            name: category.parts[i].name,
-            sorted: category.parts[i].sorted
-          })
-        
+          const insertInfo = await excuteQuery(conn, INSERT_PART_MST, [category.parts[i].name, category.parts[i].sorted, category.id])
           for (let j = 0; j < category.parts[i].chapters.length; j++) {
             if (!category.parts[i].chapters[j].onDelete) {
-              await insert_chapter_mst(conn, {
+              const obj = {
                 name: category.parts[i].chapters[j].name,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: insertInfo.insertId,
                 sorted: j
-              })
+              };
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
             }
           }
         } else {
           //update
-          await update_part_mst(conn, category.parts[i].id, {
-            name: category.parts[i].name,
-            sorted: category.parts[i].sorted
-          });
-
+          await excuteQuery(conn, UPDATE_PART_MST, [category.parts[i].name, category.parts[i].sorted, category.parts[i].id])
           for (let j = 0; j < category.parts[i].chapters.length; j++) {
             if (category.parts[i].chapters[j].onDelete && !category.parts[i].chapters[j].id) {
               continue;
@@ -199,22 +164,24 @@ const update_category_logic = (category: any) => {
 
             if (category.parts[i].chapters[j].onDelete) {
               //delete
-              await delete_chapter_mst(conn, Number(category.parts[i].chapters[j].id));
+              await excuteQuery(conn, DELETE_CHAPTER_MST, [new Date(), Number(category.parts[i].chapters[j].id)])
             } else if (!category.parts[i].chapters[j].id) {
               //insert
-              await insert_chapter_mst(conn, {
+              const obj = {
                 name: category.parts[i].chapters[j].name,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: category.parts[i].id,
                 sorted: j
-              });
+              };
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
             } else {
               //update
-              await update_chapter_mst(conn, category.parts[i].chapters[j].id, {
+              const obj = {
                 name: category.parts[i].chapters[j].name,
                 sorted: j,
                 flg: category.parts[i].chapters[j].flg,
-              });
+              };
+              await excuteQuery(conn, UPDATE_CHAPTER_MST, [obj.name, obj.sorted, obj.flg, category.parts[i].chapters[j].id]);
             }
           }
         }

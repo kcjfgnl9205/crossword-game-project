@@ -4,9 +4,9 @@ import { ClientOnly, Container } from "@/app/components/common";
 import ListingCard from "../components/listing/ListingCard";
 
 
-
 // 管理者メインページ
 export default async function Admin() {
+  // 管理者権限チェック
   const currentUser = await getCurrentUser();
   if (!currentUser?.authority) {
     redirect("/");

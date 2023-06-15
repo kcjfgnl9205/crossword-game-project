@@ -1,24 +1,19 @@
 'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { Container, EmptyState, Heading, Timer } from "@/app/components/common";
-import { CluesData, Direction, UsedCellData } from "@/app/components/cross/types";
-import { Button } from "@/app/components/htmlTag";
-import CrosswordGame from "@/app/components/crossword/CrosswordGame";
+import { Container, EmptyState, Heading } from "@/app/components/common";
 import Link from "next/link";
 import ListingParts from "@/app/components/crossword/ListingParts";
+import { CategoryType } from "@/app/types";
 
 
 type Props = {
-  category: any;
+  category: CategoryType;
   crosswords: Array<any>
 }
 
 
 export default function CrosswordsClient({ category, crosswords }: Props) {
- console.log(crosswords)
   return (
     <Container>
       <div className="mt-8">
@@ -31,7 +26,7 @@ export default function CrosswordsClient({ category, crosswords }: Props) {
         ? <EmptyState title="クロスワードゲームが存在しません。" subtitle="" />
         : <div className="pt-2 flex flex-col gap-0.5 md:gap-1">
             {
-              crosswords.map((part: any) => {
+              crosswords.map((part) => {
                 return (
                   <ListingParts
                     key={part.id}

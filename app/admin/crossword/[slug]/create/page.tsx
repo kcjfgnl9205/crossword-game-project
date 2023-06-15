@@ -3,37 +3,31 @@ import { notFound, redirect } from "next/navigation";
 import { ClientOnly } from "@/app/components/common";
 import CreateClient from "./CreateClient";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import getPartsAndChapter from "@/app/actions/getPartsAndChapter";
-import getLangsByCategoryName from "@/app/actions/getLangsByCategoryName";
-import getCategoryBySlug from "@/app/actions/getCategoryBySlug";
+import getCategories from "@/app/actions/getCategories";
 
 
 type Props = {
   slug: string;
 }
 
+// クロスワードゲームを生成するページ
 export default async function CrosswordCreate({ params }:  { params: Props }) {
-  const category = await getCategoryBySlug(params);
+  // 該当するカテゴリーデータを取得
+  const category = await getCategories(params);
   if (!category && params.slug !== "create") {
     notFound();
   }
   
+  // 管理者権限チェック
   const currentUser = await getCurrentUser();
   if (!currentUser?.authority) {
     redirect("/")
   }
 
-  const [parts, langs] = await Promise.all([
-    getPartsAndChapter(params),
-    getLangsByCategoryName(params)
-  ]);
-  
   return (
     <ClientOnly>
       <CreateClient
-        partsCategories={parts}
-        langsCategories={langs}
-        category={category}
+        category={category[0]}
       />
     </ClientOnly>
   )

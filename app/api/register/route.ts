@@ -1,5 +1,5 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { insert_user_mst } from "@/app/libs/db/sql/users/user_mst";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { INSERT_USER_MST } from "@/app/libs/db/sql/user";
 
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
@@ -24,7 +24,7 @@ export async function POST(
 
     await connection?.beginTransaction();
 
-    const user = await insert_user_mst(connection, obj);
+    const user = await excuteQuery(connection, INSERT_USER_MST, [obj.username, obj.password, obj.email, obj.authority]);
     
     await connection?.commit();
 

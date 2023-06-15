@@ -7,6 +7,7 @@ import getCategories from "@/app/actions/getCategories";
 
 // 管理者カテゴリー設定ページ
 export default async function Admin() {
+  // 管理者権限チェック
   const currentUser = await getCurrentUser();
   if (!currentUser?.authority) {
     redirect("/");
@@ -17,7 +18,7 @@ export default async function Admin() {
   
   return (
     <ClientOnly>
-      <CategoryClient categories={categories} />
+      <CategoryClient items={categories} />
     </ClientOnly>
   )
 }

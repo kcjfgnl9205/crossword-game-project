@@ -1,4 +1,16 @@
-const SELECT_V_CROSSWORD_RESULT_BY_ID = `
+// クロスワード結果データを登録する
+export const INSERT_CROSSWORD_RESULT = `
+  INSERT INTO CROSSWORD_RESULT_MST(crossword_id, title, time_limit, u_time_limit, u_score, category_id, part_id, chapter_id, lang_id, user_id, times)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT maxtimes.times FROM (SELECT COALESCE(MAX(times), 0) + 1 AS times FROM CROSSWORD_RESULT_MST WHERE category_id = ? AND part_id = ? AND chapter_id = ? AND lang_id = ? AND user_id = ?) AS maxtimes ))
+`;
+export const INSERT_CROSSWORD_RESULT_DETAIL = `
+  INSERT INTO CROSSWORD_RESULT_DETAIL(crossword_result_id, clue, hint, answer, direction, u_hint, u_answer)
+  VALUES(?, ?, ?, ?, ?, ?, ?)
+`;
+
+
+
+export const SELECT_V_CROSSWORD_RESULT_BY_ID = `
     SELECT * 
       FROM V_CROSSWORD_ALL_RESULT
      WHERE category_name_en = ?
@@ -9,16 +21,8 @@ const SELECT_V_CROSSWORD_RESULT_BY_ID = `
          , result_id
          , lang_id
 `;
-export const select_v_crossword_result_by_crossword_id = async (conn: any, category_name_en: string, crossword_id: number) => {
-  try {
-    const [ rows ] = await conn?.execute(SELECT_V_CROSSWORD_RESULT_BY_ID, [category_name_en, crossword_id]);
-    return rows;
-  } catch (err) {
-    throw err;
-  }
-};
 
-const SELECT_V_CROSSWORD_RESULT = `
+export const SELECT_V_CROSSWORD_RESULT = `
     SELECT * 
       FROM V_CROSSWORD_ALL_RESULT
      WHERE user_username = ?
@@ -29,17 +33,8 @@ const SELECT_V_CROSSWORD_RESULT = `
          , result_id
          , lang_id
 `;
-export const select_v_crossword_result = async (conn: any, username: string, category_name_en: string) => {
-  try {
-    const [ rows ] = await conn?.execute(SELECT_V_CROSSWORD_RESULT, [username, category_name_en]);
-    return rows;
-  } catch (err) {
-    throw err;
-  }
-};
 
-
-const SELECT_V_CROSSWORD_MAX_RESULT = `
+export const SELECT_V_CROSSWORD_MAX_RESULT = `
                   WITH RANK_TABLE AS (
                     SELECT category_id
                          , part_id
@@ -47,12 +42,14 @@ const SELECT_V_CROSSWORD_MAX_RESULT = `
                          , lang_id
                          , result_id
                          , result_times
+                         , user_id
                          , COUNT(*) AS total_questions
                          , SUM(CASE WHEN isCorrect = true THEN 1 ELSE 0 END) AS total_correct_answers
                          , row_number() OVER (PARTITION BY category_id
                                                          , part_id
                                                          , chapter_id
                                                          , lang_id
+                                                         , user_id
                                                   ORDER BY COUNT(CASE WHEN isCorrect = true THEN 1 END) DESC) AS rank_col
                       FROM V_CROSSWORD_ALL_RESULT
                   GROUP BY category_id
@@ -61,6 +58,7 @@ const SELECT_V_CROSSWORD_MAX_RESULT = `
                          , lang_id
                          , result_id
                          , result_times
+                         , user_id
                   ), USER_RESULT AS (
                     SELECT V_CROSSWORD_ALL_RESULT.user_id
                          , V_CROSSWORD_ALL_RESULT.user_username
@@ -124,17 +122,10 @@ const SELECT_V_CROSSWORD_MAX_RESULT = `
                AND V_CATEGORY_ALL_MST.part_id = USER_RESULT.part_id
                AND V_CATEGORY_ALL_MST.chapter_id = USER_RESULT.chapter_id
                AND V_CATEGORY_ALL_MST.lang_id  = USER_RESULT.lang_id
+             WHERE V_CATEGORY_ALL_MST.category_lang_package_flg = 1
           ORDER BY V_CATEGORY_ALL_MST.category_sorted
                  , V_CATEGORY_ALL_MST.part_sorted
                  , V_CATEGORY_ALL_MST.chapter_sorted
                  , V_CATEGORY_ALL_MST.lang_id
                  , USER_RESULT.result_id
 `;
-export const select_v_crossword_max_result = async (conn: any, username: string) => {
-  try {
-    const [ rows ] = await conn?.execute(SELECT_V_CROSSWORD_MAX_RESULT, [username]);
-    return rows;
-  } catch (err) {
-    throw err;
-  }
-};

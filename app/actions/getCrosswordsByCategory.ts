@@ -1,12 +1,16 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { select_crosswords_by_category_id } from "../libs/db/sql/crossword/crossword_mst";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { SELECT_CROSSWORD_MST_BY_CATEGORY } from "@/app/libs/db/sql/crossword";
 
 
 
-export default async function getCrosswordsByCategoryId(id: number): Promise<Array<any>> {
+type Props =  {
+  slug: string; // カテゴリー名(name_en)
+}
+
+export default async function getCrosswordsByCategory(params: Props): Promise<Array<any>> {
   const connection = await getConnection();
   try {
-    const crosswords: Array<any> = await select_crosswords_by_category_id(connection, id);
+    const crosswords: Array<any> = await excuteQuery(connection, SELECT_CROSSWORD_MST_BY_CATEGORY, [params.slug])
     const transformedData: Array<any> = [];
 
     crosswords.forEach((row: any) => {
@@ -74,7 +78,7 @@ export default async function getCrosswordsByCategoryId(id: number): Promise<Arr
 
     return transformedData;
   } catch (error: any) {
-    console.log("getCrosswordById" + error);
+    console.log("getCrosswordsByCategory" + error);
     return [];
   } finally {
     releaseConnection(connection);

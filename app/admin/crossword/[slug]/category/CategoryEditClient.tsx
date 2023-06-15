@@ -8,7 +8,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { CategoryType } from "@/app/types";
+import { CategoryType, LangType, PartType } from "@/app/types";
 import { PartAccordion } from "@/app/components/Accordion";
 import { Button, Checkbox, Input } from "@/app/components/htmlTag";
 import { Container, ErrorMessage, Heading } from "@/app/components/common";
@@ -17,30 +17,31 @@ import usePartCreateModal from "@/app/hooks/usePartCreate";
 
 
 type Props = {
-  category: CategoryType | null;
-  parts: Array<any>;
-  langs: Array<any>;
+  category: CategoryType;
+  langs: Array<LangType>;
 }
 
 const partHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">単元・章設定</div>;
 const langHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">言語カテゴリー名称設定</div>;
 const settingHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">ゲーム詳細設定</div>;
 
-export default function CategoryEditClient({ category, parts, langs }: Props) {
+export default function CategoryEditClient({ category, langs }: Props) {
   const router = useRouter();
   const createModal = usePartCreateModal();
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   
-  const [ partItem, setPartItem ] = useState<Array<any>>(parts);
-  const [ langChecked, setLangChecked ] = useState<Array<any>>(langs.map((lang) => { return { id: lang.id, name: lang.name, name_en: lang.name_en, checked: Number(lang.cnt) > 0 } }))
+  const [ partItem, setPartItem ] = useState<Array<PartType>>(category ? category.parts : []);
+  const [ langChecked, setLangChecked ] = useState<Array<LangType>>(category ? category.langs : langs);
   const [ modalData, setModalData ] = useState<any | null>(null);
+
+  const [ accordionOpen, setAccordionOpen ] = useState({ part: false, lang: false, setting: false });
 
   const { register, handleSubmit, formState: { errors }, setValue, getValues } = useForm<FieldValues>({
     defaultValues: {
       id: category?.id,
       name: category?.name || "",
       name_en: category?.name_en || "",
-      min_cnt: category?.min_cnt || 0,
+      min_cnt: category?.min_cnt || 2,
       sorted: category?.sorted || 99,
       
       parts: partItem,
@@ -48,11 +49,10 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
     }
   });
 
-  
   const handleSort = useCallback(() => {
-    setPartItem((prev: Array<any>) => {
+    setPartItem((prev: Array<PartType>) => {
       let newIndex = 1;
-      return prev.map((part: any) => {
+      return prev.map((part: PartType) => {
         if (part.onDelete) {
           return { ...part, sorted: 0 };
         } else {
@@ -66,29 +66,29 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
 
   // 単元削除ボタン押下した時
   const handleDeletePart = useCallback((sortedIndex: number) => {
-    setPartItem((prev: Array<any>) => {
-      return prev.map((part: any, prevIndex: number) => {
-        if (sortedIndex === part.sorted) {
-          return { ...part, onDelete: true };
-        } else {
-          return { ...part }
-        }
-      })
-    });
-
-    handleSort();
+      setPartItem((prev: Array<PartType>) => {
+        return prev.map((part: PartType) => {
+          if (sortedIndex === part.sorted) {
+            return { ...part, onDelete: true };
+          } else {
+            return { ...part }
+          }
+        })
+      });
+  
+      handleSort();
   }, [handleSort]);
   
   // 単元追加ボタン押下した時
   const handleAppendPart = useCallback((data: any) => {
-    setPartItem((prev: Array<any>) => {
-      const index = prev.findIndex((part: any) => part.id === data.id);
-      if (index === -1 || ! data.id) {
-        const newData = { ...data, id: undefined, disabled: false };
+    setPartItem((prev: Array<PartType>) => {
+      const index = prev?.findIndex((part: PartType) => part.sorted === data.sorted);
+      if (index === -1) {
+        const newData = { ...data };
         return [ ...prev, newData ];
       } else {
-        return prev.map((part: any) => {
-          if (part.id === data.id) {
+        return prev.map((part: PartType) => {
+          if (part.sorted === data.sorted) {
             return { ...part, name: data.name, chapters: data.chapters }
           } else {
             return { ...part };
@@ -103,7 +103,7 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
   // 単元並び順ボタン押下した時
   const handleSortPart = useCallback((sortedIndex: number, direction: "up" | "down") => {
     // 該当データのindexを探す
-    const index = partItem.findIndex((part: any) => part.sorted === sortedIndex);
+    const index = partItem.findIndex((part: PartType) => part.sorted === sortedIndex);
     if (index === -1 || (direction === 'up' && index === 0) || (direction === 'down' && index === partItem.length - 1)) {
       return;
     }
@@ -124,28 +124,50 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
   const handleOnSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
-      if (confirm("設定値を修正します。")) {
+        
+      if (getValues("parts").length === 0) {
+        alert("単元・章カテゴリーを追加してください。");
+        setAccordionOpen((prev: any) => { return { ...prev, part: true } });
+        return;
+      }
+      if (getValues("langs").filter((lang: LangType) => lang.flg).length === 0) {
+        alert("言語カテゴリーを選択してください。");
+        setAccordionOpen((prev: any) => { return { ...prev, lang: true } });
+        return;
+      }
+      if (!/^(?:[2-9]|[1-9][0-9])$/.test(getValues("min_cnt"))) {
+        alert("ゲーム詳細設定値を2-99の数字を入力してください。");
+        setAccordionOpen((prev: any) => { return { ...prev, setting: true } });
+        return;
+      }
+
+      const msg = category ? "修正" : "登録";
+      if (confirm(`設定値を${msg}します。`)) {
         const response = await axios.put(`/api/category`, {
           category: getValues(),
           withCredentials: true,
         });
   
         if (response.status === 200) {
-          alert("修正しました。");
+          alert(`${msg}しました。`);
           setPartItem(response.data.parts);
           router.push(`/admin/crossword/${response.data.name_en}`);
           router.refresh();
         }
-      } else {
-        setIsLoading(false);
       }
     } catch (error: any) {
       alert("error: " + error);
     } finally {
       setIsLoading(false);
     }
-  }, [router, getValues]);
+  }, [router, getValues, setAccordionOpen, category]);
 
+  // 取消ボタン押下した時
+  const handleCancel = useCallback(() => {
+    if (confirm("登録・修正を取り消します。\n作成中の内容は保存しません。")) {
+      router.push(`/admin/crossword`);
+    }
+  }, [router]);
   
   useEffect(() => {
     setValue("langs", langChecked);
@@ -158,14 +180,13 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {  
     setLangChecked((prev: Array<any>) => {
       const arr = [ ...prev ];
-      arr[index].checked = !prev[index].checked;
+      arr[index].flg = !prev[index].flg;
       return arr;
     })
   }
 
   const partBody = (
     <div className="py-4">
-      <ErrorMessage message="※クロスワードゲームが登録されている単元、章は削除できません。" />
       <div className="w-full md:w-40">
         <Button
           label="単元を追加する"
@@ -181,8 +202,8 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
         {
           partItem.length === 0 
           ? <div className="text-center font-semibold py-4">単元・章のデータが存在しません。</div>
-          : partItem?.filter((part) => !part?.onDelete)
-                    .map((part, index: number) => (
+          : partItem.filter((part: PartType) => !part?.onDelete)
+                     .map((part: PartType, index: number) => (
                       <div key={index} className="flex flex-row gap-1 items-center md:gap-2">
                         <div
                           onClick={() => {
@@ -215,7 +236,6 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
                             label="-"
                             onClick={() => handleDeletePart(part.sorted)}
                             error
-                            // disabled={isLoading || part.disabled}
                           />
                         </div>
                       </div>
@@ -231,7 +251,7 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
         <ErrorMessage message="※このカテゴリーで使用する言語を選択してください。" />
         <div className="flex flex-col gap-2 md:flex-row">
           {
-            langChecked.map((lang, index: number) => {
+            langChecked?.map((lang, index: number) => {
               return (
                 <Checkbox
                   key={lang.id}
@@ -240,7 +260,7 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
                   name={lang.name_en}
                   disabled={isLoading}
                   register={register}
-                  defaultChecked={lang.checked}
+                  defaultChecked={lang.flg}
                   handleOnChange={(e) => handleOnChange(e, index)}
                 />
               )
@@ -262,6 +282,10 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
           label="最小問題数"
           register={register}
           errors={errors}
+          validate={{ 
+            required: "設定数字を入力してください。",
+            pattern: { value: /^(?:[2-9]|[1-9][0-9])$/, message: "2-99の数字を入力してください。" }
+          }}
         />
       </div>
     </div>
@@ -279,18 +303,36 @@ export default function CategoryEditClient({ category, parts, langs }: Props) {
         <Heading title="クロスワードゲーム設定" />
         <ErrorMessage message="※カテゴリー名(英語)はパスを意味する" />
         <div className="flex flex-col gap-2 md:flex-row">
-          <Input id="name" label="カテゴリー名" register={register} errors={errors} required />
-          <Input id="name_en" label="カテゴリー名(英語)" register={register} errors={errors} required />
+          <Input
+            id="name"
+            label="カテゴリー名"
+            register={register}
+            errors={errors}
+            validate={{ 
+              required: "カテゴリー名を入力してください。",
+              maxLength: { value: 50, message: "カテゴリー名は最大50文字で入力してください。" }
+            }}
+          />
+          <Input
+            id="name_en"
+            label="カテゴリー名(英語)"
+            register={register}
+            errors={errors}
+            validate={{ 
+              required: "カテゴリー名(英語)を入力してください。",
+              pattern: { value: /^[A-Za-z]{1,20}$/, message: "カテゴリー名(英語)は最大20英文字で入力してください。" }
+            }}
+          />
         </div>
       </div>
 
       <div className="flex flex-col gap-1 py-4">
-        <PartAccordion header={partHeader} body={partBody} />
-        <PartAccordion header={langHeader} body={langBody} />
-        <PartAccordion header={settingHeader} body={settingBody} />
+        <PartAccordion header={partHeader} body={partBody} open={accordionOpen.part} setOpen={() => setAccordionOpen((prev) => { return { ...accordionOpen, part: !prev.part } })} />
+        <PartAccordion header={langHeader} body={langBody} open={accordionOpen.lang} setOpen={() => setAccordionOpen((prev) => { return { ...accordionOpen, lang: !prev.lang } })} />
+        <PartAccordion header={settingHeader} body={settingBody} open={accordionOpen.setting} setOpen={() => setAccordionOpen((prev) => { return { ...accordionOpen, setting: !prev.setting } })} />
         <div className="flex flex-col gap-2 md:w-64 md:flex-row">
           <Button label={category ? "修正" : "登録"} onClick={handleSubmit(handleOnSubmit)} primary disabled={isLoading} />
-          <Button label="取消" onClick={() => router.push(`/admin/crossword`)} error disabled={isLoading} />
+          <Button label="取消" onClick={handleCancel} error disabled={isLoading} />
         </div>
       </div>
     </Container>

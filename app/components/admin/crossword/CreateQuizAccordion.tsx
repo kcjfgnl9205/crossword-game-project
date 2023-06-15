@@ -1,8 +1,8 @@
 'ues client';
 
 import { useState } from "react";
-import { HiChevronDown, HiChevronUp, HiMinus } from "react-icons/hi2";
-import Button from "../../htmlTag/Button";
+import { HiChevronDown, HiChevronUp } from "react-icons/hi2";
+import { Button } from "@/app/components/htmlTag";
 
 
 type Props ={
@@ -13,8 +13,7 @@ type Props ={
 }
 
 export default function CreateQuizAccordion({ title, children, remove, isNull }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(true);
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };

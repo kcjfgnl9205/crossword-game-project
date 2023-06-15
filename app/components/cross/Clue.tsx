@@ -62,7 +62,7 @@ export default function Clue({
 
   return (
     <>
-      <div className="inline-block mr-4">
+      <div className="block mr-4">
         <ClueWrapper
           highlightBackground='rgb(255,255,204)'
           highlight={

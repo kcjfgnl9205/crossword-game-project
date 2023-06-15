@@ -1,5 +1,5 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { select_v_crossword_result_by_crossword_id } from "../libs/db/sql/crossword/v_crossword_result";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { SELECT_V_CROSSWORD_RESULT_BY_ID } from "@/app/libs/db/sql/result";
 
 
 type Props =  {
@@ -10,7 +10,7 @@ type Props =  {
 export default async function getCrosswordResultsByCrosswordId(params: Props): Promise<any> {
   const connection = await getConnection();
   try {
-    const crosswordResults: Array<any> = await select_v_crossword_result_by_crossword_id(connection, params.slug, Number(params.id));
+    const crosswordResults: Array<any> = await excuteQuery(connection, SELECT_V_CROSSWORD_RESULT_BY_ID, [params.slug, Number(params.id)])
     const transformedData: Array<any> = [];
 
     crosswordResults.forEach((row: any) => {

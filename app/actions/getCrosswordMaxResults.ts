@@ -1,5 +1,5 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { select_v_crossword_max_result } from "@/app/libs/db/sql/crossword/v_crossword_result";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { SELECT_V_CROSSWORD_MAX_RESULT } from "@/app/libs/db/sql/result";
 
 
 type Props =  {
@@ -9,7 +9,7 @@ type Props =  {
 export default async function getCrosswordMaxResults(params: Props): Promise<Array<any>> {
   const connection = await getConnection();
   try {
-    const crosswordResults: Array<any> = await select_v_crossword_max_result(connection, params.username);
+    const crosswordResults: Array<any> = await excuteQuery(connection, SELECT_V_CROSSWORD_MAX_RESULT, [params.username]);
     const transformedData: Array<any> = [];
 
     crosswordResults.forEach((row: any) => {

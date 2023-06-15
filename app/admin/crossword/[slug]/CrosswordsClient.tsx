@@ -1,12 +1,13 @@
 'use client';
 
+
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
 import { Button } from "@/app/components/htmlTag";
 import { Container, EmptyState, Heading } from "@/app/components/common";
 import ListingPartsAdmin from "@/app/components/crossword/ListingPartsAdmin";
-import Link from "next/link";
 import { CategoryType } from "@/app/types";
 
 
@@ -16,7 +17,8 @@ type Props = {
 }
 
 export default function CrosswordsClient({ category, crosswords }: Props) {
-  const [isLoading, setIsLoading] = useState(false);
+  console.log(crosswords)
+  const [ isLoading, setIsLoading ] = useState(false);
   const router = useRouter();
 
   //　クロスワード削除
@@ -43,6 +45,7 @@ export default function CrosswordsClient({ category, crosswords }: Props) {
     }
   }, [router]);
 
+  
   //　クロスワード修正ページへ移動する
   const handleUpdateRouter = useCallback((id: number) => {
     router.push(`/admin/crossword/${category.name_en}/${id}/edit`)

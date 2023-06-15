@@ -1,7 +1,7 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { find_user_mst_by_username } from "../libs/db/sql/users/user_mst";
+import { SELECT_USER_BY_USERNAME } from "@/app/libs/db/sql/user";
 
 
 export async function getSession() {
@@ -16,7 +16,7 @@ export default async function getCurrentUser() {
       return null;
     }
 
-    const currentUser = await find_user_mst_by_username(connection, session.user.name);
+    const currentUser = await excuteQuery(connection, SELECT_USER_BY_USERNAME, [session.user.name])
     if (!currentUser[0]) {
       return null;
     }

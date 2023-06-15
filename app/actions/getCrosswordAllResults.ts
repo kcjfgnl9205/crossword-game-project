@@ -1,5 +1,5 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { select_v_crossword_result } from "@/app/libs/db/sql/crossword/v_crossword_result";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { SELECT_V_CROSSWORD_RESULT } from "../libs/db/sql/result";
 
 
 type Props =  {
@@ -10,7 +10,7 @@ type Props =  {
 export default async function getCrosswordAllResults(params: Props): Promise<Array<any>> {
   const connection = await getConnection();
   try {
-    const crosswordResults: Array<any> = await select_v_crossword_result(connection, params.username, params.slug);
+    const crosswordResults: Array<any> = await excuteQuery(connection, SELECT_V_CROSSWORD_RESULT, [params.username, params.slug]);
     const transformedData: Array<any> = [];
 
     crosswordResults.forEach((row: any) => {
@@ -45,7 +45,6 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                             {
                               id: row.result_detail_id,
                               direction: row.result_detail_direction,
-                              number: row.result_detail_number,
                               clue: row.result_detail_clue,
                               answer: row.result_detail_answer,
                               usedHint: row.result_detail_u_hint,
@@ -88,7 +87,6 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                           {
                             id: row.result_detail_id,
                             direction: row.result_detail_direction,
-                            number: row.result_detail_number,
                             clue: row.result_detail_clue,
                             answer: row.result_detail_answer,
                             usedHint: row.result_detail_u_hint,
@@ -125,7 +123,6 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                         {
                           id: row.result_detail_id,
                           direction: row.result_detail_direction,
-                          number: row.result_detail_number,
                           clue: row.result_detail_clue,
                           answer: row.result_detail_answer,
                           usedHint: row.result_detail_u_hint,
@@ -154,7 +151,6 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                       {
                         id: row.result_detail_id,
                         direction: row.result_detail_direction,
-                        number: row.result_detail_number,
                         clue: row.result_detail_clue,
                         answer: row.result_detail_answer,
                         usedHint: row.result_detail_u_hint,
@@ -175,7 +171,6 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                     {
                       id: row.result_detail_id,
                       direction: row.result_detail_direction,
-                      number: row.result_detail_number,
                       clue: row.result_detail_clue,
                       answer: row.result_detail_answer,
                       usedHint: row.result_detail_u_hint,
@@ -187,7 +182,6 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                 transformedData[categoryIndex].parts[partIndex].chapters[chapterIndex].langs[langIndex].answers[answerIndex].result.push({
                   id: row.result_detail_id,
                   direction: row.result_detail_direction,
-                  number: row.result_detail_number,
                   clue: row.result_detail_clue,
                   answer: row.result_detail_answer,
                   usedHint: row.result_detail_u_hint,

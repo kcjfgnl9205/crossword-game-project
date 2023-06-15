@@ -3,6 +3,7 @@
 
 import { PartAccordion } from "@/app/components/Accordion";
 import { Button } from "../htmlTag";
+import { useState } from "react";
 
 
 type Props = {
@@ -14,6 +15,8 @@ type Props = {
 }
 
 export default function ListingPartsAdmin({ item, isLoading, handleDelete, handleUpdateRouter, handleResultRouter }: Props) {
+  const [ open, setOpen ] = useState<boolean>(false);
+
   const header = (
     <div className="font-semibold text-lg md:text-xl">
       {item.name}
@@ -66,6 +69,8 @@ export default function ListingPartsAdmin({ item, isLoading, handleDelete, handl
     <PartAccordion
       header={header}
       body={body}
+      open={open}
+      setOpen={() => { setOpen((prev: boolean) => !prev) }}
     />
   )
 }

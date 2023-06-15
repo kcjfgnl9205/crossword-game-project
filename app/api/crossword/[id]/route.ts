@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { transaction } from "@/app/libs/db/mysql";
-import { delete_crossword_mst, update_crossword_mst } from "@/app/libs/db/sql/crossword/crossword_mst";
-import { delete_crossword_detail, insert_crossword_detail, update_crossword_detail } from "@/app/libs/db/sql/crossword/crossword_detail";
 import { changeMinuteToSecond } from "@/app/utils/utils";
-import { insert_crossword_result_mst } from "@/app/libs/db/sql/crossword/crossword_result_mst";
-import { insert_crossword_result_detail } from "@/app/libs/db/sql/crossword/crossword_result_detail";
+import { excuteQuery, transaction } from "@/app/libs/db/mysql";
+import { DELETE_CROSSWORD, DELETE_CROSSWORD_DETAIL, INSERT_CROSSWORD_DETAIL, UPDATE_CROSSWORD, UPDATE_CROSSWORD_DETAIL } from "@/app/libs/db/sql/crossword";
+import { INSERT_CROSSWORD_RESULT, INSERT_CROSSWORD_RESULT_DETAIL } from "@/app/libs/db/sql/result";
 
 
 type IParams = {
@@ -73,22 +71,22 @@ export async function PUT(
 const insert_crossword_result_logic = (id: number, crossword: any) => {
   return async (conn: any) => {
     try {
-      const crosswordResultInfo = await insert_crossword_result_mst(conn, crossword);
+      const obj = crossword;
+      const crosswordResultInfo = await excuteQuery(conn, INSERT_CROSSWORD_RESULT, [obj.crossword_id, obj.title, obj.time_limit, obj.u_time_limit, obj.u_score, obj.category_id, obj.part_id, obj.chapter_id, obj.lang_id, obj.user_id, obj.category_id, obj.part_id, obj.chapter_id, obj.lang_id, obj.user_id])
+
       for (const key of Object.keys(crossword.answers)) {
         const items = crossword.answers[key];
         for (const itemKey of Object.keys(items)) {
           const item = items[itemKey];
-          await insert_crossword_result_detail(conn, Number(crosswordResultInfo.insertId), {
-            number: Number(itemKey),
+          const obj = {
             clue: item.clue,
             hint: item.hint,
             answer: item.answer,
-            x_coordinates: item.col,
-            y_coordinates: item.row,
             direction: key,
             u_hint: item.usedHint,
             u_answer: item.userAnswer ? item.userAnswer.join("") : ""
-          });
+          }
+          await excuteQuery(conn, INSERT_CROSSWORD_RESULT_DETAIL, [Number(crosswordResultInfo.insertId), obj.clue, obj.hint, obj.answer, obj.direction, obj.u_hint, obj.u_answer])
         }
       }
       return { status: 200, message: "登録しました。" };
@@ -102,8 +100,8 @@ const delete_crossword_logic = (id: number) => {
   return async (conn: any) => {
     try {
       await Promise.all([
-        delete_crossword_mst(conn, id),
-        delete_crossword_detail(conn, id)
+        excuteQuery(conn, DELETE_CROSSWORD, [new Date(), id]),
+        excuteQuery(conn, DELETE_CROSSWORD_DETAIL, [new Date(), id])
       ])
 
       return { status: 200, message: "削除しました。" };
@@ -116,40 +114,37 @@ const delete_crossword_logic = (id: number) => {
 const update_crossword_logic = (id: number, crossword: any, crosswordQuestions: any) => {
   return async (conn: any) => {
     try {
-      await update_crossword_mst(conn, id, {
+      const obj = {
         title: crossword.title, 
         time_limit: changeMinuteToSecond(Number(crossword.minute), Number(crossword.second)),
         category_id: Number(crossword.category_id),
         part_id: Number(crossword.part_id),
         chapter_id: Number(crossword.chapter_id),
         lang_id: Number(crossword.lang_id)
-      })
+      }
+      await excuteQuery(conn, UPDATE_CROSSWORD, [obj.title, obj.time_limit, obj.part_id, obj.chapter_id, obj.lang_id, id, obj.category_id])
 
       for (const key of Object.keys(crosswordQuestions)) {
         const items = crosswordQuestions[key];
         for (const itemKey of Object.keys(items)) {
           const item = items[itemKey];
           if (item.id) {
-            await update_crossword_detail(conn, item.id, {
-              number: Number(itemKey),
+            const obj = {
               clue: item.clue,
               hint: item.hint,
               answer: item.answer,
-              col: item.col,
-              row: item.row,
               crossword_id: id,
               direction: key
-            });
+            }
+            await excuteQuery(conn, UPDATE_CROSSWORD_DETAIL, [obj.clue, obj.hint, obj.answer, obj.direction, item.id, obj.crossword_id])
           } else {
-            await insert_crossword_detail(conn, id, {
-              number: Number(itemKey),
+            const obj = {
               clue: item.clue,
               hint: item.hint,
               answer: item.answer,
-              col: item.col,
-              row: item.row,
               direction: key
-            })
+            };
+            await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [obj.clue, obj.hint, obj.answer, id, obj.direction]);
           };
         }
       }

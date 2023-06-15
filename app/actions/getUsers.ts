@@ -1,13 +1,13 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { select_user_mst } from "../libs/db/sql/users/user_mst";
-import { SafeUser } from "../types";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { SafeUser } from "@/app/types";
+import { SELECT_USER_MST } from "../libs/db/sql/user";
 
 
 // カテゴリーリスト取得する
 export default async function getUsers(): Promise<Array<SafeUser>> {
   const connection = await getConnection();
   try {
-    return await select_user_mst(connection);
+    return await excuteQuery(connection, SELECT_USER_MST, []);
   } catch (error: any) {
     console.log("getUsers" + error);
     return [];

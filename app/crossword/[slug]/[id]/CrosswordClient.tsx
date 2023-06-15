@@ -7,23 +7,22 @@ import { Container, Heading, Timer } from "@/app/components/common";
 import { CluesData, Direction } from "@/app/components/cross/types";
 import { Button } from "@/app/components/htmlTag";
 import CrosswordGame from "@/app/components/crossword/CrosswordGame";
-import { CrosswordType, SafeUser } from "@/app/types";
+import { SafeUser } from "@/app/types";
 import { calculateScore, changeMinuteToSecond } from "@/app/utils/utils";
 import { CrosswordProviderImperative } from "@/app/components/cross/CrosswordProvider";
 import axios from "axios";
 import qs from "query-string";
+import { CrosswordBoardCreate, convertToResultArray } from "@/app/utils/crosswordutil";
 
 type Props = {
   currentUser?: SafeUser;
-  crossword: CrosswordType;
+  crossword: any;
 }
 
 
 export default function Quiz({ currentUser, crossword }: Props) {
   // クロスワード問題数
-  const acrossCount = Object.keys(crossword.questions.across).length;
-  const downCount = Object.keys(crossword.questions.down).length;
-  const totalCount = acrossCount + downCount;
+  const totalCount = crossword.questions.length;
   // 進行状況の問題数
   const [ progressCount, setProgressCount ] = useState<number>(0);
   // ヒント使用状況
@@ -36,10 +35,22 @@ export default function Quiz({ currentUser, crossword }: Props) {
   const [ selectedClue, setSelectedClue ] = useState<Record<string, string> | null>(null);
   
   const [ onHintShow, setOnHintShow ] = useState<boolean>(false);
-
+  const [ data, setData ] = useState(null);
 
   // Timer
   const [ isRunning, setIsRunning ] = useState(true);
+
+  useEffect(() => {
+    const result = CrosswordBoardCreate(crossword.questions)
+    if (!result) {
+      alert("クロスワードゲーム生成に失敗しました。");
+      return;
+    }
+
+    const newData = convertToResultArray(result);
+    setData(newData);
+  }, []);
+
   useEffect(() => {
     let intervalId: any;
 
@@ -53,6 +64,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
       clearInterval(intervalId);
     };
   }, [isRunning]);
+  
   const handlePause = useCallback(() => { setIsRunning(false); }, []);
   const handleResume = useCallback(() => { setIsRunning(true); }, []);
 
@@ -85,7 +97,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
         inCorrectCnt: inCorrectCnt,
         hintCount: hintCount,
         title: crossword.title,
-        lang: crossword.lang.name
+        lang: crossword.category.langs[0].name
       }
 
       const url = qs.stringifyUrl({
@@ -122,9 +134,9 @@ export default function Quiz({ currentUser, crossword }: Props) {
             u_time_limit: currentTime,
             u_score: correctCnt * calculateScore(totalCount),
             category_id: crossword.category.id,
-            part_id: crossword.part.id,
-            chapter_id: crossword.chapter.id,
-            lang_id: crossword.lang.id,
+            part_id: crossword.category.parts[0].id,
+            chapter_id: crossword.category.parts[0].chapters[0].id,
+            lang_id: crossword.category.langs[0].id,
             answers: crosswordRef.current.isResultClues(),
             user_id: currentUser.id
           },
@@ -229,7 +241,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
   return (
     <Container>
       <div className="py-4">
-        <Heading title={`${crossword.title} (${crossword.lang.name})`} subtitle={`${crossword.part.name} ${crossword.chapter.name}`} />
+        <Heading title={`${crossword.title} (${crossword.category.langs[0].name})`} subtitle={`${crossword.category.parts[0].name} ${crossword.category.parts[0].chapters[0].name}`} />
 
         <div>
           <div>
@@ -245,22 +257,25 @@ export default function Quiz({ currentUser, crossword }: Props) {
         </div>
 
         <div>
-          <CrosswordGame
-            ref1={crosswordRef}
-            lang={crossword.lang.name_en}
-            data={crossword.questions}
-            onAnswerComplete={onAnswerComplete}
-            onAnswerCorrect={onAnswerCorrect}
-            onCrosswordComplete={onCrosswordComplete}
-            onClueSelected={onClueSelected}
-            onHintSelected={onHintSelected}
-            onCellChange={onCellChange}
-            onAnswerIncorrect={onAnswerIncorrect}
+          {
+            data &&
+            <CrosswordGame
+              ref1={crosswordRef}
+              lang={crossword.category.langs[0].name_en}
+              data={data}
+              onAnswerComplete={onAnswerComplete}
+              onAnswerCorrect={onAnswerCorrect}
+              onCrosswordComplete={onCrosswordComplete}
+              onClueSelected={onClueSelected}
+              onHintSelected={onHintSelected}
+              onCellChange={onCellChange}
+              onAnswerIncorrect={onAnswerIncorrect}
 
-            onHintShow={onHintShow}
-            setOnHintShow={setOnHintShow}
-            selectedClue={selectedClue}
-          />
+              onHintShow={onHintShow}
+              setOnHintShow={setOnHintShow}
+              selectedClue={selectedClue}
+            />
+          }
         </div>
 
         <div className="py-4 md:w-40">

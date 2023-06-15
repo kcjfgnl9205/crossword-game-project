@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useState } from "react";
 import { PartAccordion } from "@/app/components/Accordion";
 import { Button } from "@/app/components/htmlTag";
 
@@ -13,7 +13,7 @@ type Props = {
 
 
 export default function UserResultTable({ item, onClick, onHref }: Props) {
-
+  const [ open, setOpen ] = useState<boolean>(false);
   const header = (
     <div className="font-semibold text-lg md:text-xl">
       {item.name}
@@ -75,6 +75,8 @@ export default function UserResultTable({ item, onClick, onHref }: Props) {
     <PartAccordion
       header={header}
       body={body}
+      open={open}
+      setOpen={() => setOpen((prev: boolean) => !prev)}
     />
   )
 }

@@ -4,7 +4,7 @@ import CrosswordGrid from "../cross/CrosswordGrid";
 import CrosswordProvider, { CrosswordProviderImperative } from "../cross/CrosswordProvider";
 import DirectionClues from "../cross/DirectionClues";
 import MobileOption from "../cross/MobileOption";
-import { CluesData, Direction, LangType, UsedCellData } from "../cross/types";
+import { CluesData, Direction, UsedCellData } from "../cross/types";
 
 
 type Props = {

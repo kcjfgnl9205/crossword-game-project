@@ -1,6 +1,5 @@
-import { getConnection, releaseConnection } from "@/app/libs/db/mysql";
-import { find_user_mst_by_username, select_user_mst } from "../libs/db/sql/users/user_mst";
-import { SafeUser } from "../types";
+import { excuteQuery, getConnection, releaseConnection } from "@/app/libs/db/mysql";
+import { SELECT_USER_BY_USERNAME } from "@/app/libs/db/sql/user";
 
 
 type Props =  {
@@ -11,7 +10,7 @@ type Props =  {
 export default async function getUserByUsername(params: Props) {
   const connection = await getConnection();
   try {
-    const user = await find_user_mst_by_username(connection, params.username);
+    const user = await excuteQuery(connection, SELECT_USER_BY_USERNAME, [params.username]);
     if (!user) {
       return null;
     }

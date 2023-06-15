@@ -10,12 +10,15 @@ type Props = {
   id: string;
 }
 
+// クロスワードゲームページ
 export default async function Quiz({ params }:  { params: Props }) {
+  // クロスワードデータを取得する
   const crossword = await getCrosswordById(params);
   if (!crossword) {
     notFound();
   }
 
+  //　ログインしているユーザー情報
   const currentUser = await getCurrentUser();
 
   return (

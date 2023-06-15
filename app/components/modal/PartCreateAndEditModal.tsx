@@ -22,9 +22,8 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     defaultValues: {
       id: undefined,
       name: "",
-      disabled: false,
       sorted: 0,
-      chapters: [{id: 0, name: "", flg: 0, disabled: false}]
+      chapters: [{id: 0, name: "", flg: false}]
     }
   });
 
@@ -37,15 +36,13 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     if (item) {
       setValue('id', item.id);
       setValue('name', item.name);
-      setValue('disabled', item.disabled);
       setValue('sorted', item.sorted);
       setValue('chapters', item.chapters);
     } else {
       setValue('id', undefined);
       setValue('name', "");
-      setValue('disabled', false);
       setValue('sorted', 0);
-      setValue('chapters', [{id: 0, name: "", flg: 0, disabled: false}]);
+      setValue('chapters', [{name: "", flg: false}]);
     }
   }, [item, setValue, createModal.isOpen]);
 
@@ -56,10 +53,20 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
   
   // 章を削除するボタンを押下した時
   const handleChapterRemove = (index: number) => {
-    const prevName = getValues(`chapters.${index}.name`);
-    const prevId = getValues(`chapters.${index}.id`);
-    update(index, { id: prevId, name: prevName, onDelete: true, flg: 0, disabled: false});
+    if (fields.filter((field: any) => !field.onDelete).length > 1) {
+      const prevName = getValues(`chapters.${index}.name`);
+      const prevId = getValues(`chapters.${index}.id`);
+      update(index, { id: prevId, name: prevName, onDelete: true, flg: false });
+    }
   };
+
+  // 章の総合ボタンを押下した時
+  const handleOnChange = useCallback((index: number) => {
+      const prevName = getValues(`chapters.${index}.name`);
+      const prevId = getValues(`chapters.${index}.id`);
+      const prevFlg = getValues(`chapters.${index}.flg`);
+      update(index, { id: prevId, name: prevName, flg: !prevFlg });
+  }, [update, getValues]);
 
   // 章を追加する
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
@@ -83,7 +90,10 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
         label="単元"
         register={register}
         errors={errors}
-        required
+        validate={{ 
+          required: "単元名を入力してください。",
+          maxLength: { value: 50, message: "単元名は最大50文字までです。" }
+        }}
       />
       <hr className="py-2"/>
 
@@ -91,7 +101,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
       <Button label="章を追加する" onClick={handleAddChapter} primary />
       {
         fields.map((chapter, chapterIndex) => {
-          const { id, chapter_id, disabled, onDelete } = chapter as { id: string, chapter_id: number, disabled: boolean, onDelete: boolean };
+          const { id, chapter_id, flg, onDelete } = chapter as { id: string, chapter_id: number, flg: boolean, onDelete: boolean };
           
           if (!onDelete) {
             return (
@@ -101,7 +111,10 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
                   label="章"
                   register={register}
                   errors={errors}
-                  required
+                  validate={{ 
+                    required: "章名を入力してください。",
+                    maxLength: { value: 50, message: "章名は最大50文字までです。" }
+                  }}
                 />
                 <div className="flex-none w-30">
                   <Checkbox
@@ -109,7 +122,8 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
                     name={`chapters.${chapterIndex}.flg`}
                     label="総合"
                     register={register}
-                    disabled={disabled}
+                    defaultChecked={flg}
+                    handleOnChange={() => handleOnChange(chapterIndex)}
                   />
                 </div>
                 <div className="flex-none w-14">
@@ -117,7 +131,6 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
                     label="-"
                     onClick={() => handleChapterRemove(chapterIndex)}
                     error
-                    disabled={disabled}
                   />
                 </div>
               </div>

@@ -1,7 +1,7 @@
-import getCategories from "@/app/actions/getCategories";
-import { transaction } from "@/app/libs/db/mysql";
-import { delete_category_mst } from "@/app/libs/db/sql/category/category_mst";
 import { NextResponse } from "next/server";
+import getCategories from "@/app/actions/getCategories";
+import { excuteQuery, transaction } from "@/app/libs/db/mysql";
+import { DELETE_CATEGORY_MST } from "@/app/libs/db/sql/category";
 
 
 type IParams = {
@@ -31,7 +31,7 @@ export async function DELETE(
 const delete_category_logic = (id: number) => {
   return async (conn: any) => {
     try {
-      const deleteInfo = await delete_category_mst(conn, id);
+      const deleteInfo = await excuteQuery(conn, DELETE_CATEGORY_MST, [new Date(), id]);
       return deleteInfo;
     } catch (err) {
       throw err;

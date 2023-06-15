@@ -13,26 +13,25 @@ import { Container, Heading } from "@/app/components/common";
 
 
 type Props = {
-  categories: Array<CategoryType>;
+  items: Array<CategoryType>;
 }
 
-export default function CategoryClient({ categories }: Props) {
+export default function CategoryClient({ items }: Props) {
   const router = useRouter();
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
-  const [ item, setItem ] = useState<Array<CategoryType>>(categories);
+  const [ categories, setCategories ] = useState<Array<CategoryType>>(items);
 
-  
   // 単元削除ボタン押下した時
   const handleDeletePart = useCallback(async (id: number) => {
     setIsLoading(true);
-    const category = item.filter((category: CategoryType) => category.id === id)?.[0];
+    const category = categories.filter((category: CategoryType) => category.id === id)?.[0];
     try {
-      if (confirm(`カテゴリー「${category.name}」を削除します。\n※このカテゴリーに該当するクロスワード問題は全て削除されます。`)) {
+      if (confirm(`カテゴリー「${category.name}」を削除します。`)) {
         const response = await axios.delete(`/api/category/${id}`);
 
         if (response.status === 200) {
           alert(`カテゴリー「${category.name}」を削除しました。`);
-          setItem(response.data);
+          setCategories(response.data);
           router.refresh();
         }
       }
@@ -41,20 +40,20 @@ export default function CategoryClient({ categories }: Props) {
     } finally {
       setIsLoading(false);
     }
-  }, [router, item]);
+  }, [router, categories]);
 
 
   // カテゴリーの並び順
   const handleSortPart = useCallback(async (sortedIndex: number, direction: "up" | "down") => {
     // 該当データのindexを探す
-    const index = item.findIndex((part: CategoryType) => part.sorted === sortedIndex);
-    if (index === -1 || (direction === 'up' && index === 0) || (direction === 'down' && index === item.length - 1)) {
+    const index = categories.findIndex((part: CategoryType) => part.sorted === sortedIndex);
+    if (index === -1 || (direction === 'up' && index === 0) || (direction === 'down' && index === categories.length - 1)) {
       return;
     }
     
     setIsLoading(true);
 
-    const newData = [ ...item ];
+    const newData = [ ...categories ];
     if (direction === 'up') {
       [newData[index - 1], newData[index]] = [newData[index], newData[index - 1]];
     } else if (direction === 'down') {
@@ -67,20 +66,19 @@ export default function CategoryClient({ categories }: Props) {
     }).sort((a, b) => a.sorted - b.sorted);
     
     try {
-      const params = {
+      const response = await axios.put(`/api/category`, {
         categories: data,
         withCredentials: true,
-      }
-      const response = await axios.put(`/api/category`, params);
+      });
       if (response.status === 200) {
-        setItem(newData);
+        setCategories(newData);
       }
     } catch (error: any) {
       alert("error: " + error);
     } finally {
       setIsLoading(false); 
     }
-  }, [item]);
+  }, [categories]);
   
   
   return (
@@ -101,42 +99,42 @@ export default function CategoryClient({ categories }: Props) {
         </div>
         <div className="flex flex-col py-1 w-full gap-2 md:py-2">
           {
-            item.length === 0
+            categories.length === 0
             ? <Heading center title="カテゴリーデータが存在しません。・" subtitle="カテゴリーを追加してください。" />
-            : item.map((category: CategoryType) => (
-                    <div key={category.id} className="flex flex-row gap-1 items-center md:gap-2">
-                      <div
-                        onClick={() =>  router.push(`/admin/crossword/${category.name_en}`)}
-                        className="p-4 border rounded-lg transition w-full text-center hover:opacity-80 hover:bg-neutral-100 cursor-pointer"
-                      >
-                        {category.name}
-                      </div>
-                      <div className="flex-none w-14">
-                        <Button
-                          label="　"
-                          onClick={() => handleSortPart(category.sorted, "up")}
-                          icon={HiChevronUp}
-                          disabled={isLoading}
-                        />
-                      </div>
-                      <div className="flex-none w-14">
-                        <Button
-                          label="　"
-                          onClick={() => handleSortPart(category.sorted, "down")}
-                          icon={HiChevronDown}
-                          disabled={isLoading}
-                        />
-                      </div>
-                      <div className="flex-none w-14">
-                        <Button
-                          label="-"
-                          onClick={() => handleDeletePart(category.id)}
-                          error
-                          disabled={isLoading}
-                        />
-                      </div>
-                    </div>
-                  ))
+            : categories.map((category: CategoryType) => (
+                <div key={category.id} className="flex flex-row gap-1 items-center md:gap-2">
+                  <div
+                    onClick={() =>  router.push(`/admin/crossword/${category.name_en}`)}
+                    className="p-4 border rounded-lg transition w-full text-center hover:opacity-80 hover:bg-neutral-100 cursor-pointer"
+                  >
+                    {category.name}
+                  </div>
+                  <div className="flex-none w-14">
+                    <Button
+                      label="　"
+                      onClick={() => handleSortPart(category.sorted, "up")}
+                      icon={HiChevronUp}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div className="flex-none w-14">
+                    <Button
+                      label="　"
+                      onClick={() => handleSortPart(category.sorted, "down")}
+                      icon={HiChevronDown}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div className="flex-none w-14">
+                    <Button
+                      label="-"
+                      onClick={() => handleDeletePart(category.id)}
+                      error
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+              ))
           }
         </div>
       </div>

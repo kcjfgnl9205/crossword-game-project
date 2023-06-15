@@ -4,10 +4,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FieldValues, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
 
-import { convertAnswerObjectToAnswerArray, convertToResultArray, crosswordGenerator } from "@/app/utils/utils";
-import { InputClueType, LangType, CategoryType, CrosswordType } from "@/app/types";
+import { InputClueType, LangType, CategoryType, CrosswordType, ChapterType, PartType } from "@/app/types";
 import { Direction } from "@/app/components/cross/types";
 import { Container, ErrorMessage, Heading } from "@/app/components/common";
 import { CrosswordProviderImperative } from "@/app/components/cross/CrosswordProvider";
@@ -15,26 +15,22 @@ import CrosswordGame from "@/app/components/crossword/CrosswordGame";
 import CreateQuizAccordion from "@/app/components/admin/crossword/CreateQuizAccordion";
 import CreateQuizAccordionItem from "@/app/components/admin/crossword/CreateQuizAccordionItem";
 import { Input, Button, Hr, RadioGroupAndSelect } from "@/app/components/htmlTag";
-import Link from "next/link";
+import { CrosswordBoardCreate, convertAnswerObjectToAnswerArray, convertToResultArray } from "@/app/utils/crosswordutil";
 
 
 
 const defaultQuestion = { clue: "", answer: "", hint: "" };
 
 type Props = {
-  partsCategories: Array<any>;
-  langsCategories: Array<LangType>;
   item?: CrosswordType;
-  category: CategoryType | null;
+  category: CategoryType;
 }
 
-export default function CrosswordCreateClient({ partsCategories, langsCategories, item, category }: Props) {
+export default function CrosswordCreateClient({ item, category }: Props) {
   const router = useRouter();
-
   const crosswordRef = useRef<CrosswordProviderImperative>(null);
-  const parts = partsCategories;
-  const [ chapters, setChapters ] = useState<Array<any>>(item ? parts.filter((part: any) => part.id === item.part.id)[0].chapters : parts[0]?.chapters || []);
-  const langs: Array<LangType> = langsCategories.filter((lang: LangType) => lang.cnt && lang.cnt > 0);
+  const [ chapters, setChapters ] = useState<Array<ChapterType>>(item ? category.parts.filter((part: PartType) => part.id === item.category.parts[0].id)[0].chapters : category.parts[0].chapters);
+  const langs: Array<LangType> = category.langs.filter((lang: LangType) => lang.flg);
 
   const [ isCombined, setIsCombined ] = useState<boolean>(false); //総合問題なのか
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
@@ -44,12 +40,12 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
   
   // 章のカテゴリー
   const [ crosswordData, setCrosswordData ] = useState<Record<Direction, Record<string, any>> | null>(null);
-  const { control, register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm<FieldValues>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
-      category_id: category?.id.toString(),
-      part_id: item ? item.part.id.toString() : parts[0]?.id.toString(),
-      chapter_id: item ? item.chapter.id.toString() : chapters[0]?.id.toString(),
-      lang_id: item ? item.lang.id.toString() : langs[0]?.id.toString(),
+      category_id: category.id.toString(),
+      part_id: item ? item.category.parts[0].id.toString() : category.parts[0]?.id.toString(),
+      chapter_id: item ? item.category.parts[0].chapters[0].id.toString() : chapters[0]?.id.toString(),
+      lang_id: item ? item.category.langs[0].id.toString() : langs[0]?.id.toString(),
       
       title: item ? item.title : "",
       minute: item ? item.minute.toString() : "5",
@@ -67,7 +63,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
   useEffect(() => {
     const questionArray = convertAnswerObjectToAnswerArray(item?.questions);
     if (questionArray.length === 0) {
-      append([defaultQuestion, defaultQuestion, defaultQuestion]);
+      append([defaultQuestion, defaultQuestion]);
     } else {
       questionArray.forEach((question: any) => {
         append([question]);
@@ -81,38 +77,41 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
     }
   }, [item, chapters, setValue, watch])
 
-  const handleOnChange = useCallback((e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+
+  const CategoryhandleOnChange = useCallback((e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     setCrosswordData(null);
     
     const { name, value } = e.target;
     setValue(name, value);
-    // if (name.startsWith("questions")) {
-    //   setValue(name, value.toUpperCase());
-    // }
     
     if (name === "part_id") {
-      const part = parts.filter((part: any) => part.id.toString() === watch("part_id"))[0];
-      
-      // setValue("chapter_id", part.chapters[0]?.id.toString());
+      const part = category.parts.filter((part: any) => part.id.toString() === watch("part_id"))[0];
       setChapters(part.chapters);
       setIsCombined(false);
-    } 
-    else if (name === "chapter_id") {
+    } else if (name === "chapter_id") {
       const chapterFlg = chapters.find((chapter) => chapter.id?.toString() === watch("chapter_id"))?.flg;
       const flg = chapterFlg === 1;
       setIsCombined(flg);
     }
-  }, [parts, setValue, watch, chapters, setChapters]);
+  }, [category, setValue, watch, chapters, setChapters]);
   
+
+  const QuizhandleOnChange = useCallback((e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setValue(name, value.toUpperCase());
+  }, [setValue])
+
+
   // 問題を追加する
   const handleAppend = () => {
     append(defaultQuestion);
     setCrosswordData(null);
   }
 
+
   // 問題を削除する
   const handleRemove = (index: number) => {
-    if (fields.length > 3) {
+    if (fields.length > 2) {
       setCrosswordData(null);
       remove(index);
     }
@@ -125,7 +124,9 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
     }
   }
 
+
   const handleCrosswordCreate: SubmitHandler<FieldValues> = (data) => {
+    
     setIsChecked(false);
     let errorData: any = {};
     data.questions.forEach((el: any, index: number) => {
@@ -142,15 +143,14 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
 
     setQuestionErrIndex(-1);
     let words: Array<InputClueType> = data.questions;
-    
-    const result = crosswordGenerator(words);
+
+    const result = CrosswordBoardCreate(words)
     if (!result) {
-      alert("error");
+      alert("クロスワードゲーム生成に失敗しました。");
       return;
     }
 
-    const newData = convertToResultArray(result.positionObjArr);
-
+    const newData = convertToResultArray(result);
 
     setCrosswordData(newData);
 
@@ -161,7 +161,6 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
     }, 200)
   }
 
-  
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
 
@@ -176,14 +175,14 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
         crosswordQuestions: crosswordData,
         withCredentials: true,
       }
+
       if (item) {
-        console.log(data)
         //修正
         const response = await axios.put(`/api/crossword/${item.id}`, params);
 
         if (response.status === 200) {
           alert("クロスワードゲームを修正しました。");
-          router.push(`/admin/crossword/${category?.name_en}`);
+          router.push(`/admin/crossword/${category.name_en}`);
           router.refresh();
         }
       } else {
@@ -192,7 +191,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
 
         if (response.status === 200) {
           alert("クロスワードゲームを登録しました。");
-          router.push(`/admin/crossword/${category?.name_en}`);
+          router.push(`/admin/crossword/${category.name_en}`);
           router.refresh();
         }
       }  
@@ -203,13 +202,23 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
     }    
   }
 
+
+  // TODO: 過去のデータからランダム生成する
   const handleSetRandomQuestions = useCallback(() => {
     console.log("ランダム生成");
   }, []);
+
+  // 取消ボタン押下した時
+  const handleCancel = useCallback(() => {
+    if (confirm("登録・修正を取り消します。\n作成中の内容は保存しません。")) {
+      router.push(`/admin/crossword/${category.name_en}`);
+    }
+  }, [router]);
+
   return (
     <Container>
       <div className="mt-8">
-        <Link href={`/admin/crossword/${category?.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
+        <Link href={`/admin/crossword/${category.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
         <Heading title="クロスワードゲーム生成" />
       </div>
       
@@ -221,8 +230,8 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
           disabled={isLoading || item !== undefined}
           register={register}
           errors={errors}
-          items={parts}
-          handleOnChange={handleOnChange}
+          items={category.parts}
+          handleOnChange={CategoryhandleOnChange}
         />
         <RadioGroupAndSelect
           name="chapter_id"
@@ -231,7 +240,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
           register={register}
           errors={errors}
           items={chapters}
-          handleOnChange={handleOnChange}
+          handleOnChange={CategoryhandleOnChange}
         />
         <RadioGroupAndSelect
           name="lang_id"
@@ -240,7 +249,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
           register={register}
           errors={errors}
           items={langs}
-          handleOnChange={handleOnChange}
+          handleOnChange={CategoryhandleOnChange}
         />
       </div>
 
@@ -252,7 +261,10 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+          validate={{ 
+            required: "プロジェクト名を入力してください。",
+            maxLength: { value: 50, message: "プロジェクト名は最大50文字で入力してください。" }
+          }}
         />
         
         {/* 所要時間 */}
@@ -264,8 +276,11 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
             disabled={isLoading}
             register={register}
             errors={errors}
-            required
             subFormat="分"
+            validate={{ 
+              required: "所要時間(分)を入力してください。",
+              pattern: { value: /^(?:[1-9]|[1-9][0-9])$/, message: "所要時間(分)は1-99の数字を入力できます。" }
+            }}
           />
           <Input
             type="number"
@@ -274,8 +289,11 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
             disabled={isLoading}
             register={register}
             errors={errors}
-            required
             subFormat="秒"
+            validate={{ 
+              required: "所要時間(秒)を入力してください。",
+              pattern: { value: /^(?:[0-5]?[0-9])$/, message: "所要時間(秒)は0-59の数字を入力できます。" }
+            }}
           />
         </div>
       </div>
@@ -288,7 +306,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
       </div>
       
       <div className="flex flex-col">
-        <ErrorMessage message="※問題は最低3問以上登録すべきです。" />
+        <ErrorMessage message="※問題は最低2問以上登録すべきです。" />
         <ErrorMessage message="※正解の文字は他の正解の文字に１文字以上含まれないといけない" />
       </div>
       {
@@ -304,7 +322,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
             control={control}
             errors={errors}
             index={index}
-            handleOnChange={handleOnChange}
+            handleOnChange={QuizhandleOnChange}
           />
         </CreateQuizAccordion>
        ))
@@ -323,7 +341,7 @@ export default function CrosswordCreateClient({ partsCategories, langsCategories
         isChecked && crosswordData !== null &&
         <div className="flex flex-col gap-1 pb-4 md:flex-row md:w-48 md:gap-2">
           <Button label={`${item ? "修正する" : "新規登録"}`} onClick={handleSubmit(onSubmit)} primary />
-          <Button label="取消" onClick={() => router.push("/admin/crossword")} error />
+          <Button label="取消" onClick={handleCancel} error />
         </div>
       }
     </Container>

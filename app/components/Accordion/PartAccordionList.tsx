@@ -1,7 +1,7 @@
 'use client';
 
 
-import React from "react";
+import React, { useState } from "react";
 import Accordion from "./Accordion";
 import PartAccordion from "./PartAccordion";
 
@@ -11,6 +11,8 @@ type Props ={
 }
 
 export default function PartAccordionList({ item }: Props) {
+  const [ open, setOpen ] = useState<boolean>(false);
+
   const header = <div className="font-semibold text-lg md:text-xl">{item.name}</div>;
   const body = (
     <>
@@ -83,6 +85,8 @@ export default function PartAccordionList({ item }: Props) {
     <PartAccordion
       header={header}
       body={body}
+      open={open}
+      setOpen={() => setOpen((prev: boolean) => !prev)}
     />
   );
 }

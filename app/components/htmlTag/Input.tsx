@@ -1,6 +1,7 @@
 'ues client';
 
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { ErrorMessage } from "@/app/components/common";
 
 
 type Props = {
@@ -25,7 +26,6 @@ export default function Input ({
   disabled,
   subFormat,
   register,
-  required,
   errors,
   validate,
   handleOnChange,
@@ -37,7 +37,7 @@ export default function Input ({
       <input
         id={id}
         disabled={disabled}
-        { ...register(id, { required, validate }) }
+        { ...register(id, validate) }
         value={value}
         placeholder="  "
         type={type}
@@ -83,6 +83,7 @@ export default function Input ({
       >
         {label}
       </label>
-    </div> 
+      { errors[id] && <ErrorMessage message={`${errors[id]?.message}`} /> }
+    </div>
   )
 }

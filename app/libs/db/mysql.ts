@@ -49,3 +49,12 @@ export const transaction = async (logic: any) => {
     }
   }
 };
+
+export const excuteQuery = async (conn: any, sql: string, params: Array<any>) => {
+  try {
+    const [ rows ] = await conn?.execute(sql, params);
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};

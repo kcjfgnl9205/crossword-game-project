@@ -2,15 +2,18 @@
 
 
 import { PartAccordion, PartAccordionCategory } from "@/app/components/Accordion";
+import { CategoryType } from "@/app/types";
+import { useState } from "react";
 
 
 type Props = {
   item: any;
-  category: any;
+  category: CategoryType;
 }
 
 export default function ListingParts({ item, category }: Props) {
-  console.log(item)
+  const [ open, setOpen ] = useState<boolean>(false);
+
   const header = (
     <div className="font-semibold text-lg md:text-xl">
       {item.name}
@@ -42,6 +45,8 @@ export default function ListingParts({ item, category }: Props) {
     <PartAccordion
       header={header}
       body={body}
+      open={open}
+      setOpen={() => { setOpen((prev: boolean) => !prev) }}
     />
   )
 }
