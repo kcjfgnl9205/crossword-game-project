@@ -73,7 +73,7 @@ export const SELECT_V_CROSSWORD_MAX_RESULT = `
                          , V_CROSSWORD_ALL_RESULT.lang_name
                          , V_CROSSWORD_ALL_RESULT.lang_name_en
                          , V_CROSSWORD_ALL_RESULT.result_id
-                         , V_CROSSWORD_ALL_RESULT.result_title
+                         , V_CROSSWORD_ALL_RESULT.crossword_title
                          , RANK_TABLE.total_questions
                          , RANK_TABLE.total_correct_answers
                       FROM V_CROSSWORD_ALL_RESULT
@@ -111,7 +111,7 @@ export const SELECT_V_CROSSWORD_MAX_RESULT = `
                  , V_CATEGORY_ALL_MST.lang_name
                  , V_CATEGORY_ALL_MST.lang_name_en
                  , USER_RESULT.result_id
-                 , USER_RESULT.result_title
+                 , USER_RESULT.crossword_title
                  , USER_RESULT.total_questions
                  , USER_RESULT.total_correct_answers
               FROM V_CATEGORY_ALL_MST

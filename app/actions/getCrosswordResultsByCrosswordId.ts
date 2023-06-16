@@ -19,7 +19,7 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
         // 新しい category 追加
         transformedData.push({
           id: row.crossword_id,
-          title: row.result_title,
+          title: row.crossword_title,
           category_name_en: row.category_name_en,
           lang: {
             id: row.lang_id,
