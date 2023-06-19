@@ -39,7 +39,7 @@ const clueInputPropsOriginal = {
 
   usedHint: PropTypes.bool,
 
-  userAnswer: PropTypes.array,
+  userAnswer: PropTypes.string,
 };
 
 export const clueShapeOriginal = PropTypes.shape(clueInputPropsOriginal);

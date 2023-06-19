@@ -221,18 +221,17 @@ export default function Quiz({ currentUser, crossword }: Props) {
   }, [])
 
   const onCellChange = useCallback((row: number, col: number, char: string, currentDirection: Direction, currentNumber: string, clues: CluesData | undefined) => {
-    if (crosswordRef.current) {
-      console.log(crosswordRef.current.isResultClues());
-    }
-
     setProgressCount((prev: number) => {
-      let cnt = 0;
+      prev = 0;
       for (const clue in clues) {
         const directionKey = clue as Direction;
         const direction = clues[directionKey];
-        cnt += direction.filter(el => el.complete).length;
+        prev += direction.filter(el => {
+          if (el.userAnswer && el.userAnswer !== "")
+          return el;
+        }).length;
       }
-      return cnt;
+      return prev;
     })
   }, []);
 

@@ -106,7 +106,7 @@ export function fillClues(
   const dir = directionInfo[direction];
 
   Object.entries(data[direction]).forEach(([number, info]) => {
-    const { row: rowStart, col: colStart, clue, answer, hint, userAnswer } = info;
+    const { row: rowStart, col: colStart, clue, answer, hint, userAnswer = "" } = info;
     for (let i = 0; i < answer.length; i++) {
       const row = rowStart + (dir.primary === 'row' ? i : 0);
       const col = colStart + (dir.primary === 'col' ? i : 0);

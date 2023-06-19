@@ -84,7 +84,7 @@ const insert_crossword_result_logic = (id: number, crossword: any) => {
             answer: item.answer,
             direction: key,
             u_hint: item.usedHint,
-            u_answer: item.userAnswer ? item.userAnswer.join("") : ""
+            u_answer: item.userAnswer
           }
           await excuteQuery(conn, INSERT_CROSSWORD_RESULT_DETAIL, [Number(crosswordResultInfo.insertId), obj.clue, obj.hint, obj.answer, obj.direction, obj.u_hint, obj.u_answer])
         }

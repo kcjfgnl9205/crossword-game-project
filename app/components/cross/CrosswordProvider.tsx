@@ -454,29 +454,41 @@ const CrosswordProvider = React.forwardRef<
         );
 
         if (onCellChange) {
-          setClues(
-            produce((draft) => {
-              if (draft) {
-                const clueInfo = draft[currentDirection].find((i) => i.number === currentNumber);
-                if (clueInfo) {
-                  if (!clueInfo.userAnswer) {
-                    clueInfo.userAnswer = new Array(clueInfo.answer.length).fill("");
+          const newClues = { ...clues } as CluesData;
+          gridData.forEach((rowData: any) => {
+            rowData.forEach((colData: any) => {
+              if (colData.used) {
+                if (Object.keys(colData).includes("across")) {
+                  if (newClues.across && colData.guess) {
+                    const index = newClues.across.findIndex((i: any) => i.number === colData.across);
+                    if (index !== -1) {
+                      const updatedClue = { ...newClues.across[index], userAnswer: (newClues.across[index].userAnswer) + (colData.guess || "") };
+                      const updatedAcross = [...newClues.across];
+                      updatedAcross[index] = updatedClue;
+                      newClues.across = updatedAcross;
+                    }
                   }
-
-                  const across = isAcross(currentDirection);
-                  if (across) {
-                    clueInfo.userAnswer.splice(col - clueInfo.col, 1, char);
-                  } else {
-                    clueInfo.userAnswer.splice(row - clueInfo.row, 1, char);
+                }
+                if (Object.keys(colData).includes("down")) {
+                  if (newClues.down && colData.guess) {
+                    const index = newClues.down.findIndex((i: any) => i.number === colData.down);
+                    if (index !== -1) {
+                      console.log("asdf")
+                      const updatedClue = { ...newClues.down[index], userAnswer: (newClues.down[index].userAnswer) + (colData.guess || "") };
+                      const updatedAcross = [...newClues.down];
+                      updatedAcross[index] = updatedClue;
+                      newClues.down = updatedAcross;
+                    }
                   }
-                } 
+                }
               }
-            })
-          )
-          onCellChange(row, col, char, currentDirection, currentNumber, clues);
+            });
+          });
+        
+          onCellChange(row, col, char, currentDirection, currentNumber, newClues);
         }
       },
-      [clues, currentDirection, currentNumber, getCellData, onCellChange]
+      [clues, currentDirection, currentNumber, getCellData, onCellChange, gridData]
     );
 
     const notifyAnswerComplete = useCallback(
@@ -569,8 +581,6 @@ const CrosswordProvider = React.forwardRef<
             if (normalizeHiragana(checkCell.guess) !== normalizeHiragana(checkCell.answer)) {
               correct = false;
             }
-
-            // userAnswer += checkCell.guess;
           }
 
           // update the clue state
@@ -581,6 +591,7 @@ const CrosswordProvider = React.forwardRef<
                 if (clueInfo) {
                   clueInfo.complete = complete;
                   clueInfo.correct = correct;
+                  clueInfo.userAnswer = clueInfo.userAnswer || "";
                 }
               }
             })
@@ -1180,7 +1191,40 @@ const CrosswordProvider = React.forwardRef<
         isCrosswordCorrect: () => crosswordCorrect,
 
 
-        isResultClues: () => clues,
+        // 結果データ
+        isResultClues: () => {
+          const newClues = { ...clues };
+          gridData.forEach((rowData: any) => {
+            rowData.forEach((colData: any) => {
+              if (colData.used) {
+                if (Object.keys(colData).includes("across")) {
+                  if (newClues.across && colData.guess) {
+                    const index = newClues.across.findIndex((i: any) => i.number === colData.across);
+                    if (index !== -1) {
+                      const updatedClue = { ...newClues.across[index], userAnswer: (newClues.across[index].userAnswer) + (colData.guess || "") };
+                      const updatedAcross = [...newClues.across];
+                      updatedAcross[index] = updatedClue;
+                      newClues.across = updatedAcross;
+                    }
+                  }
+                }
+                if (Object.keys(colData).includes("down")) {
+                  if (newClues.down && colData.guess) {
+                    const index = newClues.down.findIndex((i: any) => i.number === colData.down);
+                    if (index !== -1) {
+                      console.log("asdf")
+                      const updatedClue = { ...newClues.down[index], userAnswer: (newClues.down[index].userAnswer) + (colData.guess || "") };
+                      const updatedAcross = [...newClues.down];
+                      updatedAcross[index] = updatedClue;
+                      newClues.down = updatedAcross;
+                    }
+                  }
+                }
+              }
+            });
+          });
+          return newClues;
+        },
 
         /**
          * Sets the “guess” character for a specific grid position.
@@ -1200,6 +1244,7 @@ const CrosswordProvider = React.forwardRef<
         setCellCharacter,
         storageKey,
         useStorage,
+        gridData
       ]
     );
 
