@@ -24,6 +24,7 @@ export default function ListingParts({ item, category }: Props) {
     <div className="text-md md:text-lg">
       {
         item.chapters?.map((chapter: any) => {
+          console.log(chapter)
           return (
             <div
               key={chapter.id}
@@ -31,7 +32,7 @@ export default function ListingParts({ item, category }: Props) {
             >
               <div className="flex flex-col gap-2 md:flex-row md:gap-6">
                 <div className="font-semibold">{chapter.name}</div>
-                <div>{chapter.name}</div>
+                <div>{chapter.crosswords[0].title}</div>
               </div>
               <PartAccordionCategory items={chapter.crosswords} category={category} />
             </div>
