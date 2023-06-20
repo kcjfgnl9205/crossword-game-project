@@ -24,7 +24,6 @@ export default function ListingParts({ item, category }: Props) {
     <div className="text-md md:text-lg">
       {
         item.chapters?.map((chapter: any) => {
-          console.log(chapter)
           return (
             <div
               key={chapter.id}

@@ -4,7 +4,7 @@ import CrosswordGrid from "../cross/CrosswordGrid";
 import CrosswordProvider, { CrosswordProviderImperative } from "../cross/CrosswordProvider";
 import DirectionClues from "../cross/DirectionClues";
 import MobileOption from "../cross/MobileOption";
-import { CluesData, Direction, UsedCellData } from "../cross/types";
+import { ClueTypeOriginal, CluesData, Direction, UsedCellData } from "../cross/types";
 
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
   onAnswerIncorrect?: (direction: Direction, number: string, answer: string) => void;
   onCrosswordComplete?: (correct: boolean) => void;
   onCellSelected?: (cellData: UsedCellData, direction: Direction) => void;
-  onClueSelected?: (direction: Direction, number: string) => void;
+  onClueSelected?: (direction: Direction, info: ClueTypeOriginal) => void;
   onHintSelected?: (direction: Direction, number: string, onHint: boolean) => void;
   onCellChange?: (row: number, col: number, char: string, currentDirection: Direction, currentNumber: string, clues: CluesData | undefined) => void;
 
@@ -42,8 +42,6 @@ export default function CrosswordGame({
   setOnHintShow,
   selectedClue
 }: Props) {
-  const selectedDirection = selectedClue && Object.keys(selectedClue)[0] as string;
-  const selectedNumber = selectedClue && Object.values(selectedClue)[0] as string;
   return (
     <CrosswordProvider
       ref={ref1}
@@ -68,7 +66,7 @@ export default function CrosswordGame({
             <MobileOption
               onHintShow={onHintShow}
               setOnHintShow={setOnHintShow}
-              item={data[selectedDirection][selectedNumber]}
+              item={selectedClue}
             />
           }
 

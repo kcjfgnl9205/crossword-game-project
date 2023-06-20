@@ -17,7 +17,6 @@ type Props = {
 }
 
 export default function CrosswordsClient({ category, crosswords }: Props) {
-  console.log(crosswords)
   const [ isLoading, setIsLoading ] = useState(false);
   const router = useRouter();
 

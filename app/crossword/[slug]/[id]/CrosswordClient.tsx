@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Container, Heading, Timer } from "@/app/components/common";
-import { CluesData, Direction } from "@/app/components/cross/types";
+import { ClueTypeOriginal, CluesData, Direction } from "@/app/components/cross/types";
 import { Button } from "@/app/components/htmlTag";
 import CrosswordGame from "@/app/components/crossword/CrosswordGame";
 import { SafeUser } from "@/app/types";
@@ -32,7 +32,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
   const params = useSearchParams();
   const crosswordRef = useRef<CrosswordProviderImperative>(null);
   const [ currentTime, setCurrentTime ] = useState<number>(0);
-  const [ selectedClue, setSelectedClue ] = useState<Record<string, string> | null>(null);
+  const [ selectedClue, setSelectedClue ] = useState<Record<string, string | ClueTypeOriginal> | null>(null);
   
   const [ onHintShow, setOnHintShow ] = useState<boolean>(false);
   const [ data, setData ] = useState(null);
@@ -216,8 +216,8 @@ export default function Quiz({ currentUser, crossword }: Props) {
   }, []);
   
   // モバイル：問題を選択すると問題を表示する
-  const onClueSelected = useCallback((direction: Direction, number: string) => {
-    setSelectedClue({ [direction]: number });
+  const onClueSelected = useCallback((direction: Direction, info: ClueTypeOriginal) => {
+    setSelectedClue({direction, info});
   }, [])
 
   const onCellChange = useCallback((row: number, col: number, char: string, currentDirection: Direction, currentNumber: string, clues: CluesData | undefined) => {

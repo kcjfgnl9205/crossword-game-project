@@ -61,8 +61,7 @@ export default function CrosswordCreateClient({ item, category }: Props) {
 
   // 質問リスト
   useEffect(() => {
-    console.log(item)
-    if (item?.questions.length === 0) {
+    if (!item || item?.questions.length === 0) {
       append([defaultQuestion, defaultQuestion]);
     } else {
       item?.questions.forEach((question: any) => {

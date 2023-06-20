@@ -2,7 +2,7 @@
 
 
 import { Control, FieldErrors, FieldValues } from "react-hook-form";
-import Input from "../../htmlTag/Input";
+import { Input, Textarea } from "@/app/components/htmlTag";
 
 
 type Props = {
@@ -17,13 +17,15 @@ export default function CreateQuizAccordionItem({isLoading, control, errors, ind
 
   return (
     <div className="flex flex-col gap-1">
-      <Input
+      <Textarea
         id={`questions.${index}.clue`}
         label="質問"
         disabled={isLoading}
         register={control.register}
         errors={errors}
-        required
+        validate={{
+          required: "質問を入力してください。",
+        }}
       />
       <Input
         id={`questions.${index}.hint`}
@@ -38,8 +40,10 @@ export default function CreateQuizAccordionItem({isLoading, control, errors, ind
         disabled={isLoading}
         register={control.register}
         errors={errors}
-        required
         handleOnChange={handleOnChange}
+        validate={{
+          required: "正解を入力してください。",
+        }}
       />
     </div>
   );

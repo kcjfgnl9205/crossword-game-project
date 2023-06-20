@@ -16,7 +16,7 @@ export default function PartAccordionCategory({ items, category }: Props) {
       {
         items.map((item: any, index: number) => {
           return (
-            <React.Fragment key={item.lang_id}>
+            <React.Fragment key={index}>
               <div
                 onClick={() => router.push(`/crossword/${category.name_en}/${item.id}`)}
                 className="text-neutral-500 font-semibold cursor-pointer hover:underline"

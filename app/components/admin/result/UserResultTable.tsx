@@ -7,12 +7,13 @@ import { Button } from "@/app/components/htmlTag";
 
 type Props = {
   item: any;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onPdfClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onCsvClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onHref: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 
-export default function UserResultTable({ item, onClick, onHref }: Props) {
+export default function UserResultTable({ item, onPdfClick, onCsvClick, onHref }: Props) {
   const [ open, setOpen ] = useState<boolean>(false);
   const header = (
     <div className="font-semibold text-lg md:text-xl">
@@ -23,8 +24,9 @@ export default function UserResultTable({ item, onClick, onHref }: Props) {
   const body = (
     <>
       <div className="flex flex-col gap-1 py-1 md:flex-row">
-        <Button label={`${item.name}の結果PDF出力`} onClick={onClick} primary />
-        <Button label={`結果詳細`} onClick={onHref} info />
+        <Button label={`${item.name}の結果PDF出力`} onClick={onPdfClick} primary />
+        <Button label={`${item.name}の結果CSV出力`} onClick={onCsvClick} primary />
+        <Button label={`結果詳細(受講生のマイページ画面と同様)`} onClick={onHref} info />
       </div>
       {
         item.parts?.map((part: any) => {

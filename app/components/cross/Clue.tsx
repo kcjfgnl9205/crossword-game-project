@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useContext } from 'react';
+import React, { useState, useCallback, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
@@ -49,6 +49,7 @@ export default function Clue({
     usedHint: boolean | null;
   }
 >) {
+  const [ data, setData ] = useState("");
   const { focused, selectedDirection, selectedNumber, handleClueSelected, handleHintSelected } = useContext(CrosswordContext);
   const [ onHintShow, setOnHintShow ] = useState<boolean>(false);
 
@@ -59,6 +60,17 @@ export default function Clue({
     },
     [direction, number, handleClueSelected]
   );
+  
+  // 改行処理
+  useEffect(() => {
+    const fetchDataFromDB = () => {
+      const fetchedData = children as string;
+      const replacedData = fetchedData.replace(/\n/g, '<br>');
+      setData(replacedData);
+    };
+
+    fetchDataFromDB();
+  }, [children]);
 
   return (
     <>
@@ -74,7 +86,7 @@ export default function Clue({
           onClick={handleClick}
           aria-label={`clue-${number}-${direction}`}
         >
-          問題{number}：{children}
+          <div dangerouslySetInnerHTML={{ __html: `問題${number} : ${data}` }} />
         </ClueWrapper>
       </div>
       { hint && <span className="text-yellow-500 text-xs hidden cursor-pointer md:inline-block" onClick={() => { setOnHintShow(prev => !prev); handleHintSelected(direction, number); } }>Hintを{ onHintShow ? "閉じる" : "見る" }</span> }

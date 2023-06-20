@@ -29,7 +29,8 @@ import {
   UsedCellData,
   CellData,
   UnusedCellData,
-  LangType
+  LangType,
+  ClueTypeOriginal
 } from './types';
 import {
   bothDirections,
@@ -277,7 +278,7 @@ export type CrosswordProviderProps = EnhancedProps<typeof crosswordProviderPropT
     /**
      * callback function called when a clue is selected
      */
-    onClueSelected?: (direction: Direction, number: string) => void;
+    onClueSelected?: (direction: Direction, info: ClueTypeOriginal) => void;
     
     
     onHintSelected?: (direction: Direction, number: string, onHint: boolean) => void;
@@ -1053,7 +1054,7 @@ const CrosswordProvider = React.forwardRef<
         focus();
 
         if (onClueSelected) {
-          onClueSelected(direction, number);
+          onClueSelected(direction, info);
         }
       },
       [clues, focus, moveTo, onClueSelected]
