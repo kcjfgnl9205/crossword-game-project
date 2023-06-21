@@ -34,7 +34,7 @@ export default function CategoryEditClient({ category, langs }: Props) {
   const [ langChecked, setLangChecked ] = useState<Array<LangType>>(category ? category.langs : langs);
   const [ modalData, setModalData ] = useState<any | null>(null);
 
-  const [ accordionOpen, setAccordionOpen ] = useState({ part: false, lang: false, setting: false });
+  const [ accordionOpen, setAccordionOpen ] = useState({ part: true, lang: true, setting: true });
 
   const { register, handleSubmit, formState: { errors }, setValue, getValues } = useForm<FieldValues>({
     defaultValues: {

@@ -12,7 +12,7 @@ type Props = {
 }
 
 export default function ListingParts({ item, category }: Props) {
-  const [ open, setOpen ] = useState<boolean>(false);
+  const [ open, setOpen ] = useState<boolean>(true);
 
   const header = (
     <div className="font-semibold text-lg md:text-xl">

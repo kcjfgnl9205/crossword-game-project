@@ -9,25 +9,20 @@ type Props = {
   id: string;
   label: string;
   disabled?: boolean;
-  subFormat?: string;
-  required?: boolean;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors;
   validate?: any;
-  value?: string;
 }
 
 export default function Textarea ({
   id,
   label,
   disabled,
-  subFormat,
   register,
   errors,
   validate,
-  value,
 }: Props) {
-  const [rows, setRows] = useState(1);
+  const [rows, setRows] = useState(2);
   const maxRows = 4;
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -56,7 +51,6 @@ export default function Textarea ({
         id={id}
         disabled={disabled}
         { ...register(id, validate) }
-        value={value}
         placeholder="  "
         className={`
           peer
@@ -78,7 +72,6 @@ export default function Textarea ({
         `}
         onChange={handleChange}
       />
-      { subFormat && <span className="text-neutral-500 absolute top-5 right-2">{subFormat}</span> }
 
       <label
         className={`

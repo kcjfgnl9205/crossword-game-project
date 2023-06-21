@@ -15,7 +15,7 @@ type Props = {
 }
 
 export default function ListingPartsAdmin({ item, isLoading, handleDelete, handleUpdateRouter, handleResultRouter }: Props) {
-  const [ open, setOpen ] = useState<boolean>(false);
+  const [ open, setOpen ] = useState<boolean>(true);
 
   const header = (
     <div className="font-semibold text-lg md:text-xl">

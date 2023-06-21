@@ -11,7 +11,7 @@ type Props ={
 }
 
 export default function PartAccordionList({ item }: Props) {
-  const [ open, setOpen ] = useState<boolean>(false);
+  const [ open, setOpen ] = useState<boolean>(true);
 
   const header = <div className="font-semibold text-lg md:text-xl">{item.name}</div>;
   const body = (
