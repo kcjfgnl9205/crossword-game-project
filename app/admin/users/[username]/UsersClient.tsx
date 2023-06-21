@@ -8,6 +8,7 @@ import { Container, Heading } from "@/app/components/common";
 import React, { useCallback } from "react";
 import UserResultTable from "@/app/components/admin/result/UserResultTable";
 import { SafeUser } from "@/app/types";
+import { downloadCSV } from "@/app/utils/utils";
 
 type Props = {
   user: SafeUser;
@@ -21,9 +22,11 @@ export default function UsersClient({ user, items }: Props) {
     alert(`${name}のデータをPDF出力しました。`);
   }, []);
 
-  const handleCsvPrint = useCallback((e:React.MouseEvent<HTMLButtonElement>, name: string) => {
-    alert(`${name}のデータをCSV出力しました。`);
-  }, []);
+  const handleCsvPrint = useCallback(async (e:React.MouseEvent<HTMLButtonElement>, item: any) => {
+    if (confirm(`${item.name}のデータをCSV出力します。`)) {
+      await downloadCSV(item, `${item.name}_${user.username}.csv`);
+    }
+  }, [user]);
 
   const moveDetailPage = useCallback((e:React.MouseEvent<HTMLButtonElement>, name: string) => {
     router.push(`/admin/users/${user.username}/${name}`)
@@ -47,7 +50,7 @@ export default function UsersClient({ user, items }: Props) {
                   key={item.id}
                   item={item}
                   onPdfClick={(e) => handlePdfPrint(e, item.name)}
-                  onCsvClick={(e) => handleCsvPrint(e, item.name)}
+                  onCsvClick={(e) => handleCsvPrint(e, item)}
                   onHref={(e) => moveDetailPage(e, item.name_en)}
                 />
               )
