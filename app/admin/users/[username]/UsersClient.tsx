@@ -17,15 +17,9 @@ type Props = {
 
 export default function UsersClient({ user, items }: Props) {
   const router = useRouter();
-  
-  const handlePdfPrint = useCallback((e:React.MouseEvent<HTMLButtonElement>, name: string) => {
-    alert(`${name}のデータをPDF出力しました。`);
-  }, []);
 
   const handleCsvPrint = useCallback(async (e:React.MouseEvent<HTMLButtonElement>, item: any) => {
-    if (confirm(`${item.name}のデータをCSV出力します。`)) {
-      await downloadCSV(item, `${item.name}_${user.username}.csv`);
-    }
+    await downloadCSV(item, `${item.name}_${user.username}.csv`);
   }, [user]);
 
   const moveDetailPage = useCallback((e:React.MouseEvent<HTMLButtonElement>, name: string) => {
@@ -49,7 +43,7 @@ export default function UsersClient({ user, items }: Props) {
                 <UserResultTable
                   key={item.id}
                   item={item}
-                  onPdfClick={(e) => handlePdfPrint(e, item.name)}
+                  user={user}
                   onCsvClick={(e) => handleCsvPrint(e, item)}
                   onHref={(e) => moveDetailPage(e, item.name_en)}
                 />

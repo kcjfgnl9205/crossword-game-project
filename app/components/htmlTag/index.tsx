@@ -5,6 +5,7 @@ import Radio from "./Radio";
 import RadioGroup from "./RadioGroup";
 import RadioGroupAndSelect from "./RadioGroupAndSelect";
 import Button from "./Button";
+import ButtonPDF from "./ButtonPDF";
 import Checkbox from "./Checkbox";
 import Hr from "./Hr";
 
@@ -17,6 +18,7 @@ export {
   RadioGroup,
   RadioGroupAndSelect,
   Button,
+  ButtonPDF,
   Checkbox,
   Hr
 }

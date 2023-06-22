@@ -2,18 +2,20 @@
 
 import React, { useState } from "react";
 import { PartAccordion } from "@/app/components/Accordion";
-import { Button } from "@/app/components/htmlTag";
+import { Button, ButtonPDF } from "@/app/components/htmlTag";
+import PdfComponent from "@/app/pdf/PdfComponent";
+import { SafeUser } from "@/app/types";
 
 
 type Props = {
   item: any;
-  onPdfClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  user: SafeUser;
   onCsvClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onHref: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 
-export default function UserResultTable({ item, onPdfClick, onCsvClick, onHref }: Props) {
+export default function UserResultTable({ item, user, onCsvClick, onHref }: Props) {
   const [ open, setOpen ] = useState<boolean>(false);
   const header = (
     <div className="font-semibold text-lg md:text-xl">
@@ -24,7 +26,7 @@ export default function UserResultTable({ item, onPdfClick, onCsvClick, onHref }
   const body = (
     <>
       <div className="flex flex-col gap-1 py-1 md:flex-row">
-        <Button label={`${item.name}の結果PDF出力`} onClick={onPdfClick} primary />
+        <ButtonPDF label={`${item.name}の結果PDF出力`} document={<PdfComponent username={user.username} item={item} />} filename={`${item.name}_${user.username}.pdf`} primary />
         <Button label={`${item.name}の結果CSV出力`} onClick={onCsvClick} primary />
         <Button label={`結果詳細(受講生のマイページ画面と同様)`} onClick={onHref} info />
       </div>
