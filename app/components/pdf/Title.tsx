@@ -15,7 +15,7 @@ type Props = {
 
 export default function PdfTitle({
   fontWeight = "bold",
-  fontSize = 12,
+  fontSize = 10,
   children
 }: Props) {
   return (
@@ -23,8 +23,8 @@ export default function PdfTitle({
       style={{
         fontWeight: fontWeight,
         fontSize: fontSize,
-        marginTop: "8px",
-        marginBottom: "12px"
+        marginTop: "12px",
+        marginBottom: "6px"
       }}
     >
       {children}

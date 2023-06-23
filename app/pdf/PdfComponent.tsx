@@ -1,6 +1,5 @@
 import React from 'react';
-import { Font, Document, Page } from '@react-pdf/renderer';
-import PdfHeading from '../components/pdf/Heading';
+import { Font, Document, Page, Text } from '@react-pdf/renderer';
 import PdfTitle from '../components/pdf/Title';
 import PdfPageNumber from '../components/pdf/PageNumber';
 import PdfTable from '../components/pdf/Table';
@@ -28,7 +27,9 @@ const PdfComponent = ({ username, item }: Props) => {
       }}>
 
         {/* ヘッダー、カテゴリー */}
-        <PdfHeading fixed>{username}さん（{item.name}）</PdfHeading>
+        <Text style={{ fontSize: 9, padding: 2 }}>会社名：神田IT School</Text>
+        <Text style={{ fontSize: 9, padding: 2 }}>名前：{username}</Text>
+        <Text style={{ fontSize: 9, padding: 2 }}>カテゴリー：{item.name}</Text>
 
         {
           item.parts.map((part: any) => {
@@ -38,11 +39,11 @@ const PdfComponent = ({ username, item }: Props) => {
                 <PdfTable
                   headerFixed
                   fields={
-                    part.chapters.map((chapter: any, idx: number, arr: Array<any>) => { return { title: chapter.name, width: Math.floor(100 / arr.length) } })
+                    part.chapters.map((chapter: any, idx: number, arr: Array<any>) => { return { title: chapter.name, width: Math.ceil(100 / arr.length) } })
                   }
                   data={
                     part.chapters.map((chapter: any, idx: number, arr: Array<any>) => 
-                      chapter.langs.map((lang: any, _idx: number, langArr: Array<any>) =>  { return { title: lang.name, width: Math.floor(100 / arr.length + langArr.length), item: lang.total_questions === null ? "" : `${lang.total_correct_answers} / ${lang.total_questions}` } })
+                      chapter.langs.map((lang: any, _idx: number, langArr: Array<any>) =>  { return { title: lang.name, width: Math.ceil(100 / arr.length + langArr.length), item: lang.total_questions === null ? "" : `${lang.total_correct_answers} / ${lang.total_questions}` } })
                     )
                 }
                 />
