@@ -85,6 +85,14 @@ export const SELECT_CROSSWORD_BY_ID = `
 `;
 
 
+// クロスワードゲーム質問データ取得
+export const SELECT_CROSSWORD_DETAIL_BY_CROSSWORD_ID = `
+  SELECT id
+    FROM CROSSWORD_DETAIL
+   WHERE deleted_at IS NULL
+     AND crossword_id = ?
+`;
+
 // クロスワードゲームを登録する
 export const INSERT_CROSSWORD = `INSERT INTO CROSSWORD_MST(title, time_limit, category_id, part_id, chapter_id, lang_id) VALUES(?, ?, ?, ?, ?, ?)`;
 export const INSERT_CROSSWORD_DETAIL = `INSERT INTO CROSSWORD_DETAIL(clue, hint, answer, crossword_id, direction) VALUES(?, ?, ?, ?, ?)`;
@@ -98,7 +106,7 @@ export const DELETE_CROSSWORD = `
 export const DELETE_CROSSWORD_DETAIL = `
     UPDATE CROSSWORD_DETAIL
        SET deleted_at = ?
-     WHERE crossword_id = ?
+     WHERE id = ?
 `;
 
 // クロスワードゲームを修正する

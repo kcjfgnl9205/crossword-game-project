@@ -171,7 +171,6 @@ export default function CrosswordCreateClient({ item, category }: Props) {
     try {
       const params = {
         crossword: data,
-        crosswordQuestions: crosswordData,
         withCredentials: true,
       }
 

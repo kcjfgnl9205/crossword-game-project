@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { changeMinuteToSecond } from "@/app/utils/utils";
 import { excuteQuery, transaction } from "@/app/libs/db/mysql";
-import { DELETE_CROSSWORD, DELETE_CROSSWORD_DETAIL, INSERT_CROSSWORD_DETAIL, UPDATE_CROSSWORD, UPDATE_CROSSWORD_DETAIL } from "@/app/libs/db/sql/crossword";
+import { DELETE_CROSSWORD, DELETE_CROSSWORD_DETAIL, INSERT_CROSSWORD_DETAIL, SELECT_CROSSWORD_DETAIL_BY_CROSSWORD_ID, UPDATE_CROSSWORD, UPDATE_CROSSWORD_DETAIL } from "@/app/libs/db/sql/crossword";
 import { INSERT_CROSSWORD_RESULT, INSERT_CROSSWORD_RESULT_DETAIL } from "@/app/libs/db/sql/result";
 
 
@@ -58,9 +58,9 @@ export async function PUT(
       throw new Error('Invalid ID');
     }
     const body = await request.json();
-    const { crossword, crosswordQuestions } = body;
+    const { crossword } = body;
 
-    const response = await transaction(update_crossword_logic(Number(id), crossword, crosswordQuestions));
+    const response = await transaction(update_crossword_logic(Number(id), crossword));
 
     return NextResponse.json(response);
   } catch (error: any) {
@@ -111,7 +111,7 @@ const delete_crossword_logic = (id: number) => {
   };
 };
 
-const update_crossword_logic = (id: number, crossword: any, crosswordQuestions: any) => {
+const update_crossword_logic = (id: number, crossword: any) => {
   return async (conn: any) => {
     try {
       const obj = {
@@ -124,28 +124,21 @@ const update_crossword_logic = (id: number, crossword: any, crosswordQuestions: 
       }
       await excuteQuery(conn, UPDATE_CROSSWORD, [obj.title, obj.time_limit, obj.part_id, obj.chapter_id, obj.lang_id, id, obj.category_id])
 
-      for (const key of Object.keys(crosswordQuestions)) {
-        const items = crosswordQuestions[key];
-        for (const itemKey of Object.keys(items)) {
-          const item = items[itemKey];
-          if (item.id) {
-            const obj = {
-              clue: item.clue,
-              hint: item.hint,
-              answer: item.answer,
-              crossword_id: id,
-              direction: key
-            }
-            await excuteQuery(conn, UPDATE_CROSSWORD_DETAIL, [obj.clue, obj.hint, obj.answer, obj.direction, item.id, obj.crossword_id])
-          } else {
-            const obj = {
-              clue: item.clue,
-              hint: item.hint,
-              answer: item.answer,
-              direction: key
-            };
-            await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [obj.clue, obj.hint, obj.answer, id, obj.direction]);
-          };
+
+      const detailids = await excuteQuery(conn, SELECT_CROSSWORD_DETAIL_BY_CROSSWORD_ID, [id]);
+      const deleteArr = detailids.filter((item1: any) => {
+        return !crossword.questions.some((item2:any) => item2.id === item1.id);
+      })
+      for (let i = 0; i < deleteArr.length; i++) {
+        await excuteQuery(conn, DELETE_CROSSWORD_DETAIL, [new Date(), deleteArr[i].id])
+      }
+
+      for (let i = 0; i < crossword.questions.length; i++) {
+        const question = crossword.questions[i];
+        if (crossword.questions[i].id) {
+          await excuteQuery(conn, UPDATE_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, question.direction, question.id, id])
+        } else {
+          await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, id, question.direction]);
         }
       }
 
