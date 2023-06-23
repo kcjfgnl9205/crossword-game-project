@@ -9,9 +9,9 @@ export async function POST(
 ) {
   try {
     const body = await request.json();
-    const { crossword, crosswordQuestions } = body;
+    const { crossword } = body;
 
-    const crosswordInsert = await transaction(insert_crossword_logic(crossword, crosswordQuestions));
+    const crosswordInsert = await transaction(insert_crossword_logic(crossword));
   
     return NextResponse.json(crosswordInsert);
   } catch (error: any) {
@@ -19,7 +19,7 @@ export async function POST(
   }
 }
 
-const insert_crossword_logic = (crossword: any, crosswordQuestions: any) => {
+const insert_crossword_logic = (crossword: any) => {
   return async (conn: any) => {
     try {
       const obj = {
@@ -32,18 +32,9 @@ const insert_crossword_logic = (crossword: any, crosswordQuestions: any) => {
       };
       const crosswordInsertInfo = await excuteQuery(conn, INSERT_CROSSWORD, [obj.title, obj.time_limit, obj.category_id, obj.part_id, obj.chapter_id, obj.lang_id]);
 
-      for (const key of Object.keys(crosswordQuestions)) {
-        const items = crosswordQuestions[key];
-        for (const itemKey of Object.keys(items)) {
-          const item = items[itemKey];
-          const obj = {
-            clue: item.clue,
-            hint: item.hint,
-            answer: item.answer,
-            direction: key
-          };
-          await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [obj.clue, obj.hint, obj.answer, Number(crosswordInsertInfo.insertId), obj.direction]);
-        }
+      for (let i = 0; i < crossword.questions.length; i++) {
+        const question = crossword.questions[i];
+        await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, Number(crosswordInsertInfo.insertId)]);
       }
 
       return crosswordInsertInfo;

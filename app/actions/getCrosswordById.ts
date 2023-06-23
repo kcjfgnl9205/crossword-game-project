@@ -52,8 +52,7 @@ export default async function getCrosswordById(params: Props): Promise<any> {
             id: row.question_id,
             clue: row.clue,
             hint: row.hint,
-            answer: row.answer,
-            direction: row.direction
+            answer: row.answer
           }]
         })
       } else {
@@ -61,8 +60,7 @@ export default async function getCrosswordById(params: Props): Promise<any> {
           id: row.question_id,
           clue: row.clue,
           hint: row.hint,
-          answer: row.answer,
-          direction: row.direction
+          answer: row.answer
         })
       }
     });

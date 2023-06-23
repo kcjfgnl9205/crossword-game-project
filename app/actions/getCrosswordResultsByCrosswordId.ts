@@ -37,7 +37,6 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
                 result: [
                   {
                     id: row.result_detail_id,
-                    direction: row.result_detail_direction,
                     number: row.result_detail_number,
                     clue: row.result_detail_clue,
                     answer: row.result_detail_answer,
@@ -63,7 +62,6 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
               result: [
                 {
                   id: row.result_detail_id,
-                  direction: row.result_detail_direction,
                   number: row.result_detail_number,
                   clue: row.result_detail_clue,
                   answer: row.result_detail_answer,
@@ -83,7 +81,6 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
               result: [
                 {
                   id: row.result_detail_id,
-                  direction: row.result_detail_direction,
                   number: row.result_detail_number,
                   clue: row.result_detail_clue,
                   answer: row.result_detail_answer,
@@ -95,7 +92,6 @@ export default async function getCrosswordResultsByCrosswordId(params: Props): P
           } else {
             transformedData[crosswordIndex].users[userIndex].answers[answerIndex].result.push({
               id: row.result_detail_id,
-              direction: row.result_detail_direction,
               number: row.result_detail_number,
               clue: row.result_detail_clue,
               answer: row.result_detail_answer,

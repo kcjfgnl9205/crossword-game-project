@@ -22,7 +22,6 @@ CREATE VIEW V_CROSSWORD_ALL_RESULT AS
                 , CROSSWORD_RESULT_DETAIL.id as result_detail_id
                 , CROSSWORD_RESULT_DETAIL.clue as result_detail_clue
                 , CROSSWORD_RESULT_DETAIL.answer as result_detail_answer
-                , CROSSWORD_RESULT_DETAIL.direction as result_detail_direction
                 , CROSSWORD_RESULT_DETAIL.u_hint as result_detail_u_hint
                 , CASE WHEN CROSSWORD_RESULT_DETAIL.answer = CROSSWORD_RESULT_DETAIL.u_answer THEN TRUE ELSE FALSE END AS isCorrect
                 , USER_MST.id as user_id

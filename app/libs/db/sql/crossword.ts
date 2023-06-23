@@ -69,7 +69,6 @@ export const SELECT_CROSSWORD_BY_ID = `
                , CROSSWORD_DETAIL.clue
                , CROSSWORD_DETAIL.hint
                , CROSSWORD_DETAIL.answer
-               , CROSSWORD_DETAIL.direction
             FROM CROSSWORD_MST
       INNER JOIN V_CATEGORY_ALL_MST
               ON CROSSWORD_MST.category_id = V_CATEGORY_ALL_MST.category_id
@@ -95,7 +94,7 @@ export const SELECT_CROSSWORD_DETAIL_BY_CROSSWORD_ID = `
 
 // クロスワードゲームを登録する
 export const INSERT_CROSSWORD = `INSERT INTO CROSSWORD_MST(title, time_limit, category_id, part_id, chapter_id, lang_id) VALUES(?, ?, ?, ?, ?, ?)`;
-export const INSERT_CROSSWORD_DETAIL = `INSERT INTO CROSSWORD_DETAIL(clue, hint, answer, crossword_id, direction) VALUES(?, ?, ?, ?, ?)`;
+export const INSERT_CROSSWORD_DETAIL = `INSERT INTO CROSSWORD_DETAIL(clue, hint, answer, crossword_id) VALUES(?, ?, ?, ?)`;
 
 // クロスワードゲームを削除する
 export const DELETE_CROSSWORD = `
@@ -125,7 +124,6 @@ export const UPDATE_CROSSWORD_DETAIL = `
        SET clue = ?
          , hint = ?
          , answer = ?
-         , direction = ?
      WHERE id = ?
        AND crossword_id = ?
 `;

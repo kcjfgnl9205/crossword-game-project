@@ -4,8 +4,8 @@ export const INSERT_CROSSWORD_RESULT = `
   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT maxtimes.times FROM (SELECT COALESCE(MAX(times), 0) + 1 AS times FROM CROSSWORD_RESULT_MST WHERE category_id = ? AND part_id = ? AND chapter_id = ? AND lang_id = ? AND user_id = ?) AS maxtimes ))
 `;
 export const INSERT_CROSSWORD_RESULT_DETAIL = `
-  INSERT INTO CROSSWORD_RESULT_DETAIL(crossword_result_id, clue, hint, answer, direction, u_hint, u_answer)
-  VALUES(?, ?, ?, ?, ?, ?, ?)
+  INSERT INTO CROSSWORD_RESULT_DETAIL(crossword_result_id, clue, hint, answer, u_hint, u_answer)
+  VALUES(?, ?, ?, ?, ?, ?)
 `;
 
 

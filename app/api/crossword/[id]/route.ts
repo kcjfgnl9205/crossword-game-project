@@ -82,11 +82,10 @@ const insert_crossword_result_logic = (id: number, crossword: any) => {
             clue: item.clue,
             hint: item.hint,
             answer: item.answer,
-            direction: key,
             u_hint: item.usedHint,
             u_answer: item.userAnswer
           }
-          await excuteQuery(conn, INSERT_CROSSWORD_RESULT_DETAIL, [Number(crosswordResultInfo.insertId), obj.clue, obj.hint, obj.answer, obj.direction, obj.u_hint, obj.u_answer])
+          await excuteQuery(conn, INSERT_CROSSWORD_RESULT_DETAIL, [Number(crosswordResultInfo.insertId), obj.clue, obj.hint, obj.answer, obj.u_hint, obj.u_answer])
         }
       }
       return { status: 200, message: "登録しました。" };
@@ -136,9 +135,9 @@ const update_crossword_logic = (id: number, crossword: any) => {
       for (let i = 0; i < crossword.questions.length; i++) {
         const question = crossword.questions[i];
         if (crossword.questions[i].id) {
-          await excuteQuery(conn, UPDATE_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, question.direction, question.id, id])
+          await excuteQuery(conn, UPDATE_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, question.id, id])
         } else {
-          await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, id, question.direction]);
+          await excuteQuery(conn, INSERT_CROSSWORD_DETAIL, [question.clue, question.hint, question.answer, id]);
         }
       }
 

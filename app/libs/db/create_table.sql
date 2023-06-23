@@ -95,7 +95,6 @@ CREATE TABLE `CROSSWORD_DETAIL` (
   `answer` varchar(255) NOT NULL,
   `score` int NOT NULL DEFAULT '0',
   `crossword_id` int NOT NULL,
-  `direction` varchar(6) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -180,7 +179,6 @@ CREATE TABLE `CROSSWORD_RESULT_DETAIL` (
   `hint` varchar(255) DEFAULT NULL,
   `answer` varchar(255) NOT NULL,
   `score` int NOT NULL DEFAULT '0',
-  `direction` varchar(6) NOT NULL,
   `u_hint` int NOT NULL,             -- ヒント使用
   `u_answer` varchar(255) NOT NULL,  -- ユーザーが提出した回答  
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
