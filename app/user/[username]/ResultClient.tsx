@@ -24,18 +24,20 @@ export default function ResultClient({ user, items }: Props) {
 
       <div className="pt-2 flex flex-col gap-0.5 md:gap-1">
         {
-          items.map((item: any) => {
-            return (
-              <div key={item.id} className="flex flex-row gap-1 items-center md:gap-2">
-                <div
-                  onClick={() =>  {router.push(`/user/${user.username}/${item.name_en}`)}}
-                  className="p-4 border rounded-lg transition w-full text-center hover:opacity-80 hover:bg-neutral-100 cursor-pointer"
-                >
-                  {item.name}
+          items.length === 0
+          ? <Heading title="データが存在しません。" center />
+          : items.map((item: any) => {
+              return (
+                <div key={item.id} className="flex flex-row gap-1 items-center md:gap-2">
+                  <div
+                    onClick={() =>  {router.push(`/user/${user.username}/${item.name_en}`)}}
+                    className="p-4 border rounded-lg transition w-full text-center hover:opacity-80 hover:bg-neutral-100 cursor-pointer"
+                  >
+                    {item.name}
+                  </div>
                 </div>
-              </div>
-            )
-          })
+              )
+            })
         }
       </div>
     </Container>

@@ -368,9 +368,6 @@ const CrosswordProvider = React.forwardRef<
     },
     ref
   ) => {
-    const hiraganaRegex = /^[\u3040-\u309F]+$/;
-    const katakanaRegex = /^[\u30A0-\u30FF]+$/;
-
     // The final theme is the merger of three values: the "theme" property
     // passed to the component (which takes precedence), any values from
     // ThemeContext, and finally the "defaultTheme" values fill in for any
@@ -884,6 +881,9 @@ const CrosswordProvider = React.forwardRef<
 
 
     useEffect(() => {
+      const hiraganaRegex = /[\u3040-\u309F]/;
+      const katakanaRegex = /[\u30A0-\u30FF]/;
+
       if (!bulkChange) {
         setBulkCursor(0);
         return;
@@ -905,8 +905,6 @@ const CrosswordProvider = React.forwardRef<
     setBulkCursor,
     handleSingleCharacter,
     moveBackward,
-    hiraganaRegex,
-    katakanaRegex
   ]);
 
     // When the clues *input* data changes, reset/reload the player data

@@ -1,7 +1,7 @@
 'use client';
 
-
 import Accordion from "../../Accordion/Accordion";
+import CrosswordResultClue from "../../Accordion/CrosswordResultClue";
 
 
 type Props = {
@@ -25,28 +25,13 @@ export default function CrosswordResult({username, items}: Props) {
   const body = (
     <>
       {
-        items.map((item, index) => {
-          return (
-            <div key={item.id} className="text-sm md:text-lg">
-              <div className="font-semibold p-1 md:p-2">{item.times}回目</div>
-              {
-                item.result.map((answer: any, index: number) => {
-                  return (
-                    <div key={answer.id} className="flex flex-col px-4 my-4 md:flex-row md:justify-between">
-                      <div className="flex flex-col gap-1 md:flex-row md:gap-4">
-                        <div className="flex-none font-semibold mr-4">
-                          問題{index + 1}
-                        </div>
-                        <div>{answer.clue}</div>
-                      </div>
-                      <div className="flex-none md:ml-4">{answer.answer} { answer.isCorrect ? "⭕️" : "❌" }</div>
-                    </div>
-                  )
-                })
-              }
-            </div>
-          )
-        })
+        items.map((item) => (
+          <CrosswordResultClue
+            key={item.id}
+            times={item.times}
+            items={item.result}
+          />
+        ))
       }
     </>
   )
