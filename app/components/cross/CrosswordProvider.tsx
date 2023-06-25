@@ -368,6 +368,9 @@ const CrosswordProvider = React.forwardRef<
     },
     ref
   ) => {
+    const hiraganaRegex = /^[\u3040-\u309F]+$/;
+    const katakanaRegex = /^[\u30A0-\u30FF]+$/;
+
     // The final theme is the merger of three values: the "theme" property
     // passed to the component (which takes precedence), any values from
     // ThemeContext, and finally the "defaultTheme" values fill in for any
@@ -474,7 +477,6 @@ const CrosswordProvider = React.forwardRef<
                   if (newClues.down && colData.guess) {
                     const index = newClues.down.findIndex((i: any) => i.number === colData.down);
                     if (index !== -1) {
-                      console.log("asdf")
                       const updatedClue = { ...newClues.down[index], userAnswer: (newClues.down[index].userAnswer) + (colData.guess || "") };
                       const updatedAcross = [...newClues.down];
                       updatedAcross[index] = updatedClue;
@@ -864,7 +866,7 @@ const CrosswordProvider = React.forwardRef<
         return String.fromCharCode(code);
       });
 
-      const value = lang === "en" ? event.target.value : lang === "jp-hira" ? event.target.value : katakana;
+      const value = lang === "jp-kata" ? katakana : event.target.value;
       if (lang !== "en") {
         setInputValue(value);
       }
@@ -888,21 +890,14 @@ const CrosswordProvider = React.forwardRef<
       }
 
       const target = bulkChange[bulkCursor];
-
-
-      // handle bulkChange by updating a character at a time (this lets us
-      // leverage the existing character-entry logic).
-    //   handleSingleCharacter(bulkChange[0]);
-    //   setBulkChange(bulkChange.length === 1 ? null : bulkChange.substring(1));
-    // }, [bulkChange, handleSingleCharacter]);
-    if (lang !== "en") {
-        if (target && /^[\u{3000}-\u{301C}\u{3041}-\u{3093}\u{309B}-\u{309E}\u{30A0}-\u{30FF}\u{30FC}\u{FF5E}]+$/mu.test(target)) {
-          handleSingleCharacter(bulkChange[bulkCursor]);
-          setBulkCursor(bulkCursor + 1);
-          console.log('bulkCursor changed to', bulkCursor + 1);
-          // setBulkChange(bulkChange.length === 1 ? null : bulkChange.substring(1));
+      if (lang !== "en") {
+        if ((lang === "jp-hira" && hiraganaRegex.test(target)) || (lang === "jp-kata" && katakanaRegex.test(target))) {
+          if (target) {
+            handleSingleCharacter(bulkChange[bulkCursor]);
+            setBulkCursor(bulkCursor + 1);
+          }
         }
-    }
+      }
   }, [
     lang,
     bulkChange,
@@ -910,6 +905,8 @@ const CrosswordProvider = React.forwardRef<
     setBulkCursor,
     handleSingleCharacter,
     moveBackward,
+    hiraganaRegex,
+    katakanaRegex
   ]);
 
     // When the clues *input* data changes, reset/reload the player data
@@ -1213,7 +1210,6 @@ const CrosswordProvider = React.forwardRef<
                   if (newClues.down && colData.guess) {
                     const index = newClues.down.findIndex((i: any) => i.number === colData.down);
                     if (index !== -1) {
-                      console.log("asdf")
                       const updatedClue = { ...newClues.down[index], userAnswer: (newClues.down[index].userAnswer) + (colData.guess || "") };
                       const updatedAcross = [...newClues.down];
                       updatedAcross[index] = updatedClue;
