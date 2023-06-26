@@ -857,17 +857,33 @@ const CrosswordProvider = React.forwardRef<
     );
 
     const handleInputChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((event) => {
-      event.preventDefault();
-      const katakana = event.target.value.replace(/[\u3041-\u3096]/g, match => {
-        const code = match.charCodeAt(0) + 0x60;
-        return String.fromCharCode(code);
-      });
+      const hiraganaRegex = /[\u3040-\u309F]/g;
+      const katakanaRegex = /[\u30A0-\u30FF]/g;
 
-      const value = lang === "jp-kata" ? katakana : event.target.value;
-      if (lang !== "en") {
-        setInputValue(value);
+      event.preventDefault();
+      const inputValue = event.target.value;
+      let convertedValue = inputValue;
+
+      if (lang === "jp-kata") {
+        // 히라가나를 가타카나로 변환
+        convertedValue = inputValue.replace(hiraganaRegex, (match) => {
+          const code = match.charCodeAt(0) + 0x60;
+          return String.fromCharCode(code);
+        });
+      } else if (lang === "jp-hira") {
+        // 가타카나를 히라가나로 변환
+        if (katakanaRegex.test(inputValue)) {
+          convertedValue = inputValue.replace(katakanaRegex, (match) => {
+            const code = match.charCodeAt(0) - 0x60;
+            return String.fromCharCode(code);
+          });
+        }
       }
-      setBulkChange(value);
+
+      if (lang !== "en") {
+        setInputValue(convertedValue);
+      }
+      setBulkChange(convertedValue);
     }, [lang]);
 
     const handleCompositionEnd = useCallback<React.CompositionEventHandler<HTMLInputElement>>((event) => {
