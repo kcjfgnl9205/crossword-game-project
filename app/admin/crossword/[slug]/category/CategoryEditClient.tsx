@@ -23,7 +23,6 @@ type Props = {
 
 const partHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">単元・章設定</div>;
 const langHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">言語カテゴリー名称設定</div>;
-const settingHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">ゲーム詳細設定</div>;
 
 export default function CategoryEditClient({ category, langs }: Props) {
   const router = useRouter();
@@ -41,7 +40,6 @@ export default function CategoryEditClient({ category, langs }: Props) {
       id: category?.id,
       name: category?.name || "",
       name_en: category?.name_en || "",
-      min_cnt: category?.min_cnt || 2,
       sorted: category?.sorted || 99,
       
       parts: partItem,
@@ -133,11 +131,6 @@ export default function CategoryEditClient({ category, langs }: Props) {
       if (getValues("langs").filter((lang: LangType) => lang.flg).length === 0) {
         alert("言語カテゴリーを選択してください。");
         setAccordionOpen((prev: any) => { return { ...prev, lang: true } });
-        return;
-      }
-      if (!/^(?:[2-9]|[1-9][0-9])$/.test(getValues("min_cnt"))) {
-        alert("ゲーム詳細設定値を2-99の数字を入力してください。");
-        setAccordionOpen((prev: any) => { return { ...prev, setting: true } });
         return;
       }
 
@@ -271,26 +264,6 @@ export default function CategoryEditClient({ category, langs }: Props) {
     </div>
   );
 
-
-  const settingBody = (
-    <div className="py-4">
-      <div className="flex flex-col py-1 w-full gap-2 md:py-2">
-        <ErrorMessage message="※各クロスワードゲームの最小問題数を設定してください。" />
-        <Input
-          type="number"
-          id="min_cnt"
-          label="最小問題数"
-          register={register}
-          errors={errors}
-          validate={{ 
-            required: "設定数字を入力してください。",
-            pattern: { value: /^(?:[2-9]|[1-9][0-9])$/, message: "2-99の数字を入力してください。" }
-          }}
-        />
-      </div>
-    </div>
-  )
-
   
   return (
     <Container>
@@ -329,7 +302,6 @@ export default function CategoryEditClient({ category, langs }: Props) {
       <div className="flex flex-col gap-1 py-4">
         <PartAccordion header={partHeader} body={partBody} open={accordionOpen.part} setOpen={() => setAccordionOpen((prev) => { return { ...accordionOpen, part: !prev.part } })} />
         <PartAccordion header={langHeader} body={langBody} open={accordionOpen.lang} setOpen={() => setAccordionOpen((prev) => { return { ...accordionOpen, lang: !prev.lang } })} />
-        <PartAccordion header={settingHeader} body={settingBody} open={accordionOpen.setting} setOpen={() => setAccordionOpen((prev) => { return { ...accordionOpen, setting: !prev.setting } })} />
         <div className="flex flex-col gap-2 md:w-64 md:flex-row">
           <Button label={category ? "修正" : "登録"} onClick={handleSubmit(handleOnSubmit)} primary disabled={isLoading} />
           <Button label="取消" onClick={handleCancel} error disabled={isLoading} />

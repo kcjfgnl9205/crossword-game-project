@@ -9,7 +9,7 @@ export const SELECT_CATEGORY_MST = `
 `;
 
 // カテゴリーデータを登録する
-export const INSERT_CATEGORY_MST = `INSERT CATEGORY_MST(name, name_en, sorted, min_cnt) VALUES(?, ?, ?, ?)`;
+export const INSERT_CATEGORY_MST = `INSERT CATEGORY_MST(name, name_en, sorted) VALUES(?, ?, ?)`;
 
 // カテゴリーデータを修正する
 export const UPDATE_CATEGORY_MST = `
@@ -17,7 +17,6 @@ export const UPDATE_CATEGORY_MST = `
        SET name = ?
          , name_en = ?
          , sorted = ?
-         , min_cnt = ?
      WHERE id = ?
 `;
 

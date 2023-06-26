@@ -40,7 +40,7 @@ const update_category_sort_logic = (categories: Array<any>) => {
   return async (conn: any) => {
     try {
       for (let i = 0; i < categories.length; i++) {
-        await excuteQuery(conn, UPDATE_CATEGORY_MST, [categories[i].name, categories[i].name_en, categories[i].sorted, categories[i].min_cnt, categories[i].id]);
+        await excuteQuery(conn, UPDATE_CATEGORY_MST, [categories[i].name, categories[i].name_en, categories[i].sorted, categories[i].id]);
       }
     } catch (err) {
       throw err;
@@ -51,7 +51,7 @@ const update_category_sort_logic = (categories: Array<any>) => {
 const insert_category_logic = (category: any) => {
   return async (conn: any) => {
     try {
-      const categoryMstInfoawait = await excuteQuery(conn, INSERT_CATEGORY_MST, [category.name, category.name_en, Number(category.sorted), Number(category.min_cnt)])
+      const categoryMstInfoawait = await excuteQuery(conn, INSERT_CATEGORY_MST, [category.name, category.name_en, Number(category.sorted)])
       for (let i = 0; i < category.langs.length; i++) {
         await excuteQuery(conn, INSERT_CATEGORY_LANG_PACKAGE, [categoryMstInfoawait.insertId, category.langs[i].id, category.langs[i].flg]);
       }
@@ -124,7 +124,7 @@ const update_category_logic = (category: any) => {
   return async (conn: any) => {
     try {
       // カテゴリーマスタ更新
-      await excuteQuery(conn, UPDATE_CATEGORY_MST, [category.name, category.name_en, category.sorted, category.min_cnt, category.id]);
+      await excuteQuery(conn, UPDATE_CATEGORY_MST, [category.name, category.name_en, category.sorted, category.id]);
       for (let i = 0; i < category.langs.length; i++) {
         //更新、削除
         await excuteQuery(conn, UPDATE_CATEGORY_LANG_PACKAGE, [ category.langs[i].flg, category.id, category.langs[i].id]);

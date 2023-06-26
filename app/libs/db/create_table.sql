@@ -4,7 +4,6 @@ CREATE TABLE `CATEGORY_MST` (
   `name` varchar(255) NOT NULL,
   `name_en` varchar(255) NOT NULL,
   `sorted` int NOT NULL,
-  `min_cnt` int NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
