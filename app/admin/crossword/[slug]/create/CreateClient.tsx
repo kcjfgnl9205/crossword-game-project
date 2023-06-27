@@ -16,7 +16,8 @@ import CreateQuizAccordion from "@/app/components/admin/crossword/CreateQuizAcco
 import CreateQuizAccordionItem from "@/app/components/admin/crossword/CreateQuizAccordionItem";
 import { Input, Button, Hr, RadioGroupAndSelect } from "@/app/components/htmlTag";
 import { CrosswordBoardCreate, convertToResultArray } from "@/app/utils/crosswordutil";
-
+import useAlertModal from "@/app/hooks/useAlert";
+import AlertModal from "@/app/components/modal/AlertModal";
 
 
 const defaultQuestion = { clue: "", answer: "", hint: "" };
@@ -28,13 +29,19 @@ type Props = {
 
 export default function CrosswordCreateClient({ item, category }: Props) {
   const router = useRouter();
+  const alertModal = useAlertModal();
+  const [ alertInfo, setAlertInfo ] = useState<any>({ 
+    title: "",
+    onSubmit: () => {},
+    onSubmitLabel: ""
+  });
+  
   const crosswordRef = useRef<CrosswordProviderImperative>(null);
   const [ chapters, setChapters ] = useState<Array<ChapterType>>(item ? category.parts.filter((part: PartType) => part.id === item.category.parts[0].id)[0].chapters : category.parts[0].chapters);
   const langs: Array<LangType> = category.langs.filter((lang: LangType) => lang.flg);
 
-  const [ isCombined, setIsCombined ] = useState<boolean>(false); //総合問題なのか
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
-  const [ isChecked, setIsChecked ] = useState<boolean>(false);
+  const [ isCombined, setIsCombined ] = useState<boolean>(false); //総合問題なのか
   const [ questionErrIndex, setQuestionErrIndex ] = useState<number>(-1);
 
   
@@ -125,8 +132,6 @@ export default function CrosswordCreateClient({ item, category }: Props) {
 
 
   const handleCrosswordCreate: SubmitHandler<FieldValues> = (data) => {
-    
-    setIsChecked(false);
     let errorData: any = {};
     data.questions.forEach((el: any, index: number) => {
       if (el.question === "" || el.answer == "") {
@@ -153,22 +158,14 @@ export default function CrosswordCreateClient({ item, category }: Props) {
 
     setCrosswordData(newData);
 
-    setIsChecked(true);
-
     setTimeout(() => {
       handleFillAllAnswers();
     }, 200)
   }
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    setIsLoading(true);
-
-    if (!isChecked) {
-      alert("クロスワードゲームを生成してください。");
-      return;
-    }
-
+  const onSubmitCrossword = useCallback(async (data: any) => {
     try {
+      setIsLoading(true);
       const params = {
         crossword: data,
         withCredentials: true,
@@ -177,18 +174,14 @@ export default function CrosswordCreateClient({ item, category }: Props) {
       if (item) {
         //修正
         const response = await axios.put(`/api/crossword/${item.id}`, params);
-
         if (response.status === 200) {
-          alert("クロスワードゲームを修正しました。");
           router.push(`/admin/crossword/${category.name_en}`);
           router.refresh();
         }
       } else {
         //登録
         const response = await axios.post(`/api/crossword`, params);
-
         if (response.status === 200) {
-          alert("クロスワードゲームを登録しました。");
           router.push(`/admin/crossword/${category.name_en}`);
           router.refresh();
         }
@@ -198,8 +191,26 @@ export default function CrosswordCreateClient({ item, category }: Props) {
     } finally {
       setIsLoading(false);
     }    
-  }
+  }, [category, item, router]);
 
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if (crosswordData === null) {
+      alert("クロスワードゲームを生成してください。");
+      return;
+    }
+
+    const msg = item ? "修正" : "登録";
+    setAlertInfo((prev: any) => { 
+      return { 
+        ...prev,
+        title: `クロスワードゲームを${msg}します。`,
+        onSubmitLabel: msg,
+        onSubmit: () => onSubmitCrossword(data),
+        secondaryAction: () => alertModal.onClose,
+        secondaryActionLabel: "取消" } 
+    })
+    alertModal.onOpen();
+  }
 
   // TODO: 過去のデータからランダム生成する
   const handleSetRandomQuestions = useCallback(() => {
@@ -208,13 +219,36 @@ export default function CrosswordCreateClient({ item, category }: Props) {
 
   // 取消ボタン押下した時
   const handleCancel = useCallback(() => {
-    if (confirm("登録・修正を取り消します。\n作成中の内容は保存しません。")) {
-      router.push(`/admin/crossword/${category.name_en}`);
-    }
-  }, [router, category]);
+    const msg = item ? "修正" : "登録";
+    setAlertInfo((prev: any) => { 
+      return { 
+        ...prev,
+        title: `${msg}を取り消します。\n作成中の内容は保存しません。`,
+        onSubmitLabel: "確認",
+        onSubmit: () => {
+          router.push(`/admin/crossword/${category.name_en}`);
+          router.refresh();
+        },
+        secondaryAction: () => alertModal.onClose,
+        secondaryActionLabel: "取消"
+      } 
+    })
+    alertModal.onOpen();
+  }, [router, category, alertModal, item]);
+
 
   return (
     <Container>
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={alertModal.onClose}
+        title={alertInfo.title}
+        onSubmit={alertInfo.onSubmit}
+        onSubmitLabel={alertInfo.onSubmitLabel}
+        secondaryAction={alertInfo?.secondaryAction}
+        secondaryActionLabel={alertInfo?.secondaryActionLabel}
+        disabled={isLoading}
+      />
       <div className="mt-8">
         <Link href={`/admin/crossword/${category.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
         <Heading title="クロスワードゲーム生成" />
@@ -330,13 +364,14 @@ export default function CrosswordCreateClient({ item, category }: Props) {
 
       <div className="flex flex-col gap-1 md:gap-2">
         <Button label="クロスワード生成" onClick={handleSubmit(handleCrosswordCreate)} primary />
-        { isChecked && crosswordData !== null && <CrosswordGame lang="en" data={crosswordData} ref1={crosswordRef} /> }
+        { !(crosswordData !== null) && <Button label="取消" onClick={handleCancel} error /> }
+        { crosswordData !== null && <CrosswordGame lang="en" data={crosswordData} ref1={crosswordRef} /> }
       </div>
 
       <Hr />
 
       {
-        isChecked && crosswordData !== null &&
+        crosswordData !== null &&
         <div className="flex flex-col gap-1 pb-4 md:flex-row md:w-48 md:gap-2">
           <Button label={`${item ? "修正する" : "新規登録"}`} onClick={handleSubmit(onSubmit)} primary />
           <Button label="取消" onClick={handleCancel} error />

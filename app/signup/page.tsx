@@ -6,11 +6,19 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 
 import { Heading } from "@/app/components/common";
-import { Input, Button } from "../components/htmlTag";
+import { Input, Button } from "@/app/components/htmlTag";
+import AlertModal from "@/app/components/modal/AlertModal";
+import useAlertModal from "@/app/hooks/useAlert";
 
 
 export default function Signup() {
   const router = useRouter();
+  const alertModal = useAlertModal();
+  const [ alertInfo, setAlertInfo ] = useState<any>({ 
+    title: "",
+    onSubmit: () => {},
+    onSubmitLabel: ""
+  });
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
@@ -19,15 +27,14 @@ export default function Signup() {
       password: ""
     }
   })
-  
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
     try {
       const res = await axios.post("/api/register", data);
       if (res.status === 200) {
-        alert("会員登録しました。\nログインしてください。");
-        router.push("/login");
-        router.refresh();
+        setAlertInfo((prev: any) => { return { ...prev, title: "会員登録しました。ログインしてください。", onSubmitLabel: "確認", onSubmit: () => { router.push("/login") } } })
+        alertModal.onOpen();
       }
     } catch (error: any) {
       alert(`${error.response.status}: ${error.response.statusText}`);
@@ -38,6 +45,13 @@ export default function Signup() {
   
   return (
     <div className="w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-6 mx-auto h-full lg:h-auto md:h-auto">
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={alertModal.onClose}
+        title={alertInfo.title}
+        onSubmitLabel={alertInfo.onSubmitLabel}
+        onSubmit={alertInfo.onSubmit}
+      />
       {/* content */}
       <div className="translate duration-300 h-full">
         <div className=" translate h-full lg:h-auto md:h-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">

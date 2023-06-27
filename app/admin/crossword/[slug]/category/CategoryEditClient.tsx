@@ -14,6 +14,8 @@ import { Button, Checkbox, Input } from "@/app/components/htmlTag";
 import { Container, ErrorMessage, Heading } from "@/app/components/common";
 import PartCreateAndEditModal from "@/app/components/modal/PartCreateAndEditModal";
 import usePartCreateModal from "@/app/hooks/usePartCreate";
+import useAlertModal from "@/app/hooks/useAlert";
+import AlertModal from "@/app/components/modal/AlertModal";
 
 
 type Props = {
@@ -27,6 +29,12 @@ const langHeader = <div className="text-sm font-semibold px-4 py-2 md:text-xl">�
 export default function CategoryEditClient({ category, langs }: Props) {
   const router = useRouter();
   const createModal = usePartCreateModal();
+  const alertModal = useAlertModal();
+  const [ alertInfo, setAlertInfo ] = useState<any>({ 
+    title: "",
+    onSubmit: () => {},
+    onSubmitLabel: ""
+  });
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   
   const [ partItem, setPartItem ] = useState<Array<PartType>>(category ? category.parts : []);
@@ -117,50 +125,88 @@ export default function CategoryEditClient({ category, langs }: Props) {
     handleSort();
   }, [partItem, handleSort]);
   
-
   // 全て修正後、修正ボタン押下した時
-  const handleOnSubmit = useCallback(async () => {
+  const onSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
-        
-      if (getValues("parts").length === 0) {
-        alert("単元・章カテゴリーを追加してください。");
-        setAccordionOpen((prev: any) => { return { ...prev, part: true } });
-        return;
-      }
-      if (getValues("langs").filter((lang: LangType) => lang.flg).length === 0) {
-        alert("言語カテゴリーを選択してください。");
-        setAccordionOpen((prev: any) => { return { ...prev, lang: true } });
-        return;
-      }
-
-      const msg = category ? "修正" : "登録";
-      if (confirm(`設定値を${msg}します。`)) {
-        const response = await axios.put(`/api/category`, {
-          category: getValues(),
-          withCredentials: true,
-        });
-  
-        if (response.status === 200) {
-          alert(`${msg}しました。`);
-          setPartItem(response.data.parts);
-          router.push(`/admin/crossword/${response.data.name_en}`);
-          router.refresh();
-        }
+      const response = await axios.put(`/api/category`, {
+        category: getValues(),
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setPartItem(response.data.parts);
+        router.push(`/admin/crossword/${response.data.name_en}`);
+        router.refresh();
       }
     } catch (error: any) {
       alert("error: " + error);
     } finally {
       setIsLoading(false);
     }
-  }, [router, getValues, setAccordionOpen, category]);
+  }, [router, getValues]);
+
+  // 全て修正後、修正ボタン押下した時モーダルを表示する
+  const handleOnSubmit = useCallback(() => {
+    if (getValues("parts").filter((part: PartType) => !part.onDelete).length === 0) {
+      setAlertInfo((prev: any) => { 
+        const { secondaryAction, secondaryActionLabel, ...rest } = prev;
+        return {
+          ...rest,
+          title: "単元・章カテゴリーを追加してください。",
+          onSubmitLabel: "確認",
+          onSubmit: () => {}
+        }
+      })
+      alertModal.onOpen();
+      setAccordionOpen((prev: any) => { return { ...prev, part: true } });
+      return;
+    }
+
+    if (getValues("langs").filter((lang: LangType) => lang.flg).length === 0) {
+      setAlertInfo((prev: any) => { 
+        const { secondaryAction, secondaryActionLabel, ...rest } = prev;
+        return {
+          ...rest,
+          title: "言語カテゴリーを選択してください。",
+          onSubmitLabel: "確認",
+          onSubmit: () => {}
+        }
+      })
+      alertModal.onOpen();
+      setAccordionOpen((prev: any) => { return { ...prev, lang: true } });
+      return;
+    }
+
+    const msg = category ? "修正" : "登録";
+    setAlertInfo((prev: any) => { 
+      return { 
+        ...prev,
+        title: `設定値を${msg}します。`,
+        onSubmitLabel: "確認",
+        onSubmit: onSubmit,
+        secondaryAction: () => alertModal.onClose,
+        secondaryActionLabel: "取消" } 
+    })
+    alertModal.onOpen();
+  }, [getValues, setAccordionOpen, category, alertModal, onSubmit]);
 
   // 取消ボタン押下した時
   const handleCancel = useCallback(() => {
-    if (confirm("登録・修正を取り消します。\n作成中の内容は保存しません。")) {
-      router.push(`/admin/crossword`);
-    }
-  }, [router]);
+    setAlertInfo((prev: any) => {
+      return {
+        ...prev,
+        title: `登録・修正を取り消します。\n作成中の内容は保存しません。`,
+        onSubmitLabel: "確認",
+        onSubmit: () => {
+          router.push(`/admin/crossword`);
+          router.refresh();
+        },
+        secondaryAction: () => alertModal.onClose,
+        secondaryActionLabel: "取消" 
+      }
+    })
+    alertModal.onOpen();
+  }, [router, alertModal]);
   
   useEffect(() => {
     setValue("langs", langChecked);
@@ -228,6 +274,7 @@ export default function CategoryEditClient({ category, langs }: Props) {
                           <Button
                             label="-"
                             onClick={() => handleDeletePart(part.sorted)}
+                            disabled={isLoading}
                             error
                           />
                         </div>
@@ -270,6 +317,16 @@ export default function CategoryEditClient({ category, langs }: Props) {
       <PartCreateAndEditModal
         item={modalData}
         handleAppendPart={handleAppendPart}
+      />
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={alertModal.onClose}
+        title={alertInfo.title}
+        onSubmit={alertInfo.onSubmit}
+        onSubmitLabel={alertInfo.onSubmitLabel}
+        secondaryAction={alertInfo?.secondaryAction}
+        secondaryActionLabel={alertInfo?.secondaryActionLabel}
+        disabled={isLoading}
       />
       <div className="mt-8 px-2">
         <Link href="/admin/crossword" className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>

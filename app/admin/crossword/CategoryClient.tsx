@@ -10,6 +10,8 @@ import { HiChevronUp, HiChevronDown } from "react-icons/hi";
 import { CategoryType } from "@/app/types";
 import { Button } from "@/app/components/htmlTag";
 import { Container, Heading } from "@/app/components/common";
+import useAlertModal from "@/app/hooks/useAlert";
+import AlertModal from "@/app/components/modal/AlertModal";
 
 
 type Props = {
@@ -18,30 +20,28 @@ type Props = {
 
 export default function CategoryClient({ items }: Props) {
   const router = useRouter();
+  const alertModal = useAlertModal();
+  const [ alertModalText, setAlertText ] = useState<CategoryType>();
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
   const [ categories, setCategories ] = useState<Array<CategoryType>>(items);
 
   // 単元削除ボタン押下した時
-  const handleDeletePart = useCallback(async (id: number) => {
-    setIsLoading(true);
-    const category = categories.filter((category: CategoryType) => category.id === id)?.[0];
-    try {
-      if (confirm(`カテゴリー「${category.name}」を削除します。`)) {
+  const handleDeletePart = useCallback(async (id: number | undefined) => {
+    if (id) {
+      setIsLoading(true);
+      try {
         const response = await axios.delete(`/api/category/${id}`);
-
+  
         if (response.status === 200) {
-          alert(`カテゴリー「${category.name}」を削除しました。`);
           setCategories(response.data);
-          router.refresh();
         }
+      } catch (error: any) {
+        alert("error: " + error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error: any) {
-      alert("error: " + error);
-    } finally {
-      setIsLoading(false);
     }
-  }, [router, categories]);
-
+  }, []);
 
   // カテゴリーの並び順
   const handleSortPart = useCallback(async (sortedIndex: number, direction: "up" | "down") => {
@@ -83,6 +83,16 @@ export default function CategoryClient({ items }: Props) {
   
   return (
     <Container>
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={alertModal.onClose}
+        title={`「${alertModalText?.name}」カテゴリーを削除します。`}
+        onSubmit={() => handleDeletePart(alertModalText?.id)}
+        onSubmitLabel="削除する"
+        secondaryAction={alertModal.onClose}
+        secondaryActionLabel="取消"
+        disabled={isLoading}
+      />
       <div className="mt-8">
         <Link href="/admin" className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
         <Heading title="クロスワードカテゴリー設定" />
@@ -128,7 +138,10 @@ export default function CategoryClient({ items }: Props) {
                   <div className="flex-none w-14">
                     <Button
                       label="-"
-                      onClick={() => handleDeletePart(category.id)}
+                      onClick={() => {
+                        setAlertText(category);
+                        alertModal.onOpen();
+                      }}
                       error
                       disabled={isLoading}
                     />

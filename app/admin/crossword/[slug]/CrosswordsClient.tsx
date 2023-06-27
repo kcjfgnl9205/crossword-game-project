@@ -9,7 +9,8 @@ import { Button } from "@/app/components/htmlTag";
 import { Container, EmptyState, Heading } from "@/app/components/common";
 import ListingPartsAdmin from "@/app/components/crossword/ListingPartsAdmin";
 import { CategoryType } from "@/app/types";
-
+import useAlertModal from "@/app/hooks/useAlert";
+import AlertModal from "@/app/components/modal/AlertModal";
 
 type Props = {
   category: CategoryType;
@@ -17,33 +18,47 @@ type Props = {
 }
 
 export default function CrosswordsClient({ category, crosswords }: Props) {
-  const [ isLoading, setIsLoading ] = useState(false);
   const router = useRouter();
+  const alertModal = useAlertModal();
+  const [ alertInfo, setAlertInfo ] = useState<any>({ 
+    title: "",
+    onSubmit: () => {},
+    onSubmitLabel: ""
+  });
+  const [ isLoading, setIsLoading ] = useState(false);
+
+  const deleteSubmit = useCallback(async (id: number) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete(`/api/crossword/${id}`, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        router.refresh();
+      }
+      
+    } catch (error: any) {
+      alert(`${error.response.status}: ${error.response.statusText}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [router])
 
   //　クロスワード削除
   const handleDelete = useCallback(async (title: string, id: number) => {
-    setIsLoading(true);
-    if (confirm(`「${title}」を削除します。`)) {
-      try {
-        const response = await axios.delete(`/api/crossword/${id}`, {
-          withCredentials: true,
-        });
-
-        if (response.status === 200) {
-          alert(`${title}」を削除します。`); 
-          router.refresh();
-        }
-        
-      } catch (error: any) {
-        alert(`${error.response.status}: ${error.response.statusText}`);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setIsLoading(false);
-    }
-  }, [router]);
-
+    setAlertInfo((prev: any) => { 
+      return { 
+        ...prev,
+        title: `「${title}」を削除します。`,
+        onSubmitLabel: "確認",
+        onSubmit: () => deleteSubmit(id),
+        secondaryAction: () => alertModal.onClose,
+        secondaryActionLabel: "取消"
+      } 
+    })
+    alertModal.onOpen();
+  }, [alertModal, deleteSubmit]);
   
   //　クロスワード修正ページへ移動する
   const handleUpdateRouter = useCallback((id: number) => {
@@ -59,6 +74,16 @@ export default function CrosswordsClient({ category, crosswords }: Props) {
   
   return (
       <Container>
+        <AlertModal
+          isOpen={alertModal.isOpen}
+          onClose={alertModal.onClose}
+          title={alertInfo.title}
+          onSubmit={alertInfo.onSubmit}
+          onSubmitLabel={alertInfo.onSubmitLabel}
+          secondaryAction={alertInfo?.secondaryAction}
+          secondaryActionLabel={alertInfo?.secondaryActionLabel}
+          disabled={isLoading}
+        />
         <div className="mt-8">
           <Link href={`/admin/crossword`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
           <Heading title={category.name} />

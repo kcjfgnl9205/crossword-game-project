@@ -41,7 +41,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     } else {
       setValue('id', undefined);
       setValue('name', "");
-      setValue('sorted', 0);
+      setValue('sorted', 99);
       setValue('chapters', [{name: "", flg: false}]);
     }
   }, [item, setValue, createModal.isOpen]);
@@ -73,7 +73,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     if (handleAppendPart) {
       handleAppendPart(data);
     }
-
+console.log(data)
     createModal.onClose();
   }
 
