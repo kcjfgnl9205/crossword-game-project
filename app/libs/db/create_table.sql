@@ -28,6 +28,7 @@ DROP TABLE CHAPTER_MST;
 CREATE TABLE `CHAPTER_MST` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `sorted` int NOT NULL,
   `flg` tinyint DEFAULT '0',
   `part_id` int NOT NULL,
@@ -66,7 +67,6 @@ CREATE TABLE `USER_MST` (
 DROP TABLE CROSSWORD_MST;
 CREATE TABLE `CROSSWORD_MST` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) NOT NULL,
   `time_limit` int NOT NULL,
   `category_id` int NOT NULL,
   `part_id` int NOT NULL,

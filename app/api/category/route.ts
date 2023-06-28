@@ -73,11 +73,12 @@ const insert_category_logic = (category: any) => {
             if (!category.parts[i].chapters[j].onDelete) {
               const obj = {
                 name: category.parts[i].chapters[j].name,
+                title: category.parts[i].chapters[j].title,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: insertInfo.insertId,
                 sorted: j
               }
-              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.title, obj.flg, obj.part_id, obj.sorted]);
             }
           }
         } else {
@@ -95,19 +96,21 @@ const insert_category_logic = (category: any) => {
               //insert
               const obj = {
                 name: category.parts[i].chapters[j].name,
+                title: category.parts[i].chapters[j].title,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: category.parts[i].id,
                 sorted: j
               }
-              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.title, obj.flg, obj.part_id, obj.sorted]);
             } else {
               //update
               const obj = {
                 name: category.parts[i].chapters[j].name,
+                title: category.parts[i].chapters[j].title,
                 sorted: j,
                 flg: category.parts[i].chapters[j].flg,
               };
-              await excuteQuery(conn, UPDATE_CHAPTER_MST, [obj.name, obj.sorted, obj.flg, category.parts[i].chapters[j].id])
+              await excuteQuery(conn, UPDATE_CHAPTER_MST, [obj.name, obj.title, obj.sorted, obj.flg, category.parts[i].chapters[j].id])
             }
           }
         }
@@ -147,11 +150,12 @@ const update_category_logic = (category: any) => {
             if (!category.parts[i].chapters[j].onDelete) {
               const obj = {
                 name: category.parts[i].chapters[j].name,
+                title: category.parts[i].chapters[j].title,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: insertInfo.insertId,
                 sorted: j
               };
-              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.title, obj.flg, obj.part_id, obj.sorted]);
             }
           }
         } else {
@@ -169,19 +173,21 @@ const update_category_logic = (category: any) => {
               //insert
               const obj = {
                 name: category.parts[i].chapters[j].name,
+                title: category.parts[i].chapters[j].title,
                 flg: category.parts[i].chapters[j].flg,
                 part_id: category.parts[i].id,
                 sorted: j
               };
-              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.flg, obj.part_id, obj.sorted]);
+              await excuteQuery(conn, INSERT_CHAPTER_MST, [obj.name, obj.title, obj.flg, obj.part_id, obj.sorted]);
             } else {
               //update
               const obj = {
                 name: category.parts[i].chapters[j].name,
+                title: category.parts[i].chapters[j].title,
                 sorted: j,
                 flg: category.parts[i].chapters[j].flg,
               };
-              await excuteQuery(conn, UPDATE_CHAPTER_MST, [obj.name, obj.sorted, obj.flg, category.parts[i].chapters[j].id]);
+              await excuteQuery(conn, UPDATE_CHAPTER_MST, [obj.name, obj.title, obj.sorted, obj.flg, category.parts[i].chapters[j].id]);
             }
           }
         }

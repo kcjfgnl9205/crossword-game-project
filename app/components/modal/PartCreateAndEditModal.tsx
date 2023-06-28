@@ -23,7 +23,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
       id: undefined,
       name: "",
       sorted: 0,
-      chapters: [{id: 0, name: "", flg: false}]
+      chapters: [{id: 0, name: "", title: "", flg: false}]
     }
   });
 
@@ -42,7 +42,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
       setValue('id', undefined);
       setValue('name', "");
       setValue('sorted', 99);
-      setValue('chapters', [{name: "", flg: false}]);
+      setValue('chapters', [{name: "", title: "", flg: false}]);
     }
   }, [item, setValue, createModal.isOpen]);
 
@@ -55,17 +55,19 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
   const handleChapterRemove = (index: number) => {
     if (fields.filter((field: any) => !field.onDelete).length > 1) {
       const prevName = getValues(`chapters.${index}.name`);
+      const prevTitle = getValues(`chapters.${index}.title`);
       const prevId = getValues(`chapters.${index}.id`);
-      update(index, { id: prevId, name: prevName, onDelete: true, flg: false });
+      update(index, { id: prevId, name: prevName, title: prevTitle, onDelete: true, flg: false });
     }
   };
 
   // 章の総合ボタンを押下した時
   const handleOnChange = useCallback((index: number) => {
       const prevName = getValues(`chapters.${index}.name`);
+      const prevTitle = getValues(`chapters.${index}.title`);
       const prevId = getValues(`chapters.${index}.id`);
       const prevFlg = getValues(`chapters.${index}.flg`);
-      update(index, { id: prevId, name: prevName, flg: !prevFlg });
+      update(index, { id: prevId, name: prevName, title: prevTitle, flg: !prevFlg });
   }, [update, getValues]);
 
   // 章を追加する
@@ -73,7 +75,7 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
     if (handleAppendPart) {
       handleAppendPart(data);
     }
-console.log(data)
+
     createModal.onClose();
   }
 
@@ -114,6 +116,16 @@ console.log(data)
                   validate={{ 
                     required: "章名を入力してください。",
                     maxLength: { value: 50, message: "章名は最大50文字までです。" }
+                  }}
+                />
+                <Input
+                  id={`chapters.${chapterIndex}.title`}
+                  label="タイトル"
+                  register={register}
+                  errors={errors}
+                  validate={{ 
+                    required: "章のタイトルを入力してください。",
+                    maxLength: { value: 50, message: "章のタイトルは最大50文字までです。" }
                   }}
                 />
                 <div className="flex-none w-30">

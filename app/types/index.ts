@@ -36,6 +36,7 @@ export type PartType = {
 export type ChapterType = {
   id: number;
   name: string;
+  title: string;
   sorted: number;
   flg: number;
 }

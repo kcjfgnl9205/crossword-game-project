@@ -9,11 +9,11 @@ CREATE VIEW V_CROSSWORD_ALL_RESULT AS
                 , CHAPTER_MST.id as chapter_id
                 , CHAPTER_MST.name as chapter_name
                 , CHAPTER_MST.sorted as chapter_sorted
+                , CHAPTER_MST.title as chapter_title
                 , LANG_MST.id as lang_id
                 , LANG_MST.name as lang_name
                 , LANG_MST.name_en as lang_name_en
                 , CROSSWORD_MST.id as crossword_id
-                , CROSSWORD_MST.title as crossword_title
                 , CROSSWORD_RESULT_MST.id as result_id
                 , CROSSWORD_RESULT_MST.time_limit as result_time_limit
                 , CROSSWORD_RESULT_MST.u_time_limit as result_u_time_limit
@@ -60,6 +60,7 @@ CREATE VIEW V_CATEGORY_ALL_MST AS
          , PART_MST.sorted as part_sorted
          , CHAPTER_MST.id as chapter_id
          , CHAPTER_MST.name as chapter_name
+         , CHAPTER_MST.title as chapter_title
          , CHAPTER_MST.sorted as chapter_sorted
          , CHAPTER_MST.flg as chapter_flg
          , LANG_MST.id as lang_id

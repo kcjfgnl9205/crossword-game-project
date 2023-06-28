@@ -36,6 +36,7 @@ export default async function getCategories(params?: Props): Promise<Array<Categ
             chapters: [{
               id: row.chapter_id,
               name: row.chapter_name,
+              title: row.chapter_title,
               sorted: row.chapter_sorted,
               flg: row.chapter_flg,
             }]
@@ -61,6 +62,7 @@ export default async function getCategories(params?: Props): Promise<Array<Categ
             chapters: [{
               id: row.chapter_id,
               name: row.chapter_name,
+              title: row.chapter_title,
               sorted: row.chapter_sorted,
               flg: row.chapter_flg
             }]
@@ -71,6 +73,7 @@ export default async function getCategories(params?: Props): Promise<Array<Categ
             transformedData[catregoryIndex].parts[partIndex].chapters.push({
               id: row.chapter_id,
               name: row.chapter_name,
+              title: row.chapter_title,
               sorted: row.chapter_sorted,
               flg: row.chapter_flg
             });

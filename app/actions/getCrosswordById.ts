@@ -21,7 +21,7 @@ export default async function getCrosswordById(params: Props): Promise<any> {
       if (crosswordIndex === -1) {
         transformedData.push({
           id: crosswords[0].id,
-          title: crosswords[0].title,
+          title: crosswords[0].chapter_title,
           minute: minute,
           second: second,
           category: {

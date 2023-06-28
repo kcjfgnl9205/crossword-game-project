@@ -23,14 +23,13 @@ const insert_crossword_logic = (crossword: any) => {
   return async (conn: any) => {
     try {
       const obj = {
-        title: crossword.title, 
         time_limit: changeMinuteToSecond(Number(crossword.minute), Number(crossword.second)),
         category_id: Number(crossword.category_id),
         part_id: Number(crossword.part_id),
         chapter_id: Number(crossword.chapter_id),
         lang_id: Number(crossword.lang_id)
       };
-      const crosswordInsertInfo = await excuteQuery(conn, INSERT_CROSSWORD, [obj.title, obj.time_limit, obj.category_id, obj.part_id, obj.chapter_id, obj.lang_id]);
+      const crosswordInsertInfo = await excuteQuery(conn, INSERT_CROSSWORD, [obj.time_limit, obj.category_id, obj.part_id, obj.chapter_id, obj.lang_id]);
 
       for (let i = 0; i < crossword.questions.length; i++) {
         const question = crossword.questions[i];

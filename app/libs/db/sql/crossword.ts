@@ -7,11 +7,11 @@ export const SELECT_CROSSWORD_MST_BY_CATEGORY = `
                , V_CATEGORY_ALL_MST.part_name 
                , V_CATEGORY_ALL_MST.chapter_id
                , V_CATEGORY_ALL_MST.chapter_name 
+               , V_CATEGORY_ALL_MST.chapter_title
                , V_CATEGORY_ALL_MST.lang_id 
                , V_CATEGORY_ALL_MST.lang_name
                , V_CATEGORY_ALL_MST.lang_name_en
                , CROSSWORD_MST.id as crossword_id
-               , CROSSWORD_MST.title as crossword_title
                , CROSSWORD_MST.time_limit as crossword_time_limit
                , COUNT(CROSSWORD_DETAIL.id) as cnt
             FROM V_CATEGORY_ALL_MST
@@ -33,11 +33,11 @@ export const SELECT_CROSSWORD_MST_BY_CATEGORY = `
                , V_CATEGORY_ALL_MST.part_name 
                , V_CATEGORY_ALL_MST.chapter_id
                , V_CATEGORY_ALL_MST.chapter_name 
+               , V_CATEGORY_ALL_MST.chapter_title
                , V_CATEGORY_ALL_MST.lang_id 
                , V_CATEGORY_ALL_MST.lang_name
                , V_CATEGORY_ALL_MST.lang_name_en
                , CROSSWORD_MST.id 
-               , CROSSWORD_MST.title
                , CROSSWORD_MST.time_limit
         ORDER BY V_CATEGORY_ALL_MST.category_sorted
                , V_CATEGORY_ALL_MST.part_sorted  
@@ -50,7 +50,6 @@ export const SELECT_CROSSWORD_MST_BY_CATEGORY = `
 export const SELECT_CROSSWORD_BY_ID = `
           SELECT DISTINCT
                  CROSSWORD_MST.id
-               , CROSSWORD_MST.title
                , CROSSWORD_MST.time_limit
                , V_CATEGORY_ALL_MST.category_id
                , V_CATEGORY_ALL_MST.category_name
@@ -61,6 +60,7 @@ export const SELECT_CROSSWORD_BY_ID = `
                , V_CATEGORY_ALL_MST.part_sorted
                , V_CATEGORY_ALL_MST.chapter_id
                , V_CATEGORY_ALL_MST.chapter_name 
+               , V_CATEGORY_ALL_MST.chapter_title
                , V_CATEGORY_ALL_MST.chapter_sorted
                , V_CATEGORY_ALL_MST.lang_id
                , V_CATEGORY_ALL_MST.lang_name
@@ -93,7 +93,7 @@ export const SELECT_CROSSWORD_DETAIL_BY_CROSSWORD_ID = `
 `;
 
 // クロスワードゲームを登録する
-export const INSERT_CROSSWORD = `INSERT INTO CROSSWORD_MST(title, time_limit, category_id, part_id, chapter_id, lang_id) VALUES(?, ?, ?, ?, ?, ?)`;
+export const INSERT_CROSSWORD = `INSERT INTO CROSSWORD_MST(time_limit, category_id, part_id, chapter_id, lang_id) VALUES(?, ?, ?, ?, ?)`;
 export const INSERT_CROSSWORD_DETAIL = `INSERT INTO CROSSWORD_DETAIL(clue, hint, answer, crossword_id) VALUES(?, ?, ?, ?)`;
 
 // クロスワードゲームを削除する
@@ -111,8 +111,7 @@ export const DELETE_CROSSWORD_DETAIL = `
 // クロスワードゲームを修正する
 export const UPDATE_CROSSWORD = `
     UPDATE CROSSWORD_MST 
-       SET title = ?
-         , time_limit = ?
+       SET time_limit = ?
          , part_id = ?
          , chapter_id = ?
          , lang_id = ?

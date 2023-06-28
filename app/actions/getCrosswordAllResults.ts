@@ -29,7 +29,7 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
                 {
                   id: row.chapter_id,
                   name: row.chapter_name,
-                  title: row.crossword_title,
+                  title: row.chapter_title,
                   langs: [
                     {
                       id: row.lang_id,
@@ -70,7 +70,7 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
               {
                 id: row.chapter_id,
                 name: row.chapter_name,
-                title: row.crossword_title,
+                title: row.chapter_title,
                 langs: [
                   {
                     id: row.lang_id,
@@ -105,7 +105,7 @@ export default async function getCrosswordAllResults(params: Props): Promise<Arr
             transformedData[categoryIndex].parts[partIndex].chapters.push({
               id: row.chapter_id,
               name: row.chapter_name,
-              title: row.crossword_title,
+              title: row.chapter_title,
               langs: [
                 {
                   id: row.lang_id,

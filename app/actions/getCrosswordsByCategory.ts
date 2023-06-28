@@ -28,7 +28,7 @@ export default async function getCrosswordsByCategory(params: Props): Promise<Ar
               ? [
                   {
                     id: row.crossword_id,
-                    title: row.crossword_title,
+                    title: row.chapter_title,
                     time_limit: row.crossword_time_limit,
                     lang_id: row.lang_id,
                     lang_name: row.lang_name,
@@ -50,7 +50,7 @@ export default async function getCrosswordsByCategory(params: Props): Promise<Ar
             ? [
                 {
                   id: row.crossword_id,
-                  title: row.crossword_title,
+                  title: row.chapter_title,
                   time_limit: row.crossword_time_limit,
                   lang_id: row.lang_id,
                   lang_name: row.lang_name,
@@ -64,7 +64,7 @@ export default async function getCrosswordsByCategory(params: Props): Promise<Ar
           if (row.crossword_id) {
             transformedData[partIndex].chapters[chapterIndex].crosswords.push({
               id: row.crossword_id,
-              title: row.crossword_title,
+              title: row.chapter_title,
               time_limit: row.crossword_time_limit,
               lang_id: row.lang_id,
               lang_name: row.lang_name,

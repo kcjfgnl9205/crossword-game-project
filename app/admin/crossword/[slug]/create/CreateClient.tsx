@@ -80,6 +80,7 @@ export default function CrosswordCreateClient({ item, category }: Props) {
   useEffect(() => {
     if (!item) {
       setValue("chapter_id", chapters[0]?.id.toString());
+      setValue("title", chapters[0]?.title.toString());
     }
   }, [item, chapters, setValue, watch])
 
@@ -95,8 +96,10 @@ export default function CrosswordCreateClient({ item, category }: Props) {
       setChapters(part.chapters);
       setIsCombined(false);
     } else if (name === "chapter_id") {
-      const chapterFlg = chapters.find((chapter) => chapter.id?.toString() === watch("chapter_id"))?.flg;
+      const chap = chapters.find((chapter) => chapter.id?.toString() === watch("chapter_id"));
+      const chapterFlg = chap?.flg;
       const flg = chapterFlg === 1;
+      setValue("title", chap?.title);
       setIsCombined(flg);
     }
   }, [category, setValue, watch, chapters, setChapters]);
@@ -290,7 +293,7 @@ export default function CrosswordCreateClient({ item, category }: Props) {
         <Input
           id="title"
           label="プロジェット名"
-          disabled={isLoading}
+          disabled={true}
           register={register}
           errors={errors}
           validate={{ 

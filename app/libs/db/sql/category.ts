@@ -47,12 +47,13 @@ export const DELETE_PART_MST = `
 `;
 
 // 章データを登録する
-export const INSERT_CHAPTER_MST = `INSERT INTO CHAPTER_MST(name, flg, part_id, sorted) VALUES(?, ?, ?, ?)`;
+export const INSERT_CHAPTER_MST = `INSERT INTO CHAPTER_MST(name, title, flg, part_id, sorted) VALUES(?, ?, ?, ?, ?)`;
 
 // 章データを修正する
 export const UPDATE_CHAPTER_MST = `
     UPDATE CHAPTER_MST
        SET name = ?
+         , title = ?
          , sorted = ?
          , flg = ?
      WHERE id = ?

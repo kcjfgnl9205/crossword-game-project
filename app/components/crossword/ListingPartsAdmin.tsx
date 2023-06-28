@@ -47,7 +47,7 @@ export default function ListingPartsAdmin({ item, isLoading, handleDelete, handl
                         {chapter.name}、{crossword.lang_name}
                       </div>
                       <div>
-                        {crossword.title ? `${crossword.title} (${crossword.cnt}問題)` : `${chapter.name}問題は存在しません。`}
+                        {`${crossword.title} (${crossword.cnt}問題)`}
                       </div>
                     </div>
 

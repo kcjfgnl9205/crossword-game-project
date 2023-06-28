@@ -114,14 +114,13 @@ const update_crossword_logic = (id: number, crossword: any) => {
   return async (conn: any) => {
     try {
       const obj = {
-        title: crossword.title, 
         time_limit: changeMinuteToSecond(Number(crossword.minute), Number(crossword.second)),
         category_id: Number(crossword.category_id),
         part_id: Number(crossword.part_id),
         chapter_id: Number(crossword.chapter_id),
         lang_id: Number(crossword.lang_id)
       }
-      await excuteQuery(conn, UPDATE_CROSSWORD, [obj.title, obj.time_limit, obj.part_id, obj.chapter_id, obj.lang_id, id, obj.category_id])
+      await excuteQuery(conn, UPDATE_CROSSWORD, [obj.time_limit, obj.part_id, obj.chapter_id, obj.lang_id, id, obj.category_id])
 
 
       const detailids = await excuteQuery(conn, SELECT_CROSSWORD_DETAIL_BY_CROSSWORD_ID, [id]);
