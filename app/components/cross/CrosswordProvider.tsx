@@ -863,16 +863,16 @@ const CrosswordProvider = React.forwardRef<
       event.preventDefault();
       const inputValue = event.target.value;
       let convertedValue = inputValue;
-
+      console.log(new Date())
       if (lang === "jp-kata") {
         console.log(inputValue)
         // 히라가나를 가타카나로 변환
-        if (hiraganaRegex.test(inputValue)) {
+        // if (hiraganaRegex.test(inputValue)) {
           convertedValue = inputValue.replace(hiraganaRegex, (match) => {
             const code = match.charCodeAt(0) + 0x60;
             return String.fromCharCode(code);
           });
-        }
+        // }
       } else if (lang === "jp-hira") {
         console.log(inputValue)
         // 가타카나를 히라가나로 변환
@@ -887,8 +887,8 @@ const CrosswordProvider = React.forwardRef<
       if (lang !== "en") {
         setInputValue(convertedValue);
       }
-      console.log(convertedValue)
       setBulkChange(convertedValue);
+      console.log(convertedValue)
     }, [lang]);
 
     const handleCompositionEnd = useCallback<React.CompositionEventHandler<HTMLInputElement>>((event) => {
