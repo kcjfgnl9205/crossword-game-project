@@ -887,6 +887,7 @@ const CrosswordProvider = React.forwardRef<
       if (lang !== "en") {
         setInputValue(convertedValue);
       }
+      console.log(convertedValue)
       setBulkChange(convertedValue);
     }, [lang]);
 
