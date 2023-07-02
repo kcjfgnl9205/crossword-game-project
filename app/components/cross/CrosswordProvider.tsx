@@ -866,10 +866,12 @@ const CrosswordProvider = React.forwardRef<
 
       if (lang === "jp-kata") {
         // 히라가나를 가타카나로 변환
-        convertedValue = inputValue.replace(hiraganaRegex, (match) => {
-          const code = match.charCodeAt(0) + 0x60;
-          return String.fromCharCode(code);
-        });
+        if (hiraganaRegex.test(inputValue)) {
+          convertedValue = inputValue.replace(hiraganaRegex, (match) => {
+            const code = match.charCodeAt(0) + 0x60;
+            return String.fromCharCode(code);
+          });
+        }
       } else if (lang === "jp-hira") {
         // 가타카나를 히라가나로 변환
         if (katakanaRegex.test(inputValue)) {
@@ -897,8 +899,8 @@ const CrosswordProvider = React.forwardRef<
 
 
     useEffect(() => {
-      const hiraganaRegex = /[\u3040-\u309F]/;
-      const katakanaRegex = /[\u30A0-\u30FF]/;
+      const hiraganaRegex = /[\u3040-\u309F]/g;
+      const katakanaRegex = /[\u30A0-\u30FF]/g;
 
       if (!bulkChange) {
         setBulkCursor(0);
@@ -906,12 +908,10 @@ const CrosswordProvider = React.forwardRef<
       }
 
       const target = bulkChange[bulkCursor];
-      if (lang !== "en") {
-        if ((lang === "jp-hira" && hiraganaRegex.test(target)) || (lang === "jp-kata" && katakanaRegex.test(target))) {
-          if (target) {
-            handleSingleCharacter(bulkChange[bulkCursor]);
-            setBulkCursor(bulkCursor + 1);
-          }
+      if ((lang === "jp-hira" && hiraganaRegex.test(target)) || (lang === "jp-kata" && katakanaRegex.test(target))) {
+        if (target) {
+          handleSingleCharacter(bulkChange[bulkCursor]);
+          setBulkCursor(bulkCursor + 1);
         }
       }
   }, [
