@@ -14,6 +14,8 @@ export type AlertProps = {
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
+  primary?: boolean;
+  error?: boolean;
 }
 
 export default function AlertModal({
@@ -25,6 +27,8 @@ export default function AlertModal({
   disabled,
   secondaryAction,
   secondaryActionLabel,
+  primary,
+  error
 }: AlertProps) {
   const [ showModal, setShowModal ] = useState(false);
 
@@ -75,9 +79,7 @@ export default function AlertModal({
           className="
             relative
             w-full
-            md:w-4/6
-            lg:w-3/6
-            xl:w-2/5
+            md:w-1/5
             my-6
             mx-auto
             lg:h-auto
@@ -116,11 +118,12 @@ export default function AlertModal({
                 className="
                   flex
                   items-center
-                  py-10
+                  pt-10
+                  pb-6
+                  px-2
                   rounded-t
                   justify-center
                   relative
-                  md:py-20
                 "
               >
                 <div className="text-lg font-semibold">
@@ -128,21 +131,21 @@ export default function AlertModal({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 p-6">
+              <div className="flex md:p-6">
                 <div
                   className='
                     flex
                     flex-row
                     items-conter
-                    gap-4
+                    md:gap-4
                     w-full
                   '
                 > 
                   {
                     secondaryAction && secondaryActionLabel && 
-                    <Button disabled={disabled} label={secondaryActionLabel} onClick={handleSecondaryAction} error />
+                    <Button disabled={disabled} label={secondaryActionLabel} onClick={handleSecondaryAction} />
                   }
-                  <Button disabled={disabled} label={onSubmitLabel} onClick={handleSubmit} primary />
+                  <Button disabled={disabled} label={onSubmitLabel} onClick={handleSubmit} error={error} primary={!(secondaryAction && secondaryActionLabel) ? true : primary} />
                 </div>
               </div>
             </div>

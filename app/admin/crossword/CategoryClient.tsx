@@ -88,10 +88,11 @@ export default function CategoryClient({ items }: Props) {
         onClose={alertModal.onClose}
         title={`「${alertModalText?.name}」カテゴリーを削除します。`}
         onSubmit={() => handleDeletePart(alertModalText?.id)}
-        onSubmitLabel="削除する"
+        onSubmitLabel="削除"
         secondaryAction={alertModal.onClose}
         secondaryActionLabel="取消"
         disabled={isLoading}
+        error
       />
       <div className="mt-8">
         <Link href="/admin" className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>

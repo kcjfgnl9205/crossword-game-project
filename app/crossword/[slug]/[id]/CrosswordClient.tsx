@@ -13,6 +13,8 @@ import { CrosswordProviderImperative } from "@/app/components/cross/CrosswordPro
 import axios from "axios";
 import qs from "query-string";
 import { CrosswordBoardCreate, convertToResultArray } from "@/app/utils/crosswordutil";
+import useAlertModal from "@/app/hooks/useAlert";
+import AlertModal from "@/app/components/modal/AlertModal";
 
 type Props = {
   currentUser?: SafeUser;
@@ -30,6 +32,12 @@ export default function Quiz({ currentUser, crossword }: Props) {
 
   const router = useRouter();
   const params = useSearchParams();
+  const alertModal = useAlertModal();
+  const [ alertInfo, setAlertInfo ] = useState<any>({ 
+    title: "",
+    onSubmit: () => {},
+    onSubmitLabel: ""
+  });
   const crosswordRef = useRef<CrosswordProviderImperative>(null);
   const [ currentTime, setCurrentTime ] = useState<number>(0);
   const [ selectedClue, setSelectedClue ] = useState<Record<string, string | ClueTypeOriginal> | null>(null);
@@ -152,45 +160,60 @@ export default function Quiz({ currentUser, crossword }: Props) {
     }
   }, [currentUser, crossword, currentTime, totalCount])
 
+  const submitResult = useCallback(async () => {
+    try {
+      if (currentUser) {
+        await onSubmitResult();
+      }
+      moveToPath();
+    } catch (error: any) {
+      alert("error: " + error);
+    }
+  }, [currentUser, moveToPath, onSubmitResult]);
+  
+
   // 全ての回答をしたとき
   const onCrosswordComplete = useCallback(async (correct: boolean) => {
     const msg = "提出しますか？";
     handlePause();
     if (correct) {
-      if (confirm(msg)) {
-        try {
-          if (currentUser) {
-            await onSubmitResult();
-          }
-          moveToPath();
-        } catch (error: any) {
-          alert("error: " + error);
-        }
-      }
+      setAlertInfo((prev: any) => { 
+        return { 
+          ...prev,
+          title: msg,
+          onSubmitLabel: "提出",
+          onSubmit: () => submitResult(),
+          secondaryAction: () => alertModal.onClose,
+          secondaryActionLabel: "取消"
+        } 
+      })
+      alertModal.onOpen();
     } else {
       handleResume();
     }
-  }, [currentUser, handlePause, handleResume, moveToPath, onSubmitResult]);
-  
+  }, [handlePause, handleResume, setAlertInfo, submitResult, alertModal]);
+
   // 提出ボタン押下する
   const onSubmit = useCallback(async () => {
     handlePause();
     if (crosswordRef.current) {
-      const msg = crosswordRef.current.isCrosswordCorrect() ? "提出しますか？" : "解決していない問題が存在する、提出しますか？";
-      if (confirm(msg)) {
-        try {
-          if (currentUser) {
-            await onSubmitResult();
-          }
-          moveToPath();
-        } catch (error: any) {
-          alert("error: " + error);
-        }
-      } else {
-        handleResume();
-      }
+      const msg = crosswordRef.current.isCrosswordCorrect() ? "提出しますか？" : "解決していない問題が存在します。\n提出しますか？";
+      setAlertInfo((prev: any) => { 
+        return { 
+          ...prev,
+          title: msg,
+          onSubmitLabel: "提出",
+          onSubmit: () => submitResult(),
+          secondaryAction: () => {
+            alertModal.onClose();
+            handleResume();
+          },
+          secondaryActionLabel: "取消"
+        } 
+      })
+      alertModal.onOpen();
     }
-  }, [onSubmitResult, currentUser, handlePause, handleResume, moveToPath, crosswordRef]);
+  }, [handlePause, handleResume, crosswordRef, submitResult, alertModal]);
 
   // １つの問題に回答をした時(正解の場合)
   const onAnswerCorrect = useCallback((direction: Direction, number: string, answer: string) => {
@@ -236,9 +259,20 @@ export default function Quiz({ currentUser, crossword }: Props) {
   }, []);
 
 
-  
+
   return (
     <Container>
+        <AlertModal
+          isOpen={alertModal.isOpen}
+          onClose={alertModal.onClose}
+          title={alertInfo.title}
+          onSubmit={alertInfo.onSubmit}
+          onSubmitLabel={alertInfo.onSubmitLabel}
+          secondaryAction={alertInfo?.secondaryAction}
+          secondaryActionLabel={alertInfo?.secondaryActionLabel}
+          primary
+        />
+      
       <div className="py-4">
         <Heading title={`${crossword.title} (${crossword.category.langs[0].name})`} subtitle={`${crossword.category.parts[0].name} ${crossword.category.parts[0].chapters[0].name}`} />
 

@@ -251,6 +251,7 @@ export default function CrosswordCreateClient({ item, category }: Props) {
         secondaryAction={alertInfo?.secondaryAction}
         secondaryActionLabel={alertInfo?.secondaryActionLabel}
         disabled={isLoading}
+        primary
       />
       <div className="mt-8">
         <Link href={`/admin/crossword/${category.name_en}`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>

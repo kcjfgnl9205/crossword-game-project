@@ -51,7 +51,7 @@ export default function CrosswordsClient({ category, crosswords }: Props) {
       return { 
         ...prev,
         title: `「${title}」を削除します。`,
-        onSubmitLabel: "確認",
+        onSubmitLabel: "削除",
         onSubmit: () => deleteSubmit(id),
         secondaryAction: () => alertModal.onClose,
         secondaryActionLabel: "取消"
@@ -83,6 +83,7 @@ export default function CrosswordsClient({ category, crosswords }: Props) {
           secondaryAction={alertInfo?.secondaryAction}
           secondaryActionLabel={alertInfo?.secondaryActionLabel}
           disabled={isLoading}
+          error
         />
         <div className="mt-8">
           <Link href={`/admin/crossword`} className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>

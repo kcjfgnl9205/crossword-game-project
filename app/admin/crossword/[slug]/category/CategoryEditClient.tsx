@@ -327,6 +327,7 @@ export default function CategoryEditClient({ category, langs }: Props) {
         secondaryAction={alertInfo?.secondaryAction}
         secondaryActionLabel={alertInfo?.secondaryActionLabel}
         disabled={isLoading}
+        primary
       />
       <div className="mt-8 px-2">
         <Link href="/admin/crossword" className="text-sm text-neutral-500 hover:underline">&lt;&lt; 以前ページへ戻る</Link>
