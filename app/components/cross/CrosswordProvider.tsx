@@ -900,7 +900,7 @@ const CrosswordProvider = React.forwardRef<
     },[lang, setBulkCursor, setBulkChange]);
 
 
-    useEffect(() => {
+    useEffect(() => {      
       const hiraganaRegex = /[\u3040-\u309F]/g;
       const katakanaRegex = /[\u30A0-\u30FF]/g;
 
@@ -910,8 +910,10 @@ const CrosswordProvider = React.forwardRef<
       }
 
       const target = bulkChange[bulkCursor];
+      console.log("target：" + target)
       if ((lang === "jp-hira" && hiraganaRegex.test(target)) || (lang === "jp-kata" && katakanaRegex.test(target))) {
         if (target) {
+          console.log("exists target：" + target)
           handleSingleCharacter(bulkChange[bulkCursor]);
           setBulkCursor(bulkCursor + 1);
         }
