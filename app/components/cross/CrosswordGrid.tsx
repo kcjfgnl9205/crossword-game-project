@@ -219,6 +219,7 @@ export default function CrosswordGrid({ theme }: CrosswordGridProps) {
               onKeyDown={handleInputKeyDown}
               onChange={handleInputChange}
               onCompositionEnd={handleCompositionEnd}
+              onCompositionUpdate={handleCompositionEnd}
               value={inputValue}
               // onInput={this.handleInput}
               autoComplete="off"

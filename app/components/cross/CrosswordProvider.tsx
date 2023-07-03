@@ -863,18 +863,13 @@ const CrosswordProvider = React.forwardRef<
       event.preventDefault();
       const inputValue = event.target.value;
       let convertedValue = inputValue;
-      console.log(new Date())
       if (lang === "jp-kata") {
-        console.log(inputValue)
         // 히라가나를 가타카나로 변환
-        // if (hiraganaRegex.test(inputValue)) {
-          convertedValue = inputValue.replace(hiraganaRegex, (match) => {
-            const code = match.charCodeAt(0) + 0x60;
-            return String.fromCharCode(code);
-          });
-        // }
+        convertedValue = inputValue.replace(hiraganaRegex, (match) => {
+          const code = match.charCodeAt(0) + 0x60;
+          return String.fromCharCode(code);
+        });
       } else if (lang === "jp-hira") {
-        console.log(inputValue)
         // 가타카나를 히라가나로 변환
         if (katakanaRegex.test(inputValue)) {
           convertedValue = inputValue.replace(katakanaRegex, (match) => {
@@ -888,7 +883,6 @@ const CrosswordProvider = React.forwardRef<
         setInputValue(convertedValue);
       }
       setBulkChange(convertedValue);
-      console.log(convertedValue)
     }, [lang]);
 
     const handleCompositionEnd = useCallback<React.CompositionEventHandler<HTMLInputElement>>((event) => {
@@ -911,10 +905,8 @@ const CrosswordProvider = React.forwardRef<
       }
 
       const target = bulkChange[bulkCursor];
-      console.log("target：" + target)
       if ((lang === "jp-hira" && hiraganaRegex.test(target)) || (lang === "jp-kata" && katakanaRegex.test(target))) {
         if (target) {
-          console.log("exists target：" + target)
           handleSingleCharacter(bulkChange[bulkCursor]);
           setBulkCursor(bulkCursor + 1);
         }
