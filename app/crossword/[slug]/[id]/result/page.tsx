@@ -9,13 +9,9 @@ type Props = {
   slug: string;
 }
 
-export default async function Result({ params, searchParams }:  { params: Props, searchParams: { [key: string]: string | string[] | undefined }; }) {
+export default async function Result({ params }:  { params: Props }) {
   const crossword = await getCrosswordById(params);
   if (!crossword) {
-    notFound();
-  }
-
-  if (Object.keys(searchParams).length === 0) {
     notFound();
   }
 
@@ -23,7 +19,6 @@ export default async function Result({ params, searchParams }:  { params: Props,
     <ClientOnly>
       <ResultClient
         params={params}
-        searchParams={searchParams}
       />
     </ClientOnly>
   )

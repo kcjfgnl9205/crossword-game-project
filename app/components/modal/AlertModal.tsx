@@ -79,7 +79,8 @@ export default function AlertModal({
           className="
             relative
             w-full
-            md:w-1/5
+            md:w-1/2
+            lg:w-1/4
             my-6
             mx-auto
             lg:h-auto
@@ -143,9 +144,53 @@ export default function AlertModal({
                 > 
                   {
                     secondaryAction && secondaryActionLabel && 
-                    <Button disabled={disabled} label={secondaryActionLabel} onClick={handleSecondaryAction} />
+                    <button
+                      type="button"
+                      onClick={handleSecondaryAction}
+                      disabled={disabled}
+                      className={`
+                        relative
+                        disabled:opacity-70
+                        disabled:cursor-not-allowed
+                        hover:opacity-80
+                        transition
+                        w-full
+                        py-3
+                        text-md
+                        font-semibold
+                        border-2
+                        md:rounded-lg
+                      `}
+                    >
+                      {secondaryActionLabel}
+                    </button>
                   }
-                  <Button disabled={disabled} label={onSubmitLabel} onClick={handleSubmit} error={error} primary={!(secondaryAction && secondaryActionLabel) ? true : primary} />
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={disabled}
+                      className={`
+                        relative
+                        disabled:opacity-70
+                        disabled:cursor-not-allowed
+                        hover:opacity-80
+                        transition
+                        w-full
+                        py-3
+                        text-md
+                        font-semibold
+                        border-2
+                        md:rounded-lg
+                        ${ !(secondaryAction && secondaryActionLabel) ? true : primary && "bg-blue-500" }
+                        ${ !(secondaryAction && secondaryActionLabel) ? true : primary && "border-blue-500" }
+                        ${ !(secondaryAction && secondaryActionLabel) ? true : primary && "text-white" }
+                        ${ error && "bg-rose-500 " }
+                        ${ error && "border-rose-500" }
+                        ${ error && "text-white" }
+                      `}
+                    >
+                      {onSubmitLabel}
+                    </button>
                 </div>
               </div>
             </div>

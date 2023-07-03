@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Container, Heading, Timer } from "@/app/components/common";
-import { ClueTypeOriginal, CluesData, Direction } from "@/app/components/cross/types";
+import { ClueTypeOriginal, CluesData, Direction, UsedCellData } from "@/app/components/cross/types";
 import { Button } from "@/app/components/htmlTag";
 import CrosswordGame from "@/app/components/crossword/CrosswordGame";
 import { SafeUser } from "@/app/types";
@@ -44,6 +44,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
   
   const [ onHintShow, setOnHintShow ] = useState<boolean>(false);
   const [ data, setData ] = useState(null);
+  const [ isSubmitted, setIsSubmitted ] = useState<boolean>(false);
 
   // Timer
   const [ isRunning, setIsRunning ] = useState(true);
@@ -170,29 +171,13 @@ export default function Quiz({ currentUser, crossword }: Props) {
       alert("error: " + error);
     }
   }, [currentUser, moveToPath, onSubmitResult]);
-  
 
-  // 全ての回答をしたとき
-  const onCrosswordComplete = useCallback(async (correct: boolean) => {
-    const msg = "提出しますか？";
-    handlePause();
-    if (correct) {
-      setAlertInfo((prev: any) => { 
-        return { 
-          ...prev,
-          title: msg,
-          onSubmitLabel: "提出",
-          onSubmit: () => submitResult(),
-          secondaryAction: () => alertModal.onClose,
-          secondaryActionLabel: "取消"
-        } 
-      })
+  useEffect(() => {
+    if (!isRunning && !alertModal.isOpen) {
       alertModal.onOpen();
-    } else {
-      handleResume();
     }
-  }, [handlePause, handleResume, setAlertInfo, submitResult, alertModal]);
-
+  }, [alertModal, isRunning])
+  
   // 提出ボタン押下する
   const onSubmit = useCallback(async () => {
     handlePause();
@@ -203,18 +188,30 @@ export default function Quiz({ currentUser, crossword }: Props) {
           ...prev,
           title: msg,
           onSubmitLabel: "提出",
-          onSubmit: () => submitResult(),
-          secondaryAction: () => {
-            alertModal.onClose();
+          onSubmit: () => {
+            submitResult();
             handleResume();
           },
+          secondaryAction: () => handleResume(),
           secondaryActionLabel: "取消"
         } 
       })
-      alertModal.onOpen();
     }
-  }, [handlePause, handleResume, crosswordRef, submitResult, alertModal]);
+  }, [handlePause, handleResume, crosswordRef, submitResult, setAlertInfo]);
 
+  // 全ての回答をしたとき
+  const onCrosswordComplete = useCallback(async (correct: boolean) => {
+    if (isSubmitted) {
+      return;
+    }
+    
+    if (correct) {
+      setIsSubmitted(true);
+      onSubmit();
+    }
+  }, [onSubmit, isSubmitted, setIsSubmitted]);
+
+  
   // １つの問題に回答をした時(正解の場合)
   const onAnswerCorrect = useCallback((direction: Direction, number: string, answer: string) => {
     console.log("정답", direction, number, answer);
@@ -237,9 +234,14 @@ export default function Quiz({ currentUser, crossword }: Props) {
       setHintCount((prev: number) => ++prev)
     }
   }, []);
-  
+
   // モバイル：問題を選択すると問題を表示する
   const onClueSelected = useCallback((direction: Direction, info: ClueTypeOriginal) => {
+    setIsSubmitted(false);
+    setSelectedClue({direction, info});
+  }, [setIsSubmitted]);
+
+  const onCellSelected = useCallback((cellData: UsedCellData, direction: Direction, info: ClueTypeOriginal) => {
     setSelectedClue({direction, info});
   }, [])
 
@@ -262,16 +264,16 @@ export default function Quiz({ currentUser, crossword }: Props) {
 
   return (
     <Container>
-        <AlertModal
-          isOpen={alertModal.isOpen}
-          onClose={alertModal.onClose}
-          title={alertInfo.title}
-          onSubmit={alertInfo.onSubmit}
-          onSubmitLabel={alertInfo.onSubmitLabel}
-          secondaryAction={alertInfo?.secondaryAction}
-          secondaryActionLabel={alertInfo?.secondaryActionLabel}
-          primary
-        />
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={alertModal.onClose}
+        title={alertInfo.title}
+        onSubmit={alertInfo.onSubmit}
+        onSubmitLabel={alertInfo.onSubmitLabel}
+        secondaryAction={alertInfo?.secondaryAction}
+        secondaryActionLabel={alertInfo?.secondaryActionLabel}
+        primary
+      />
       
       <div className="py-4">
         <Heading title={`${crossword.title} (${crossword.category.langs[0].name})`} subtitle={`${crossword.category.parts[0].name} ${crossword.category.parts[0].chapters[0].name}`} />
@@ -300,6 +302,7 @@ export default function Quiz({ currentUser, crossword }: Props) {
               onAnswerCorrect={onAnswerCorrect}
               onCrosswordComplete={onCrosswordComplete}
               onClueSelected={onClueSelected}
+              onCellSelected={onCellSelected}
               onHintSelected={onHintSelected}
               onCellChange={onCellChange}
               onAnswerIncorrect={onAnswerIncorrect}

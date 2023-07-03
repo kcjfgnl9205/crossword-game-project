@@ -102,7 +102,8 @@ export default function Cell({
         y={y + cellHalf + 1} // +1 for visual alignment?
         textAnchor="middle"
         dominantBaseline="middle"
-        style={{ fill: answer === guess ? 'rgb(0,0,0)' : "#d32f2f" }}
+        // style={{ fill: answer === guess ? 'rgb(0,0,0)' : "#d32f2f" }}
+        style={{ fill: 'rgb(0,0,0)' }}
         className={
           answer === guess ? 'guess-text-correct' : 'guess-text-incorrect'
         }
