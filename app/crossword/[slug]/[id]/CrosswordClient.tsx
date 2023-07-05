@@ -53,12 +53,13 @@ export default function Quiz({ currentUser, crossword }: Props) {
     const result = CrosswordBoardCreate(crossword.questions)
     if (!result) {
       alert("クロスワードゲーム生成に失敗しました。");
+      router.back();
       return;
     }
 
     const newData = convertToResultArray(result);
     setData(newData);
-  }, [crossword]);
+  }, [crossword, router]);
 
   useEffect(() => {
     let intervalId: any;

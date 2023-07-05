@@ -181,9 +181,9 @@ export default function AlertModal({
                         font-semibold
                         border-2
                         md:rounded-lg
-                        ${ !(secondaryAction && secondaryActionLabel) ? true : primary && "bg-blue-500" }
-                        ${ !(secondaryAction && secondaryActionLabel) ? true : primary && "border-blue-500" }
-                        ${ !(secondaryAction && secondaryActionLabel) ? true : primary && "text-white" }
+                        ${ !(secondaryAction && secondaryActionLabel) ? "bg-blue-500" : primary && "bg-blue-500" }
+                        ${ !(secondaryAction && secondaryActionLabel) ? "border-blue-500" : primary && "border-blue-500" }
+                        ${ !(secondaryAction && secondaryActionLabel) ? "text-white" : primary && "text-white" }
                         ${ error && "bg-rose-500 " }
                         ${ error && "border-rose-500" }
                         ${ error && "text-white" }

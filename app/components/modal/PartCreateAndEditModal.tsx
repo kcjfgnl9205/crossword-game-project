@@ -108,16 +108,18 @@ export default function CrosswordCreateSubModal({ item, handleAppendPart }: Prop
           if (!onDelete) {
             return (
               <div key={chapterIndex} className="flex flex-row gap-1 items-center">
-                <Input
-                  id={`chapters.${chapterIndex}.name`}
-                  label="章"
-                  register={register}
-                  errors={errors}
-                  validate={{ 
-                    required: "章名を入力してください。",
-                    maxLength: { value: 50, message: "章名は最大50文字までです。" }
-                  }}
-                />
+                <div>
+                  <Input
+                    id={`chapters.${chapterIndex}.name`}
+                    label="章"
+                    register={register}
+                    errors={errors}
+                    validate={{ 
+                      required: "章名を入力してください。",
+                      maxLength: { value: 50, message: "章名は最大50文字までです。" }
+                    }}
+                  />
+                </div>
                 <Input
                   id={`chapters.${chapterIndex}.title`}
                   label="タイトル"
