@@ -39,9 +39,10 @@ export default function CategoryClient({ items }: Props) {
         alert("error: " + error);
       } finally {
         setIsLoading(false);
+        router.refresh();
       }
     }
-  }, []);
+  }, [router]);
 
   // カテゴリーの並び順
   const handleSortPart = useCallback(async (sortedIndex: number, direction: "up" | "down") => {
